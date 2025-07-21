@@ -1,0 +1,7 @@
+name: FurWatch
+version: '1.0.0-SNAPSHOT'
+main: net.nextfur.fws.FwMain
+api-version: '1.21'
+load: STARTUP
+authors: [ KivixEletric, Diogo06221 ]
+website: https://fursmp.com/

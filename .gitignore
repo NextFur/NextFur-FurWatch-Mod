@@ -1,0 +1,89 @@
+# ======================================
+# GERAL
+# ======================================
+**/*.log
+**/*.swp
+**/*.class
+**/*.DS_Store
+**/*.iml
+**/*BACKUP*
+
+# IDEs
+**/.idea/
+**/*.sublime*
+**/.vscode/
+**/.vscode-test/
+
+# ======================================
+# GRADLE
+# ======================================
+**/.gradle/
+**/build/
+**/out/
+
+# Distribuições e wrappers
+!**/gradle/wrapper/gradle-wrapper.jar
+!**/gradlew
+!**/gradlew.bat
+**/gradle-app.setting
+
+# Caches
+**/.classpath
+**/.project
+**/.settings/
+
+# ======================================
+# NPM/Yarn
+# ======================================
+**/node_modules/
+**/yarn.lock
+**/package-lock.json
+**/.pnp.*
+**/.pnp
+
+# ======================================
+# Minecraft Específico
+# ======================================
+**/debug/
+**/server/
+**/runs/
+**/logs/
+**/crash-reports/
+**/config/
+**/saves/
+**/mods/
+*.jar
+*.launch
+*.nb-gradle/
+*.vscode/
+**/run/
+**/eclipse/
+
+# ======================================
+# IntelliJ / Eclipse / NetBeans
+# ======================================
+**/*.iws
+**/*.ipr
+**/*.idea/
+**/*.launch
+**/*.settings/
+**/*.metadata/
+**/bin/
+
+# ======================================
+# Testes temporários e artefatos
+# ======================================
+**/*.tmp
+**/*.bak
+**/*.orig
+**/*.rej
+**/*.patch
+
+# ======================================
+# Arquivos do sistema operacional
+# ======================================
+**/Thumbs.db
+**/ehthumbs.db
+**/Desktop.ini
+**/$RECYCLE.BIN/
+**/*.stackdump
