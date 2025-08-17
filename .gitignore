@@ -45,7 +45,6 @@
 # Minecraft Específico
 # ======================================
 **/debug/
-**/server/
 **/runs/
 **/logs/
 **/crash-reports/
