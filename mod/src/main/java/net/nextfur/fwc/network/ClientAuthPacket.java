@@ -2,9 +2,10 @@ package net.nextfur.fwc.network;
 
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.server.ServerLoader;
-
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext; 
 
 public class ClientAuthPacket {
     private final String token;
@@ -13,7 +14,7 @@ public class ClientAuthPacket {
         this.token = token;
     }
 
-    public ClientAuthPacket(FriendltByteBuf buf) {
+    public ClientAuthPacket(FriendlyByteBuf buf) {
         this.token = buf.readUtf();
     }
 
@@ -21,14 +22,14 @@ public class ClientAuthPacket {
         buf.writeUtf(this.token);
     }
 
-    public void handle(NetworkEvent.Context ctx) {
-        ctx.enqueueWork(() -> {
-            String username = ctx.getSender().getName().getString();
-            FwMain.LOGGER.info("[FURSMP] Client Auth Packet received for user: " + username);
+    public void handle(final PlayPayloadContext context) {
+        context.workHandler().execute(() -> {
+            context.player().ifPresent(player -> {
+                String username = player.getName().getString();
+                FwMain.LOGGER.info("[FURSMP] Received auth token packet from user: " + username);
 
-            ServerLoader.authenticatePlayer(username, this.token);
-        })
-
-        ctx.setPacketHandled(true);
+                ServerLoader.pendingTokens.put(username, this.token);
+            });
+        });
     }
 }

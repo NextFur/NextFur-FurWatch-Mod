@@ -22,7 +22,8 @@ public class PacketHandler {
             ClientAuthPacket.class,
             ClientAuthPacket::encode,
             ClientAuthPacket::new,
-            ClientAuthPacket::handle
+            ClientAuthPacket::handle,
+            (packet, context) -> packet.handle(context) 
         );
         FwMain.LOGGER.info("[FURSMP] PacketHandler initialized and ClientAuthPacket registered.");
     }

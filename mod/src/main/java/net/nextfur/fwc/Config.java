@@ -38,6 +38,10 @@ public class Config {
         return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
     }
 
+    public static String getAuthToken() {
+        return "your_auth_token"; // Replace with your actual token retrieval logic
+    }
+
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
         logDirtBlock = LOG_DIRT_BLOCK.get();

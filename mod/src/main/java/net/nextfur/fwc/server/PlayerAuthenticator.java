@@ -1,9 +1,8 @@
 package net.nextfur.fwc.server;
 
-import net.nextfur.fwc.FwMain;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import net.nextfur.fwc.FwMain;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -22,9 +21,10 @@ public class PlayerAuthenticator {
     private static final Gson gson = new Gson();
 
     public static boolean authenticatePlayer(String username, String token) {
+        // FIX: The map was named 'requestBody' in your original code but used as 'data'
         Map<String, String> requestBody = new HashMap<>();
-        data.put("username", username);
-        data.put("token", token);
+        requestBody.put("username", username);
+        requestBody.put("token", token);
         String jsonRequest = gson.toJson(requestBody);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -41,8 +41,9 @@ public class PlayerAuthenticator {
             }
 
             JsonObject apiResponse = gson.fromJson(response.body(), JsonObject.class);
-            boolean isAuthenticated = apiResponse.get("authenticated") && apiResponse.get("authenticated").getAsBoolean();
-            boolean isWhitelisted = apiResponse.get("whitelisted") && apiResponse.get("whitelisted").getAsBoolean();
+            
+            boolean isAuthenticated = apiResponse.has("authenticated") && apiResponse.get("authenticated").getAsBoolean();
+            boolean isWhitelisted = apiResponse.has("whitelisted") && apiResponse.get("whitelisted").getAsBoolean();
 
             if(isAuthenticated && isWhitelisted) {
                 FwMain.LOGGER.info("[FURSMP] User: " + username + " authenticated successfully.");
@@ -54,7 +55,6 @@ public class PlayerAuthenticator {
 
         } catch (Exception e) {
             FwMain.LOGGER.error("[FURSMP] User: " + username + " Authentication Failed with exception: ", e);
-            e.printStackTrace();
             return false;
         }
     }

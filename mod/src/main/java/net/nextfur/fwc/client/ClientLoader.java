@@ -1,6 +1,6 @@
 package net.nextfur.fwc.client;
 
-import net.nextfur.fwc.Config; //Config class to manage client-side settings
+import net.nextfur.fwc.Config;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.network.ClientAuthPacket;
 import net.nextfur.fwc.network.PacketHandler;
@@ -8,7 +8,8 @@ import net.nextfur.fwc.network.PacketHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent.ClientPlayerNetworkEvent;
+import net.neoforged.fml.common.Mod.EventBusSubscriber; 
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent; 
 
 @Mod.EventBusSubscriber(modid = FwMain.MODID, value = Dist.CLIENT)
 public class ClientLoader {

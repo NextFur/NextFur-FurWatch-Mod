@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 @Mod(FwMain.MODID)
 public class FwMain {
     public static final String MODID = "fursmp";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     
     //Blocks, Items, and Creative Mode Tabs
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
