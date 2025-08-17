@@ -1,35 +1,40 @@
 package net.nextfur.fwc.network;
 
 import net.nextfur.fwc.FwMain;
-import net.nextfur.fwc.server.ServerLoader;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext; 
+public class ClientAuthPacket implements CustomPacketPayload {
 
-public class ClientAuthPacket {
+    public static final Type<ClientAuthPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FwMain.MODID, "client_auth"));
+
+    public static final StreamCodec<FriendlyByteBuf, ClientAuthPacket> STREAM_CODEC = StreamCodec.of(
+            (buffer, packet) -> packet.write(buffer), 
+            ClientAuthPacket::new                       
+    );
+
     private final String token;
 
     public ClientAuthPacket(String token) {
         this.token = token;
     }
 
-    public ClientAuthPacket(FriendlyByteBuf buf) {
+    private ClientAuthPacket(FriendlyByteBuf buf) {
         this.token = buf.readUtf();
     }
 
-    public void encode(FriendlyByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeUtf(this.token);
     }
 
-    public void handle(final PlayPayloadContext context) {
-        context.workHandler().execute(() -> {
-            context.player().ifPresent(player -> {
-                String username = player.getName().getString();
-                FwMain.LOGGER.info("[FURSMP] Received auth token packet from user: " + username);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
-                ServerLoader.pendingTokens.put(username, this.token);
-            });
-        });
+    public String getToken() {
+        return this.token;
     }
 }

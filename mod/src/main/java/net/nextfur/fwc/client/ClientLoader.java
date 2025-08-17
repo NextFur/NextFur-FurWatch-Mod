@@ -2,27 +2,25 @@ package net.nextfur.fwc.client;
 
 import net.nextfur.fwc.Config;
 import net.nextfur.fwc.FwMain;
-import net.nextfur.fwc.network.ClientAuthPacket;
-import net.nextfur.fwc.network.PacketHandler;
-
+import net.nextfur.fwc.network.ClientAuthPacket; 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber; 
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent; 
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
-@Mod.EventBusSubscriber(modid = FwMain.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = FwMain.MODID, value = Dist.CLIENT)
 public class ClientLoader {
     @SubscribeEvent
     public static void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
-        FwMain.LOGGER.info("[FURSMP] Client logging In");
+        FwMain.LOGGER.info("[FURSMP] Connecting to server. Preparing to send auth token.");
+        String token = Config.getAuthToken();
 
-        String token = Config.getClientToken(); // Retrieve the token from the config
-        if(token != null && token.isEmpty()) {
-            PacketHandler.CHANNEL.sendToServer(new ClientAuthPacket(token));
-            FwMain.LOGGER.info("[FURSMP] Authentication token sent to the server for user: " + event.getPlayer().getName().getString());
+        if (token != null && !token.isEmpty()) {
+            PacketDistributor.sendToServer(new ClientAuthPacket(token));
+            FwMain.LOGGER.info("[FURSMP] Authentication token sent to server.");
         } else {
-            FwMain.LOGGER.warn("[FURSMP] No authentication token found for user: " + event.getPlayer().getName().getString() + "Aborting authentication.");
+            FwMain.LOGGER.warn("[FURSMP] No authentication token found in config. Cannot authenticate.");
         }
     }
 }

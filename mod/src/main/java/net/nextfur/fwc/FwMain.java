@@ -1,7 +1,9 @@
 package net.nextfur.fwc;
 
+import net.nextfur.fwc.network.ClientAuthPacket;
 import net.nextfur.fwc.server.ServerLoader;
-import net.nextfur.fwc.network.PacketHandler;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
@@ -56,27 +58,17 @@ public class FwMain {
         output.accept(EXAMPLE_ITEM.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
     }).build());
 
-    // The constructor for the mod class is the first code that is run when your mod is loaded.
-    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public FwMain(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
 
-        PacketHandler.register(); // Register the packet handler
+        modEventBus.addListener(this::registerPackets);
 
-        // Register blocks, items, and creative mode tabs
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
 
-        // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (FwMain) to respond directly to events.
-        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
-
-        // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
-
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
@@ -91,15 +83,31 @@ public class FwMain {
         Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
 
-    // Add the example block item to the building blocks tab
+    private void registerPackets(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(MODID);
+
+        registrar.playToServer(
+                ClientAuthPacket.TYPE,
+                ClientAuthPacket.STREAM_CODEC,
+                (payload, context) -> {
+                    context.enqueueWork(() -> {
+                        var player = context.player();
+                        if (player != null) {
+                            String username = player.getName().getString();
+                            FwMain.LOGGER.info("[FURSMP] Received auth token from user: " + username);
+                            ServerLoader.pendingTokens.put(username, payload.getToken());
+                        }
+                    });
+                }
+        );
+    }
+
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) event.accept(EXAMPLE_BLOCK_ITEM);
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        ServerLoader();
         LOGGER.info("[FURSMP] Server is starting up. Initializing server components.");
     }
 
