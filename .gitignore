@@ -21,12 +21,6 @@
 **/build/
 **/out/
 
-# Distribuições e wrappers
-!**/gradle/wrapper/gradle-wrapper.jar
-!**/gradlew
-!**/gradlew.bat
-**/gradle-app.setting
-
 # Caches
 **/.classpath
 **/.project
@@ -51,7 +45,7 @@
 **/config/
 **/saves/
 **/mods/
-*.jar
+**/dist/
 *.launch
 *.nb-gradle/
 *.vscode/
