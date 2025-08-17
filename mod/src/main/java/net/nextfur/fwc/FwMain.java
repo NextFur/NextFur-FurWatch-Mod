@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(FwMain.MODID)
 public class FwMain {
-    public static final String MODID = "fursmp";
+    public static final String MODID = "fwc";
     public static final Logger LOGGER = LogUtils.getLogger();
     
     //Blocks, Items, and Creative Mode Tabs
