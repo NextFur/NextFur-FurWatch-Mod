@@ -137,6 +137,9 @@ print.info('Compiling & Importing Mod...')
 const modsDir = path.join(clientDir, 'mods')
 if(!fs.existsSync(modsDir)) fs.mkdirSync(modsDir, { recursive: true })
 
+const modsDirServer = path.join(serverDir, 'mods')
+if(!fs.existsSync(modsDirServer)) fs.mkdirSync(modsDirServer, { recursive: true })
+
 const modProcess = await execa('../gradlew', ['assemble', '--parallel', '--build-cache'], {
   cwd: path.join(__dirname, 'mod')
 })
@@ -148,6 +151,7 @@ if(modProcess.failed) {
 
 const modJar = fs.globSync(path.join(__dirname, 'mod', 'build', 'libs', '*.jar'))[0]
 fs.copyFileSync(modJar, path.join(modsDir, 'FurWatch.jar'))
+fs.copyFileSync(modJar, path.join(modsDirServer, 'FurWatch.jar'))
 fs.unlinkSync(modJar)
 
 print.success('Mod compiled and imported successfully.')
