@@ -18,6 +18,7 @@
 * Controle de Mobs e Otimização
 * Validação Server-Side de jogadores
 * Implementação de features e comandos
+* Manejamento de Lobbies e Dimensões
 
 ### Para Inicializar:
 * Scripts de Inicialização:
