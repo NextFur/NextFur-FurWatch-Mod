@@ -59,8 +59,6 @@ public class FwMain {
     }).build());
 
     public FwMain(IEventBus modEventBus, ModContainer modContainer) {
-        modEventBus.addListener(this::commonSetup);
-
         modEventBus.addListener(this::registerPackets);
 
         BLOCKS.register(modEventBus);
@@ -69,18 +67,16 @@ public class FwMain {
 
         NeoForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
+        LOGGER.info("[FURSMP] Common setup complete.");
 
-        if (Config.logDirtBlock) LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-
-        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
-
-        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
+        if(Config.debugMode) {
+            LOGGER.info("[FURSMP] Debug mode is enabled.");
+        } else {
+            LOGGER.info("[FURSMP] Debug mode is disabled.");
+        }
     }
 
     private void registerPackets(final RegisterPayloadHandlersEvent event) {
@@ -94,7 +90,7 @@ public class FwMain {
                         var player = context.player();
                         if (player != null) {
                             String username = player.getName().getString();
-                            FwMain.LOGGER.info("[FURSMP] Received auth token from user: " + username);
+                            LOGGER.info("[FURSMP] Received auth token from user: " + username);
                             ServerLoader.pendingTokens.put(username, payload.getToken());
                         }
                     });
@@ -108,7 +104,7 @@ public class FwMain {
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        LOGGER.info("[FURSMP] Server is starting up. Initializing server components.");
+        LOGGER.info("[FURSMP] Initializing server components.");
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

@@ -21,7 +21,7 @@ public class PlayerAuthenticator {
     private static final Gson gson = new Gson();
 
     public static boolean authenticatePlayer(String username, String token) {
-        // FIX: The map was named 'requestBody' in your original code but used as 'data'
+        
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("username", username);
         requestBody.put("token", token);
