@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//Lobby Manager inspired by AdvancedLobby by Cyne79
-
 public final class FwMain extends JavaPlugin {
 
     private static FwMain instance;

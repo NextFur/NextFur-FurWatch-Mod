@@ -23,7 +23,7 @@ public class LobbyCommand implements CommandExecutor {
             return true;
         }
 
-        Location location = LocationManager.getLocation(FwMain.config.getString("spawn_location"));
+        Location location = LocationManager.getLocation(FwMain.config.getString("spawn"));
         if(location != null) {
             player.teleport(location);
         }
