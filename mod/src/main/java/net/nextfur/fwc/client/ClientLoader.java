@@ -18,7 +18,7 @@ public class ClientLoader {
         String token = Config.getAuthToken();
 
         if (token != null && !token.isEmpty()) {
-            PacketDistributor.sendToServer(new TokenPayload(token));
+            PacketDistributor.sendToServer(new ClientAuthPacket(token));
             FwMain.LOGGER.info("[FURSMP] Authentication token sent to server.");
         } else {
             FwMain.LOGGER.warn("[FURSMP] No authentication token found in config. Cannot authenticate.");

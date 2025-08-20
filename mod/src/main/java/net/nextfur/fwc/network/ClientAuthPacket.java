@@ -35,6 +35,7 @@ public class ClientAuthPacket implements CustomPacketPayload {
     }
 
     public String getToken() {
+        FwMain.LOGGER.info("Token requisitado pelo sistema." + token);
         return this.token;
     }
 }

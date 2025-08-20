@@ -1,9 +1,7 @@
 package net.nextfur.fwc;
 
-import net.neoforged.fml.config.ModConfig;
 import net.nextfur.fwc.network.ClientAuthPacket;
 import net.nextfur.fwc.server.ServerLoader;
-import net.nextfur.fwc.network.TokenPayload;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -42,7 +40,7 @@ import org.slf4j.Logger;
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(FwMain.MODID)
 public class FwMain {
-    public static final String MODID = "fwc";
+    public static final String MODID = "fursmp";
     public static final Logger LOGGER = LogUtils.getLogger();
     
     //Blocks, Items, and Creative Mode Tabs
@@ -85,23 +83,21 @@ public class FwMain {
     }
 
     private void registerPackets(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(MODID).versioned("1");
+        final PayloadRegistrar registrar = event.registrar(MODID);
 
         registrar.playToServer(
-            TokenPayload.TYPE,
-            TokenPayload.STREAM_CODEC,
-            (payload, context) -> {
-                context.enqueueWork(() -> {
-                    var player = context.player();
-                    if (player != null) {
-                        String username = player.getName().getString();
-                        LOGGER.info("[FURSMP SERVER] Received auth token packet from user: '{}'.", username);
-                        ServerLoader.pendingTokens.put(username, payload.getToken());
-                    } else {
-                        LOGGER.warn("[FURSMP SERVER] Received an auth token packet but could not identify the user profile.");
-                    }
-                });
-            }
+                ClientAuthPacket.TYPE,
+                ClientAuthPacket.STREAM_CODEC,
+                (payload, context) -> {
+                    context.enqueueWork(() -> {
+                        var player = context.player();
+                        if (player != null) {
+                            String username = player.getName().getString();
+                            LOGGER.info("[FURSMP] Received auth token from user: " + username);
+                            ServerLoader.pendingTokens.put(username, payload.getToken());
+                        }
+                    });
+                }
         );
     }
 
