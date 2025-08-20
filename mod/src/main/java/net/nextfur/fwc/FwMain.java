@@ -1,5 +1,6 @@
 package net.nextfur.fwc;
 
+import net.neoforged.fml.config.ModConfig;
 import net.nextfur.fwc.network.ClientAuthPacket;
 import net.nextfur.fwc.server.ServerLoader;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -67,6 +68,7 @@ public class FwMain {
 
         NeoForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

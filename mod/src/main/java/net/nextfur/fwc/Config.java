@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@EventBusSubscriber(modid = FwMain.MODID)
+@EventBusSubscriber(modid = FwMain.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
@@ -30,9 +30,11 @@ public class Config {
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
-        authToken = AUTH_TOKEN.get();
-        debugMode = DEBUG_MODE.get();
+        if (event.getConfig().getSpec() == Config.SPEC) {
+            authToken = AUTH_TOKEN.get();
+            debugMode = DEBUG_MODE.get();
 
-        FwMain.LOGGER.info("[FURSMP] Loaded Mod Config", authToken.isEmpty() ? "No auth token set." : "Auth token set.");
+            FwMain.LOGGER.info("[FURSMP] Loaded Mod Config. Token status: {}", authToken.isEmpty() ? "NOT SET" : "SET");
+        }
     }
 }
