@@ -20,7 +20,7 @@ public final class FwMain extends JavaPlugin {
 
     private static FwMain instance;
 
-    public static File file = new File("plugins/FWS", "config.yml");
+    public static File file = new File("plugins/FurWatch", "config.yml");
     public static FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
     public static ArrayList<Player> build = new ArrayList<>();
