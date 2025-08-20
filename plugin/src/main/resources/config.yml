@@ -9,4 +9,4 @@ lobby_world_weather: "CLEAR"
 default_health: 20
 default_gamemode: ADVENTURE
 
-spawn: "0 120 0"
+spawn: "lobby:0;120;0;0;0"
