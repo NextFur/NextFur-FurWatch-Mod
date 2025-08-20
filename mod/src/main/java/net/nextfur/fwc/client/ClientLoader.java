@@ -3,6 +3,7 @@ package net.nextfur.fwc.client;
 import net.nextfur.fwc.Config;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.network.ClientAuthPacket; 
+import net.nextfur.fwc.network.TokenPayload;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -17,7 +18,7 @@ public class ClientLoader {
         String token = Config.getAuthToken();
 
         if (token != null && !token.isEmpty()) {
-            PacketDistributor.sendToServer(new ClientAuthPacket(token));
+            PacketDistributor.sendToServer(new TokenPayload(token));
             FwMain.LOGGER.info("[FURSMP] Authentication token sent to server.");
         } else {
             FwMain.LOGGER.warn("[FURSMP] No authentication token found in config. Cannot authenticate.");

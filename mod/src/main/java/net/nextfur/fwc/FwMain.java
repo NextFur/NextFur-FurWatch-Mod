@@ -3,6 +3,7 @@ package net.nextfur.fwc;
 import net.neoforged.fml.config.ModConfig;
 import net.nextfur.fwc.network.ClientAuthPacket;
 import net.nextfur.fwc.server.ServerLoader;
+import net.nextfur.fwc.network.TokenPayload;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -60,6 +61,8 @@ public class FwMain {
     }).build());
 
     public FwMain(IEventBus modEventBus, ModContainer modContainer) {
+        modEventBus.addListener(this::commonSetup);
+
         modEventBus.addListener(this::registerPackets);
 
         BLOCKS.register(modEventBus);
@@ -82,21 +85,23 @@ public class FwMain {
     }
 
     private void registerPackets(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(MODID);
+        final PayloadRegistrar registrar = event.registrar(MODID).versioned("1");
 
         registrar.playToServer(
-                ClientAuthPacket.TYPE,
-                ClientAuthPacket.STREAM_CODEC,
-                (payload, context) -> {
-                    context.enqueueWork(() -> {
-                        var player = context.player();
-                        if (player != null) {
-                            String username = player.getName().getString();
-                            LOGGER.info("[FURSMP] Received auth token from user: " + username);
-                            ServerLoader.pendingTokens.put(username, payload.getToken());
-                        }
-                    });
-                }
+            TokenPayload.TYPE,
+            TokenPayload.STREAM_CODEC,
+            (payload, context) -> {
+                context.enqueueWork(() -> {
+                    var player = context.player();
+                    if (player != null) {
+                        String username = player.getName().getString();
+                        LOGGER.info("[FURSMP SERVER] Received auth token packet from user: '{}'.", username);
+                        ServerLoader.pendingTokens.put(username, payload.getToken());
+                    } else {
+                        LOGGER.warn("[FURSMP SERVER] Received an auth token packet but could not identify the user profile.");
+                    }
+                });
+            }
         );
     }
 
