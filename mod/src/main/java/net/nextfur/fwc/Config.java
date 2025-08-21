@@ -34,7 +34,7 @@ public class Config {
             authToken = AUTH_TOKEN.get();
             debugMode = DEBUG_MODE.get();
 
-            FwMain.LOGGER.info("[FURSMP] Loaded Mod Config. Token status: {}", authToken.isEmpty() ? "NOT SET" : "SET");
+            FwMain.LOGGER.info("[FURSMP MOD] Loaded Mod Config. Token status: {}", authToken.isEmpty() ? "NOT SET" : "SET");
         }
     }
 }

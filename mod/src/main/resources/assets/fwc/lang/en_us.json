@@ -1,5 +1,7 @@
 {
   "itemGroup.fwc": "Example Mod Tab",
   "block.fwc.example_block": "Example Block",
-  "item.fwc.example_item": "Example Item"
+  "item.fwc.example_item": "Example Item",
+  "block.fursmp.animated_server_rack": "Animated Server Rack",
+  "creative.fursmp_tab": "FurSMP Blocks"
 }

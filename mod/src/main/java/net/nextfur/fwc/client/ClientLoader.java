@@ -14,14 +14,14 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class ClientLoader {
     @SubscribeEvent
     public static void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
-        FwMain.LOGGER.info("[FURSMP] Connecting to server. Preparing to send auth token.");
+        FwMain.LOGGER.info("[FURSMP MOD] Connecting to server. Preparing to send auth token.");
         String token = Config.getAuthToken();
 
         if (token != null && !token.isEmpty()) {
             PacketDistributor.sendToServer(new ClientAuthPacket(token));
-            FwMain.LOGGER.info("[FURSMP] Authentication token sent to server.");
+            FwMain.LOGGER.info("[FURSMP MOD] Authentication token sent to server.");
         } else {
-            FwMain.LOGGER.warn("[FURSMP] No authentication token found in config. Cannot authenticate.");
+            FwMain.LOGGER.warn("[FURSMP MOD] No authentication token found in config. Cannot authenticate.");
         }
     }
 }
