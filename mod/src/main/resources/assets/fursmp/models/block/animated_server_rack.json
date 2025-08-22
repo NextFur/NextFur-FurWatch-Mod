@@ -3,6 +3,8 @@
   "textures": {
     "top": "fursmp:block/steel_plating",
     "front": "fursmp:block/animated_server_rack_front",
-    "side": "fursmp:block/steel_plating"
+    "side": "fursmp:block/steel_plating",
+    "back": "fursmp:block/steel_plating",
+    "bottom": "fursmp:block/steel_plating"
   }
 }

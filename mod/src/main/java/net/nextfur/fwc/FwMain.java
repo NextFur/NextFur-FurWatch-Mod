@@ -40,7 +40,6 @@ public class FwMain {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    // ... (the rest of your FwMain class is fine and does not need changes)
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("[FURSMP] Common setup complete.");
 
