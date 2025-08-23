@@ -15,9 +15,11 @@ public class FwModCreativeTabs {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> FWC_TAB = CREATIVE_MODE_TABS.register("fursmp_tab",
             () -> CreativeModeTab.builder()
                     .icon(() -> new ItemStack(FwModItems.ANIMATED_SERVER_RACK_ITEM.get()))
-                    .title(Component.translatable("creativetab.fursmp_tab"))
+                    .title(Component.translatable("creative.fursmp_tab"))
                     .displayItems((displayParameters, output) -> {
-                        
+                        //Accept Items
+                        output.accept(FwModItems.SCRAP_METAL.get());
+                        //Accept Blocks
                         output.accept(FwModItems.ANIMATED_SERVER_RACK_ITEM.get());
                     })
                     .build());

@@ -14,10 +14,17 @@ public class FwModBlocks {
             DeferredRegister.createBlocks(FwMain.MODID);
 
     public static final DeferredBlock<Block> ANIMATED_SERVER_RACK = BLOCKS.register("animated_server_rack",
+        () -> new AnimatedServerRackBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.ANVIL)
+                .strength(1.0f)
+                .noOcclusion()));
 
-            () -> new AnimatedServerRackBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.METAL)
-                    .sound(SoundType.ANVIL)
-                    .strength(1.0f)
-                    .noOcclusion()));
+    public static final DeferredBlock<Block> BLACK_STEEL_PLATING = BLOCKS.register("black_steel_plating",
+        () -> new BlackSteelPlatingBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.METAL)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+    //
 }
