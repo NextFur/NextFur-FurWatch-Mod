@@ -1,5 +1,7 @@
 package net.nextfur.fwc.blocks;
 
+import net.nextfur.fwc.util.tags.IMineableWithPickaxe;
+
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,7 +16,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 
-public class AnimatedServerRackBlock extends HorizontalDirectionalBlock {
+public class AnimatedServerRackBlock extends HorizontalDirectionalBlock implements IMineableWithPickaxe {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 

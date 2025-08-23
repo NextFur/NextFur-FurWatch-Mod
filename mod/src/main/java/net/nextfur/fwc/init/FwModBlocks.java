@@ -7,7 +7,9 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nextfur.fwc.FwMain;
+
 import net.nextfur.fwc.blocks.AnimatedServerRackBlock; 
+import net.nextfur.fwc.blocks.BlackSteelPlatingBlock; 
 
 public class FwModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
