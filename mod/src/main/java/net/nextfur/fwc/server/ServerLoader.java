@@ -8,6 +8,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,17 +35,29 @@ public class ServerLoader {
                             FwMain.LOGGER.warn("[FURSMP] User: {} connected without an auth token and was kicked.", username);
                             return; 
                         }
+                        FwMain.LOGGER.info("[FURSMP] User: {} has a token. Starting async auth...", username);
 
-                        if (!PlayerAuthenticator.authenticatePlayer(username, token)) {
-                            Component kickMessage = Component.literal("[FURSMP] Auth Failed: You are not Whitelisted or your token is invalid.");
-                            player.connection.disconnect(kickMessage);
-                            FwMain.LOGGER.warn("[FURSMP] User: {} failed to authenticate and was kicked.", username);
-                        } else {
-                            FwMain.LOGGER.info("[FURSMP] User: {} successfully authenticated.", username);
-                        }
+                        CompletableFuture.supplyAsync(() -> PlayerAuthenticator.authenticatePlayer(username, token)).thenAccept(isAuthenticated -> {
+                            if(!isAuthenticated) {
+                                player.server.execute(() -> {
+                                    Component kickMessage = Component.literal("[FURSMP] AUTH FAILED: Você não está com Whitelist ou seu Token está inválido! Abra um ticket!");
+                                    player.connection.disconnect(kickMessage);
+                                    FwMain.LOGGER.warn("[FURSMP] User: {} failed to authenticate and was kicked.", username);
+                                });
+                            } else {
+                                FwMain.LOGGER.info("[FURSMP] User: {} successfully authenticated.", username);
+                            }
+                        }).exceptionally(ex -> {
+                            FwMain.LOGGER.error("[FURSMP] An error occured during async auth for: {}: {}", username, ex.getMessage());
+                            player.server.execute(() -> {
+                                Component kickMessage = Component.literal("[FURSMP] Um erro interno ocorreu durante a autenticação. Código: 556");
+                                player.connection.disconnect(kickMessage);
+                            });
+                            return null;
+                        });
                     });
                 }
-            }, 500);
+            }, 1000);
         }
     }
 }
