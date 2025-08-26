@@ -101,7 +101,7 @@ public final class FwMain extends JavaPlugin {
         }
     }
 
-    private static FwMain getInstance() {
+    public static FwMain getInstance() {
         return instance;
     }
 

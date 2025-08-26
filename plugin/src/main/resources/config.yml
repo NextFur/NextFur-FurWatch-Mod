@@ -1,6 +1,7 @@
 # INFORMAÇÕES DO LOBBY
 # O nome do mundo marcado como "Lobby"
 lobby_world: "lobby"
+lobbyIsEnabled: true
 
 # Valores de Tempo para o mundo
 lobby_world_weather: "CLEAR"

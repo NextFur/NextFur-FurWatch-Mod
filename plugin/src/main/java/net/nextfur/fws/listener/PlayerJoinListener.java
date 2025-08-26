@@ -63,8 +63,11 @@ public class PlayerJoinListener implements Listener {
             player.sendMessage("[FURSMP] §cSpawn location not set in config.yml. Please set it using /setspawn.");
             return;
         }
+        player.sendMessage("§f[§dFURSMP§f] §7Você entrou no servidor! Utilize §d/fursmpnh §7para entrar no mundo principal, ou escolha um dos NPC's para jogar um minigame! ;3");
 
-        player.teleport(spawnLocation);
+        if(FwMain.lobbyWorld != null) {
+            player.teleport(spawnLocation);
+        }
 
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);

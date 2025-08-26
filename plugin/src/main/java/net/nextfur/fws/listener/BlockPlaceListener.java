@@ -11,9 +11,17 @@ public class BlockPlaceListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if(!FwMain.lobbyWorld.equals(player.getWorld().getName())) {
+
+        if(FwMain.lobbyWorld == null) {
+            FwMain.getInstance().getLogger().warning("[FURSMP PLUGIN] O Mundo do Lobby não está configurado ou não foi encontrado!");
             event.setCancelled(true);
             return;
+        }
+
+        if(player.getWorld().equals(FwMain.lobbyWorld)) {
+            if(!FwMain.build.contains(player)) {
+                event.setCancelled(true);
+            }
         }
     }
 }
