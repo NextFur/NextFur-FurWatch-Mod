@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public final class FwMain extends JavaPlugin {
 
     private static FwMain instance;
@@ -36,11 +39,21 @@ public final class FwMain extends JavaPlugin {
         this.createFiles();
         this.loadFiles();
 
-        for (World world : Bukkit.getWorlds()) {
-            if(FwMain.config.getString("lobby_world").contains(world.getName())) {
-                lobbyWorld = world;
+        //Boolean isLobbyEnabled = getConfig().getBoolean("lobbyIsEnabled");
+        String lobbyWorldName = getConfig().getString("lobby_world");
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(lobbyWorldName == null || lobbyWorldName.isEmpty()) {
+                    getLogger().warning("[FURSMP] O Mundo do Lobby não está definido!");
+                } else {
+                    lobbyWorld = Bukkit.getWorld(lobbyWorldName);
+                    if(lobbyWorld == null) {
+                        getLogger().warning("[FURSMP] Não foi possível encontrar o mundo especificado!");
+                    }
+                }
             }
-        }
+        }, 5000);
 
         this.prepareLobbyWorld();
         this.registerCommands();
@@ -86,7 +99,7 @@ public final class FwMain extends JavaPlugin {
             FwMain.config.load(FwMain.file);
             FwMain.getInstance().getLogger().info("[FURSMP] Config loaded successfully.");
         } catch (IOException | InvalidConfigurationException e) {
-            FwMain.getInstance().getLogger().severe("[FURSMP] Could not load config.yml");
+            FwMain.getInstance().getLogger().warning("[FURSMP] Could not load config.yml");
             e.printStackTrace();
         }
     }
@@ -96,7 +109,7 @@ public final class FwMain extends JavaPlugin {
             FwMain.config.save(FwMain.file);
             FwMain.getInstance().getLogger().info("[FURSMP] Config saved successfully.");
         } catch (IOException e) {
-            FwMain.getInstance().getLogger().severe("[FURSMP] Could not save config.yml");
+            FwMain.getInstance().getLogger().warning("[FURSMP] Could not save config.yml");
             e.printStackTrace();
         }
     }

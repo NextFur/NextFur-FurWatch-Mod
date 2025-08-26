@@ -31,13 +31,13 @@ public class LocationManager {
         String compact = FwMain.config.getString(name);
 
         if (compact == null || compact.isEmpty()) {
-            Bukkit.getLogger().severe("[FURSMP] Location '" + name + "' not found in config.yml!");
+            Bukkit.getLogger().warning("[FURSMP] Location '" + name + "' not found in config.yml!");
             return null;
         }
 
         String[] parts = compact.split(":");
         if (parts.length != 2) {
-            Bukkit.getLogger().severe("[FURSMP] Invalid location format for '" + name + "'. Expected 'world:x;y;z;pitch;yaw'.");
+            Bukkit.getLogger().warning("[FURSMP] Invalid location format for '" + name + "'. Expected 'world:x;y;z;pitch;yaw'.");
             return null;
         }
 
@@ -45,14 +45,14 @@ public class LocationManager {
         String[] coords = parts[1].split(";");
 
         if (coords.length < 5) {
-            Bukkit.getLogger().severe("[FURSMP] Invalid coordinates for '" + name + "'. Expected 5 values for x,y,z,pitch,yaw.");
+            Bukkit.getLogger().warning("[FURSMP] Invalid coordinates for '" + name + "'. Expected 5 values for x,y,z,pitch,yaw.");
             return null;
         }
 
         try {
             World world = Bukkit.getWorld(worldName);
             if (world == null) {
-                Bukkit.getLogger().severe("[FURSMP] World '" + worldName + "' for location '" + name + "' is not loaded!");
+                Bukkit.getLogger().warning("[FURSMP] World '" + worldName + "' for location '" + name + "' is not loaded!");
                 return null;
             }
             
@@ -65,7 +65,7 @@ public class LocationManager {
             return new Location(world, x, y, z, yaw, pitch);
 
         } catch (NumberFormatException e) {
-            Bukkit.getLogger().severe("[FURSMP] Could not parse numbers for location '" + name + "'. Please check the values.");
+            Bukkit.getLogger().warning("[FURSMP] Could not parse numbers for location '" + name + "'. Please check the values.");
             return null;
         }
     }

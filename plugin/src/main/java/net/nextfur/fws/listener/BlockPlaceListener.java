@@ -21,6 +21,7 @@ public class BlockPlaceListener implements Listener {
         if(player.getWorld().equals(FwMain.lobbyWorld)) {
             if(!FwMain.build.contains(player)) {
                 event.setCancelled(true);
+                return;
             }
         }
     }
