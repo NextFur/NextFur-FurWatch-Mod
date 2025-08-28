@@ -77,7 +77,7 @@ public final class FwMain extends JavaPlugin {
     }
 
     private void registerCommands() {
-        FwMain.getInstance().getCommand("lobby").setExecutor(new LobbyCommand());
+        FwMain.getInstance().getCommand("spawn").setExecutor(new LobbyCommand());
         FwMain.getInstance().getCommand("build").setExecutor(new BuildCommand());
     }
 
@@ -85,6 +85,7 @@ public final class FwMain extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockBreakListener(), FwMain.getInstance());
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(), FwMain.getInstance());
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), FwMain.getInstance());
+        Bukkit.getPluginManager().registerEvents(new PlayerHungerListener(), FwMain.getInstance());
     }
 
     public void createFiles() {
