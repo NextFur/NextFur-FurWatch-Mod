@@ -20,8 +20,10 @@ import net.nextfur.fwc.init.FwModBlocks;
 import net.nextfur.fwc.init.FwModCreativeTabs;
 import net.nextfur.fwc.init.FwModItems;
 import net.nextfur.fwc.init.FwModEffects;
+import net.nextfur.fwc.commands.OffRpCommand;
 import net.nextfur.fwc.network.ClientAuthPacket;
 import net.nextfur.fwc.server.ServerLoader;
+import net.nextfur.fwc.util.events.HologramEventHandler;
 import org.slf4j.Logger;
 
 @Mod(FwMain.MODID)
@@ -38,6 +40,7 @@ public class FwMain {
         FwModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         FwModEffects.EFFECTS.register(modEventBus);
 
+        NeoForge.EVENT_BUS.register(new HologramEventHandler());
         NeoForge.EVENT_BUS.register(this);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -74,6 +77,10 @@ public class FwMain {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         LOGGER.info("[FURSMP] Initializing server components.");
+        
+        // Register the OffRP command
+        OffRpCommand.register(event.getServer().getCommands().getDispatcher());
+        LOGGER.info("[FURSMP] Commands registered successfully.");
     }
 
     @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)

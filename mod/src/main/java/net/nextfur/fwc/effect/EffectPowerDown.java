@@ -22,6 +22,12 @@ public class EffectPowerDown extends MobEffect {
             -0.1, 
             AttributeModifier.Operation.ADD_VALUE
         );
+        this.addAttributeModifier(
+            Attributes.JUMP_STRENGTH,
+            ResourceLocation.fromNamespaceAndPath(FwMain.MODID, "power_down_jump"), 
+            -0.42, 
+            AttributeModifier.Operation.ADD_VALUE
+        );
     }
 
     @Override
