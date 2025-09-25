@@ -19,6 +19,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.nextfur.fwc.init.FwModBlocks;
 import net.nextfur.fwc.init.FwModCreativeTabs;
 import net.nextfur.fwc.init.FwModItems;
+import net.nextfur.fwc.init.FwModEffects;
 import net.nextfur.fwc.network.ClientAuthPacket;
 import net.nextfur.fwc.server.ServerLoader;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ public class FwMain {
         FwModBlocks.BLOCKS.register(modEventBus);
         FwModItems.ITEMS.register(modEventBus);
         FwModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
+        FwModEffects.EFFECTS.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);

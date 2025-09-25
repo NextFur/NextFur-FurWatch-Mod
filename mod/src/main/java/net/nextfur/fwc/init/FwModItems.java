@@ -25,4 +25,9 @@ public class FwModItems {
         "black_steel_plating",
         () -> new BlockItem(FwModBlocks.BLACK_STEEL_PLATING.get(), new Item.Properties())
     );
+
+    public static final DeferredItem<Item> SANDED_STONE_BLOCK = ITEMS.register(
+        "sanded_stone_block",
+        () -> new BlockItem(FwModBlocks.SANDED_STONE_BLOCK.get(), new Item.Properties())
+    );
 }

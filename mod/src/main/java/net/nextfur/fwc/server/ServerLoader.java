@@ -57,7 +57,7 @@ public class ServerLoader {
                         });
                     });
                 }
-            }, 1000);
+            }, 2000);
         }
     }
 }
