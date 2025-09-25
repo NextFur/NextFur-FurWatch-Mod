@@ -2,5 +2,8 @@
   "creative.fursmp_tab": "FurSMP: Blocks",
   "block.fursmp.animated_server_rack": "Animated Server Rack",
   "block.fursmp.black_steel_plating": "Black Steel Plating",
-  "item.fursmp.scrap_metal": "Scrap Metal"
+  "block.fursmp.sanded_stone_block": "Sanded Stone Block",
+  "item.fursmp.scrap_metal": "Scrap Metal",
+  "effect.fursmp.power_down": "Power Down",
+  "effect.fursmp.moon_gravity": "Moon Gravity"
 }

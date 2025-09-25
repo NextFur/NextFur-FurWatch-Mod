@@ -6,6 +6,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.effect.EffectPowerDown;
+import net.nextfur.fwc.effect.EffectMoonGravity;
 
 public class FwModEffects {
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, FwMain.MODID);
@@ -13,5 +14,10 @@ public class FwModEffects {
     public static final DeferredHolder<MobEffect, MobEffect> POWER_DOWN = EFFECTS.register(
         "power_down",
         EffectPowerDown::new
+    );
+    
+    public static final DeferredHolder<MobEffect, MobEffect> MOON_GRAVITY = EFFECTS.register(
+        "moon_gravity",
+        EffectMoonGravity::new
     );
 }

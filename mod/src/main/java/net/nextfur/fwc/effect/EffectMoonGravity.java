@@ -10,27 +10,18 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.nextfur.fwc.FwMain;
 
-public class EffectPowerDown extends MobEffect {
+public class EffectMoonGravity extends MobEffect {
     private int lastDuration = -1;
     private int firstDuration = -1;
 
-    public EffectPowerDown() {
-        super(MobEffectCategory.HARMFUL, 0x000000);
+    public EffectMoonGravity() {
+        super(MobEffectCategory.BENEFICIAL, 0xAAAAFF);
         this.addAttributeModifier(
-            Attributes.MOVEMENT_SPEED,
-            ResourceLocation.fromNamespaceAndPath(FwMain.MODID, "power_down_speed"), 
-            -0.1, 
+            Attributes.GRAVITY,
+            ResourceLocation.fromNamespaceAndPath(FwMain.MODID, "moon_gravity"), 
+            -0.06, 
             AttributeModifier.Operation.ADD_VALUE
         );
-    }
-
-    @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!entity.hasEffect(MobEffects.DARKNESS)) {
-            entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 40, 0, false, false));
-        }
-        
-        return true;
     }
 
     public boolean canBeAppliedBy(MobEffectInstance instance) {
@@ -39,6 +30,6 @@ public class EffectPowerDown extends MobEffect {
 
     @Override
     public String getDescriptionId() {
-        return "effect.fursmp.power_down";
+        return "effect.fursmp.moon_gravity";
     }
 }
