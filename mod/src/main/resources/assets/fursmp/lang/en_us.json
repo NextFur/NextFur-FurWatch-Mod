@@ -6,5 +6,7 @@
   "block.fursmp.sanded_deepslate_block": "Sanded Deepslate Block",
   "item.fursmp.scrap_metal": "Scrap Metal",
   "effect.fursmp.power_down": "Power Down",
+  "effect.fursmp.big_size": "Big Size",
+  "effect.fursmp.small_size": "Small Size",
   "effect.fursmp.moon_gravity": "Moon Gravity"
 }
