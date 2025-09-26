@@ -11,6 +11,8 @@ import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.blocks.AnimatedServerRackBlock; 
 import net.nextfur.fwc.blocks.BlackSteelPlatingBlock; 
 import net.nextfur.fwc.blocks.SandedStoneBlock;
+import net.nextfur.fwc.blocks.SandedDeepslateBlock;
+import net.nextfur.fwc.blocks.PolishedBlackSteelPlatingBlock;
 
 public class FwModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
@@ -38,9 +40,16 @@ public class FwModBlocks {
                 .noOcclusion()));
 
     public static final DeferredBlock<Block> SANDED_DEEPSLATE_BLOCK = BLOCKS.register("sanded_deepslate_block",
-        () -> new SandedStoneBlock(BlockBehaviour.Properties.of()
+        () -> new SandedDeepslateBlock(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
                 .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+    public static final DeferredBlock<Block> POLISHED_BLACK_STEEL_PLATING = BLOCKS.register("polished_black_steel_plating",
+        () -> new PolishedBlackSteelPlatingBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.METAL)
                 .strength(3.0f, 6.0f) 
                 .noOcclusion()));
     //

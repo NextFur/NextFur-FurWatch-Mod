@@ -22,6 +22,7 @@ public class FwModCreativeTabs {
                         //Accept Blocks
                         output.accept(FwModItems.ANIMATED_SERVER_RACK_ITEM.get());
                         output.accept(FwModItems.BLACK_STEEL_PLATING_ITEM.get());
+                        output.accept(FwModItems.POLISHED_BLACK_STEEL_PLATING.get());
                         output.accept(FwModItems.SANDED_STONE_BLOCK.get());
                         output.accept(FwModBlocks.SANDED_DEEPSLATE_BLOCK.get());
                     })
