@@ -36,5 +36,12 @@ public class FwModBlocks {
                 .sound(SoundType.STONE)
                 .strength(3.0f, 6.0f) 
                 .noOcclusion()));
+
+    public static final DeferredBlock<Block> SANDED_DEEPSLATE_BLOCK = BLOCKS.register("sanded_deepslate_block",
+        () -> new SandedStoneBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
     //
 }

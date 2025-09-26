@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#fwc:implements/mineable_with_pickaxe",
+      "required": false
+    }
+  ]
+}

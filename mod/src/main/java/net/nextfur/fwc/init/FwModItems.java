@@ -30,4 +30,9 @@ public class FwModItems {
         "sanded_stone_block",
         () -> new BlockItem(FwModBlocks.SANDED_STONE_BLOCK.get(), new Item.Properties())
     );
+
+    public static final DeferredItem<Item> SANDED_DEEPSLATE_BLOCK = ITEMS.register(
+        "sanded_deepslate_block",
+        () -> new BlockItem(FwModBlocks.SANDED_DEEPSLATE_BLOCK.get(), new Item.Properties())
+    );
 }
