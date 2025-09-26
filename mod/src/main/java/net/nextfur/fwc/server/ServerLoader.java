@@ -1,6 +1,7 @@
 package net.nextfur.fwc.server;
 
 import net.nextfur.fwc.FwMain;
+import net.nextfur.fwc.Config;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,6 +23,11 @@ public class ServerLoader {
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             String username = player.getName().getString();
+
+            if (!Config.enableLoginSystem) {
+                FwMain.LOGGER.info("[FURSMP] Login system is disabled. Allowing player {} to connect.", username);
+                return;
+            }
 
             new Timer().schedule(new TimerTask() {
                 @Override
