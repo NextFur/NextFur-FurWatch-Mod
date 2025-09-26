@@ -1,10 +1,11 @@
 package net.nextfur.fwc.util.events;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.Display.TextDisplay;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.NeoForge; 
+import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.nextfur.fwc.commands.OffRpCommand;
@@ -19,14 +20,17 @@ public class HologramEventHandler {
             UUID playerUUID = player.getUUID();
 
             if (OffRpCommand.activeHolograms.containsKey(playerUUID)) {
-                ArmorStand hologram = OffRpCommand.activeHolograms.get(playerUUID);
+                TextDisplay hologram = OffRpCommand.activeHolograms.get(playerUUID);
 
                 if (hologram != null && hologram.isAlive()) {
-                    double newX = player.getX();
-                    double newY = player.getY() + player.getBbHeight() + 0.5;
-                    double newZ = player.getZ();
+                    Vec3 playerPos = player.position();
+                    double offsetY = player.getBbHeight() + 0.5;
                     
-                    hologram.setPos(newX, newY, newZ);
+                    // Use teleport for instant position update
+                    hologram.teleportTo(playerPos.x, playerPos.y + offsetY, playerPos.z);
+                    
+                    // Update the entity's motion to match the player's
+                    hologram.setDeltaMovement(player.getDeltaMovement());
                 } else {
                     OffRpCommand.activeHolograms.remove(playerUUID);
                 }
@@ -40,7 +44,7 @@ public class HologramEventHandler {
         if (player != null) {
             UUID playerUUID = player.getUUID();
             if (OffRpCommand.activeHolograms.containsKey(playerUUID)) {
-                ArmorStand hologram = OffRpCommand.activeHolograms.get(playerUUID);
+                TextDisplay hologram = OffRpCommand.activeHolograms.get(playerUUID);
                 if (hologram != null) {
                     hologram.discard();
                 }
