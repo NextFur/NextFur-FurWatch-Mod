@@ -28,6 +28,10 @@ import net.nextfur.fwc.blocks.SandedStoneBlock;
 import net.nextfur.fwc.blocks.SandedDeepslateBlock;
 import net.nextfur.fwc.blocks.WhiteTilesBlock;
 import net.nextfur.fwc.blocks.WhiteDirtyTilesBlock;
+
+import net.nextfur.fwc.blocks.SmallerWhiteTiles;
+import net.nextfur.fwc.blocks.SmallerWhiteTilesDirty;
+import net.nextfur.fwc.blocks.SmallerWhiteTilesReallyDirty;
 import net.nextfur.fwc.blocks.RedTilesBlock;
 import net.nextfur.fwc.blocks.PolishedBlackSteelPlatingBlock;
 
@@ -156,6 +160,27 @@ public class FwModBlocks {
     
         public static final DeferredBlock<Block> WHITE_TILES_BLOCK = BLOCKS.register("white_tiles_block",
         () -> new WhiteTilesBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.SNOW)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+        public static final DeferredBlock<Block> SMALLER_WHITE_TILES_BLOCK = BLOCKS.register("smaller_white_tiles_block",
+        () -> new SmallerWhiteTiles(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.SNOW)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+        public static final DeferredBlock<Block> SMALLER_WHITE_TILES_DIRTY_BLOCK = BLOCKS.register("smaller_white_tiles_dirty_block",
+        () -> new SmallerWhiteTilesDirty(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.SNOW)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+        public static final DeferredBlock<Block> SMALLER_WHITE_TILES_REALLY_DIRTY_BLOCK = BLOCKS.register("smaller_white_tiles_really_dirty_block",
+        () -> new SmallerWhiteTilesReallyDirty(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.SNOW)
                 .sound(SoundType.STONE)
                 .strength(3.0f, 6.0f) 

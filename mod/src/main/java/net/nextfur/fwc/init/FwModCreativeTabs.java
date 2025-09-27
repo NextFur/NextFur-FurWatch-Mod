@@ -40,6 +40,9 @@ public class FwModCreativeTabs {
                         output.accept(FwModBlocks.SANDED_DEEPSLATE_BLOCK.get());
                         output.accept(FwModItems.WHITE_TILES_BLOCK.get());
                         output.accept(FwModItems.WHITE_DIRTY_TILES_BLOCK.get());
+                        output.accept(FwModItems.SMALLER_WHITE_TILES_BLOCK_ITEM.get());
+                        output.accept(FwModItems.SMALLER_WHITE_TILES_DIRTY_BLOCK_ITEM.get());
+                        output.accept(FwModItems.SMALLER_WHITE_TILES_REALLY_DIRTY_BLOCK_ITEM.get());
                         output.accept(FwModItems.RED_TILES_BLOCK.get());
                     })
                     .build());

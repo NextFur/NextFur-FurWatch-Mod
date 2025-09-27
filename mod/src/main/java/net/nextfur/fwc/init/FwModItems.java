@@ -125,4 +125,19 @@ public class FwModItems {
         "white_dirty_tiles_block",
         () -> new BlockItem(FwModBlocks.WHITE_DIRTY_TILES_BLOCK.get(), new Item.Properties())
     );
+
+    public static final DeferredItem<Item> SMALLER_WHITE_TILES_BLOCK_ITEM = ITEMS.register(
+        "smaller_white_tiles_block",
+        () -> new BlockItem(FwModBlocks.SMALLER_WHITE_TILES_BLOCK.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> SMALLER_WHITE_TILES_DIRTY_BLOCK_ITEM = ITEMS.register(
+        "smaller_white_tiles_dirty_block",
+        () -> new BlockItem(FwModBlocks.SMALLER_WHITE_TILES_DIRTY_BLOCK.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> SMALLER_WHITE_TILES_REALLY_DIRTY_BLOCK_ITEM = ITEMS.register(
+        "smaller_white_tiles_really_dirty_block",
+        () -> new BlockItem(FwModBlocks.SMALLER_WHITE_TILES_REALLY_DIRTY_BLOCK.get(), new Item.Properties())
+    );
 }
