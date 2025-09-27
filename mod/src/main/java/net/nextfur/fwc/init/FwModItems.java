@@ -36,6 +36,41 @@ public class FwModItems {
         () -> new BlockItem(FwModBlocks.BLACK_STEEL_PLATING.get(), new Item.Properties())
     );
 
+    public static final DeferredItem<Item> GRAY_STEEL_PLATING_ITEM = ITEMS.register(
+        "gray_steel_plating",
+        () -> new BlockItem(FwModBlocks.GRAY_STEEL_PLATING.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> LIGHT_GRAY_STEEL_PLATING_ITEM = ITEMS.register(
+        "light_gray_steel_plating",
+        () -> new BlockItem(FwModBlocks.LIGHT_GRAY_STEEL_PLATING.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> RED_STEEL_PLATING_ITEM = ITEMS.register(
+        "red_steel_plating",
+        () -> new BlockItem(FwModBlocks.RED_STEEL_PLATING.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> BLUE_STEEL_PLATING_ITEM = ITEMS.register(
+        "blue_steel_plating",
+        () -> new BlockItem(FwModBlocks.BLUE_STEEL_PLATING.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> GREEN_STEEL_PLATING_ITEM = ITEMS.register(
+        "green_steel_plating",
+        () -> new BlockItem(FwModBlocks.GREEN_STEEL_PLATING.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> YELLOW_STEEL_PLATING_ITEM = ITEMS.register(
+        "yellow_steel_plating",
+        () -> new BlockItem(FwModBlocks.YELLOW_STEEL_PLATING.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> LIGHT_STONE_BRICKS_ITEM = ITEMS.register(
+        "light_stone_bricks",
+        () -> new BlockItem(FwModBlocks.LIGHT_STONE_BRICKS.get(), new Item.Properties())
+    );
+
     public static final DeferredItem<Item> POLISHED_BLACK_STEEL_PLATING = ITEMS.register(
         "polished_black_steel_plating",
         () -> new BlockItem(FwModBlocks.POLISHED_BLACK_STEEL_PLATING.get(), new Item.Properties())

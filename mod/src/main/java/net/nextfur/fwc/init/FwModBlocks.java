@@ -9,7 +9,15 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nextfur.fwc.FwMain;
 
 import net.nextfur.fwc.blocks.AnimatedServerRackBlock; 
-import net.nextfur.fwc.blocks.BlackSteelPlatingBlock; 
+import net.nextfur.fwc.blocks.BlackSteelPlatingBlock;
+import net.nextfur.fwc.blocks.GraySteelPlatingBlock;
+import net.nextfur.fwc.blocks.BlueSteelPlatingBlock;
+import net.nextfur.fwc.blocks.GreenSteelPlatingBlock;
+import net.nextfur.fwc.blocks.LightGraySteelPlatingBlock;
+import net.nextfur.fwc.blocks.RedSteelPlatingBlock;
+import net.nextfur.fwc.blocks.YellowSteelPlatingBlock;
+
+import net.nextfur.fwc.blocks.LightStoneBricksBlock;
 import net.nextfur.fwc.blocks.SandedStoneBlock;
 import net.nextfur.fwc.blocks.SandedDeepslateBlock;
 import net.nextfur.fwc.blocks.WhiteTilesBlock;
@@ -35,6 +43,48 @@ public class FwModBlocks {
                 .strength(3.0f, 6.0f) 
                 .noOcclusion()));
 
+    public static final DeferredBlock<Block> GRAY_STEEL_PLATING = BLOCKS.register("gray_steel_plating",
+        () -> new GraySteelPlatingBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+    public static final DeferredBlock<Block> LIGHT_GRAY_STEEL_PLATING = BLOCKS.register("light_gray_steel_plating",
+        () -> new LightGraySteelPlatingBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+    public static final DeferredBlock<Block> BLUE_STEEL_PLATING = BLOCKS.register("blue_steel_plating",
+        () -> new BlueSteelPlatingBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+    public static final DeferredBlock<Block> GREEN_STEEL_PLATING = BLOCKS.register("green_steel_plating",
+        () -> new GreenSteelPlatingBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+    public static final DeferredBlock<Block> RED_STEEL_PLATING = BLOCKS.register("red_steel_plating",
+        () -> new RedSteelPlatingBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+    public static final DeferredBlock<Block> YELLOW_STEEL_PLATING = BLOCKS.register("yellow_steel_plating",
+        () -> new YellowSteelPlatingBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .sound(SoundType.STONE)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
     public static final DeferredBlock<Block> SANDED_STONE_BLOCK = BLOCKS.register("sanded_stone_block",
         () -> new SandedStoneBlock(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
@@ -53,6 +103,13 @@ public class FwModBlocks {
         () -> new PolishedBlackSteelPlatingBlock(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .sound(SoundType.METAL)
+                .strength(3.0f, 6.0f) 
+                .noOcclusion()));
+
+    public static final DeferredBlock<Block> LIGHT_STONE_BRICKS = BLOCKS.register("light_stone_bricks",
+        () -> new LightStoneBricksBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .sound(SoundType.STONE)
                 .strength(3.0f, 6.0f) 
                 .noOcclusion()));
     
