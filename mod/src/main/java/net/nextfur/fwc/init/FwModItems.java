@@ -40,4 +40,24 @@ public class FwModItems {
         "sanded_deepslate_block",
         () -> new BlockItem(FwModBlocks.SANDED_DEEPSLATE_BLOCK.get(), new Item.Properties())
     );
+
+    public static final DeferredItem<Item> WHITE_TILES_BLOCK = ITEMS.register(
+        "white_tiles_block",
+        () -> new BlockItem(FwModBlocks.WHITE_TILES_BLOCK.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> RED_TILES_BLOCK = ITEMS.register(
+        "red_tiles_block",
+        () -> new BlockItem(FwModBlocks.RED_TILES_BLOCK.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> WHITE_DIRTY_TILES_BLOCK = ITEMS.register(
+        "white_dirty_tiles_block",
+        () -> new BlockItem(FwModBlocks.WHITE_DIRTY_TILES_BLOCK.get(), new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> MOON_GRAVITY_POTION = ITEMS.register(
+        "moon_gravity_potion",
+        () -> new net.nextfur.fwc.item.MoonGravityPotionItem(new Item.Properties(), net.nextfur.fwc.init.FwModPotions.MOON_GRAVITY_POTION)
+    );
 }

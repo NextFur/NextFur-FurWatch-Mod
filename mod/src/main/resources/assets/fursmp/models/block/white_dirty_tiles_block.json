@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "fursmp:block/white_dirty_tiles_block"
+  }
+}

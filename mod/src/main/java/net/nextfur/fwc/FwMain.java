@@ -20,6 +20,7 @@ import net.nextfur.fwc.init.FwModBlocks;
 import net.nextfur.fwc.init.FwModCreativeTabs;
 import net.nextfur.fwc.init.FwModItems;
 import net.nextfur.fwc.init.FwModEffects;
+import net.nextfur.fwc.init.FwModPotions;
 import net.nextfur.fwc.commands.OffRpCommand;
 import net.nextfur.fwc.network.ClientAuthPacket;
 import net.nextfur.fwc.server.ServerLoader;
@@ -39,6 +40,7 @@ public class FwMain {
         FwModItems.ITEMS.register(modEventBus);
         FwModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         FwModEffects.EFFECTS.register(modEventBus);
+        FwModPotions.POTIONS.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(new HologramEventHandler());
         NeoForge.EVENT_BUS.register(this);

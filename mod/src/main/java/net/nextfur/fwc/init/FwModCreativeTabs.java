@@ -25,6 +25,9 @@ public class FwModCreativeTabs {
                         output.accept(FwModItems.POLISHED_BLACK_STEEL_PLATING.get());
                         output.accept(FwModItems.SANDED_STONE_BLOCK.get());
                         output.accept(FwModBlocks.SANDED_DEEPSLATE_BLOCK.get());
+                        output.accept(FwModItems.WHITE_TILES_BLOCK.get());
+                        output.accept(FwModItems.WHITE_DIRTY_TILES_BLOCK.get());
+                        output.accept(FwModItems.RED_TILES_BLOCK.get());
                     })
                     .build());
 }
