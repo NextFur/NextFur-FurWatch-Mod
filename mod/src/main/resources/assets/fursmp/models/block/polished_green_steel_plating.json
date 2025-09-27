@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "fursmp:block/polished_green_steel_plating"
+  }
+}

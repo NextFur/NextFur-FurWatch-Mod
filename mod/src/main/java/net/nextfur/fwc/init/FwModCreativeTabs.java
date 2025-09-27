@@ -25,10 +25,15 @@ public class FwModCreativeTabs {
                         output.accept(FwModItems.POLISHED_BLACK_STEEL_PLATING.get());
                         output.accept(FwModItems.GRAY_STEEL_PLATING_ITEM.get());
                         output.accept(FwModItems.LIGHT_GRAY_STEEL_PLATING_ITEM.get());
+                        output.accept(FwModItems.POLISHED_LIGHT_GRAY_STEEL_PLATING_ITEM.get());
                         output.accept(FwModItems.RED_STEEL_PLATING_ITEM.get());
+                        output.accept(FwModItems.POLISHED_RED_STEEL_PLATING_ITEM.get());
                         output.accept(FwModItems.BLUE_STEEL_PLATING_ITEM.get());
+                        output.accept(FwModItems.POLISHED_BLUE_STEEL_PLATING_ITEM.get());
                         output.accept(FwModItems.GREEN_STEEL_PLATING_ITEM.get());
+                        output.accept(FwModItems.POLISHED_GREEN_STEEL_PLATING_ITEM.get());
                         output.accept(FwModItems.YELLOW_STEEL_PLATING_ITEM.get());
+                        output.accept(FwModItems.POLISHED_YELLOW_STEEL_PLATING_ITEM.get());
                         
                         output.accept(FwModItems.LIGHT_STONE_BRICKS_ITEM.get());
                         output.accept(FwModItems.SANDED_STONE_BLOCK.get());
