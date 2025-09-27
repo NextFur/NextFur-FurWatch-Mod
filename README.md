@@ -11,7 +11,8 @@
 * Login e Autenticação ✅
 * Whitelisting ✅
 * Verificação de Token com API ✅
-* Import de Blocos e CommonUse features para o FurSMP ⭕
+* Import de Blocos e CommonUse features para o FurSMP ✅
+* Adição de comando /offrp ✅
 
 ### 📍 Plugin
 * Anti-Cheat generalizado ⭕
