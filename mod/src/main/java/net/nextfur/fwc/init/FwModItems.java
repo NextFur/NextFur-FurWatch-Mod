@@ -15,6 +15,16 @@ public class FwModItems {
         () -> new Item(new Item.Properties())
     );
 
+    public static final DeferredItem<Item> MOON_GRAVITY_POTION = ITEMS.register(
+        "moon_gravity_potion",
+        () -> new net.minecraft.world.item.PotionItem(new Item.Properties())
+    ); 
+    
+    public static final DeferredItem<Item> MOON_GRAVITY_SPLASH_POTION = ITEMS.register(
+        "moon_gravity_splash_potion",
+        () -> new net.minecraft.world.item.SplashPotionItem(new Item.Properties())
+    );
+
     //Register Blocks 
     public static final DeferredItem<Item> ANIMATED_SERVER_RACK_ITEM = ITEMS.register(
         "animated_server_rack",
@@ -54,10 +64,5 @@ public class FwModItems {
     public static final DeferredItem<Item> WHITE_DIRTY_TILES_BLOCK = ITEMS.register(
         "white_dirty_tiles_block",
         () -> new BlockItem(FwModBlocks.WHITE_DIRTY_TILES_BLOCK.get(), new Item.Properties())
-    );
-
-    public static final DeferredItem<Item> MOON_GRAVITY_POTION = ITEMS.register(
-        "moon_gravity_potion",
-        () -> new net.nextfur.fwc.item.MoonGravityPotionItem(new Item.Properties(), net.nextfur.fwc.init.FwModPotions.MOON_GRAVITY_POTION)
     );
 }
