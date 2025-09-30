@@ -24,19 +24,19 @@ public class FurWatchApiClient {
     private static final Gson gson = new Gson();
 
     public static CompletableFuture<ApiResponse> setLoveLevel(String username, int level) {
-        return makeApiRequest("set", "SET", username, "lovelevel", level);
+        return makeApiRequest("set", "set", username, "lovelevel", level);
     }
 
     public static CompletableFuture<ApiResponse> getLoveLevel(String username) {
-        return makeApiRequest("get", "GET", username, "lovelevel", 0);
+        return makeApiRequest("get", "get", username, "lovelevel", 0);
     }
 
     public static CompletableFuture<ApiResponse> addLoveLevel(String username, int amount) {
-        return makeApiRequest("set", "ADD", username, "lovelevel", amount);
+        return makeApiRequest("set", "add", username, "lovelevel", amount);
     }
 
     public static CompletableFuture<ApiResponse> subtractLoveLevel(String username, int amount) {
-        return makeApiRequest("set", "SUBTRACT", username, "lovelevel", amount);
+        return makeApiRequest("set", "subtract", username, "lovelevel", amount);
     }
 
     private static CompletableFuture<ApiResponse> makeApiRequest(String action, String args, String username, String type, int loveLevel) {
@@ -83,8 +83,8 @@ public class FurWatchApiClient {
                 }
 
                 JsonObject apiResponse = gson.fromJson(response.body(), JsonObject.class);
-                
-                boolean success = apiResponse.has("success") && apiResponse.get("success").getAsBoolean();
+
+                boolean success = apiResponse.has("error") && apiResponse.get("error").isJsonNull();
                 String message = apiResponse.has("message") ? apiResponse.get("message").getAsString() : "No message";
                 int currentLevel = apiResponse.has("lovelevel") ? apiResponse.get("lovelevel").getAsInt() : -1;
 
