@@ -30,11 +30,6 @@ public class LoveLevelCommand {
     }
 
     private static int setLoveLevel(CommandContext<CommandSourceStack> context, int level) {
-        if (!Config.enableLoginSystem) {
-            context.getSource().sendFailure(Component.literal("§c[FURSMP] Login system is disabled. Cannot use love level commands."));
-            return 0;
-        }
-
         Player player = context.getSource().getPlayer();
         if (player == null) {
             context.getSource().sendFailure(Component.literal("§c[FURSMP] Esse comando só pode ser usado por jogadores, no client-side."));
@@ -64,11 +59,6 @@ public class LoveLevelCommand {
     }
 
     private static int addLoveLevel(CommandContext<CommandSourceStack> context, int amount) {
-        if (!Config.enableLoginSystem) {
-            context.getSource().sendFailure(Component.literal("§c[FURSMP] Login system is disabled. Cannot use love level commands."));
-            return 0;
-        }
-
         Player player = context.getSource().getPlayer();
         if (player == null) {
             context.getSource().sendFailure(Component.literal("§c[FURSMP] Esse comando só pode ser executado por jogadores."));
@@ -98,11 +88,6 @@ public class LoveLevelCommand {
     }
 
     private static int subtractLoveLevel(CommandContext<CommandSourceStack> context, int amount) {
-        if (!Config.enableLoginSystem) {
-            context.getSource().sendFailure(Component.literal("§c[FURSMP] O Sistema de login está desligado. Não é possível usar comandos de nível de amor."));
-            return 0;
-        }
-
         Player player = context.getSource().getPlayer();
         if (player == null) {
             context.getSource().sendFailure(Component.literal("§c[FURSMP] Esse comando só pode ser usado por jogadores, no client-side."));
@@ -132,11 +117,6 @@ public class LoveLevelCommand {
     }
 
     private static int getLoveLevel(CommandContext<CommandSourceStack> context, String username) {
-        if (!Config.enableLoginSystem) {
-            context.getSource().sendFailure(Component.literal("§c[FURSMP] O Sistema de login está desligado. Não é possível usar comandos de nível de amor."));
-            return 0;
-        }
-
         Player player = context.getSource().getPlayer();
         if (player == null) {
             context.getSource().sendFailure(Component.literal("§c[FURSMP] Esse comando só pode ser usado por jogadores."));

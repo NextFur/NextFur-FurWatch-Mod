@@ -24,11 +24,6 @@ public class ServerLoader {
         if (event.getEntity() instanceof ServerPlayer player) {
             String username = player.getName().getString();
 
-            if (!Config.enableLoginSystem) {
-                FwMain.LOGGER.info("[FURSMP] Login system is disabled. Allowing player {} to connect.", username);
-                return;
-            }
-
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
