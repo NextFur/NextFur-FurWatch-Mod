@@ -14,11 +14,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class ClientLoader {
     @SubscribeEvent
     public static void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
-        if (!Config.enableLoginSystem) {
-            FwMain.LOGGER.info("[FURSMP MOD] Login system is disabled in config.");
-            return;
-        }
-
         FwMain.LOGGER.info("[FURSMP MOD] Connecting to server. Preparing to send auth token.");
         String token = Config.getAuthToken();
 
