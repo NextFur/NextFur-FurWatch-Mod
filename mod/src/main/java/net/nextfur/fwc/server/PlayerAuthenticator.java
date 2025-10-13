@@ -24,12 +24,12 @@ public class PlayerAuthenticator {
         
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("username", username);
-        requestBody.put("token", token);
         String jsonRequest = gson.toJson(requestBody);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_ENDPOINT))
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
                 .build();
         try {

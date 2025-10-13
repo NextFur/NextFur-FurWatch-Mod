@@ -49,7 +49,6 @@ public class FurWatchApiClient {
                 }
 
                 Map<String, Object> requestBody = new HashMap<>();
-                requestBody.put("token", token);
                 requestBody.put("args", args);
                 requestBody.put("username", username);
                 requestBody.put("type", type);
@@ -61,6 +60,7 @@ public class FurWatchApiClient {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .header("Content-Type", "application/json")
+                        .header("Authorization", "Bearer " + token)
                         .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
                         .timeout(Duration.ofSeconds(30))
                         .build();
@@ -84,7 +84,7 @@ public class FurWatchApiClient {
 
                 JsonObject apiResponse = gson.fromJson(response.body(), JsonObject.class);
 
-                boolean success = apiResponse.has("error") && apiResponse.get("error").isJsonNull();
+                boolean success = apiResponse.has("success") && apiResponse.get("success").getAsBoolean();
                 String message = apiResponse.has("message") ? apiResponse.get("message").getAsString() : "No message";
                 int currentLevel = apiResponse.has("lovelevel") ? apiResponse.get("lovelevel").getAsInt() : -1;
 

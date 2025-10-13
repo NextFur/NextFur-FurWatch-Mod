@@ -28,7 +28,7 @@ public class Config {
     public static boolean debugMode;
 
     public static String getAuthToken() {
-        return authToken;
+        return AUTH_TOKEN.get();
     }
 
     @SubscribeEvent
