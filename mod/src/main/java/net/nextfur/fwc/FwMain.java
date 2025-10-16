@@ -16,6 +16,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import net.nextfur.fwc.commands.TitleMenuCommand;
 import net.nextfur.fwc.init.FwModBlocks;
 import net.nextfur.fwc.init.FwModCreativeTabs;
 import net.nextfur.fwc.init.FwModItems;
@@ -24,6 +25,7 @@ import net.nextfur.fwc.init.FwModPotions;
 import net.nextfur.fwc.commands.OffRpCommand;
 import net.nextfur.fwc.commands.LoveLevelCommand;
 import net.nextfur.fwc.network.ClientAuthPacket;
+import net.nextfur.fwc.network.OpenTitleMenuPacket;
 import net.nextfur.fwc.server.ServerLoader;
 import net.nextfur.fwc.util.events.HologramEventHandler;
 import org.slf4j.Logger;
@@ -75,6 +77,14 @@ public class FwMain {
                     });
                 }
         );
+
+        registrar.playBidirectional(
+                OpenTitleMenuPacket.TYPE,
+                OpenTitleMenuPacket.STREAM_CODEC,
+                (packet, ctx) -> {
+                    OpenTitleMenuPacket.handle(packet);
+                }
+        );
     }
 
     @SubscribeEvent
@@ -86,6 +96,9 @@ public class FwMain {
         
         // Register the LoveLevel command
         LoveLevelCommand.register(event.getServer().getCommands().getDispatcher());
+
+        // Menu de title custom (/tmenu)
+        TitleMenuCommand.register(event.getServer().getCommands().getDispatcher());
         
         LOGGER.info("[FURSMP] Commands registered successfully.");
     }
