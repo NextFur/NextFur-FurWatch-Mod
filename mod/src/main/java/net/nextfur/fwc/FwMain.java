@@ -1,7 +1,7 @@
 package net.nextfur.fwc;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,6 +16,8 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import net.nextfur.fwc.client.world.CustomSkyRenderer;
+import net.nextfur.fwc.commands.SkyColorCommand;
 import net.nextfur.fwc.commands.TitleMenuCommand;
 import net.nextfur.fwc.init.FwModBlocks;
 import net.nextfur.fwc.init.FwModCreativeTabs;
@@ -25,7 +27,10 @@ import net.nextfur.fwc.init.FwModPotions;
 import net.nextfur.fwc.commands.OffRpCommand;
 import net.nextfur.fwc.commands.LoveLevelCommand;
 import net.nextfur.fwc.network.ClientAuthPacket;
-import net.nextfur.fwc.network.OpenTitleMenuPacket;
+import net.nextfur.fwc.network.gui.OpenSkyColorMenuPacket;
+import net.nextfur.fwc.network.gui.OpenTitleMenuPacket;
+import net.nextfur.fwc.network.world.SkyColorChangePacket;
+import net.nextfur.fwc.network.world.SkyColorSyncPacket;
 import net.nextfur.fwc.server.ServerLoader;
 import net.nextfur.fwc.util.events.HologramEventHandler;
 import org.slf4j.Logger;
@@ -46,6 +51,7 @@ public class FwMain {
         FwModPotions.POTIONS.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(new HologramEventHandler());
+        NeoForge.EVENT_BUS.register(new CustomSkyRenderer());
         NeoForge.EVENT_BUS.register(this);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -78,27 +84,47 @@ public class FwMain {
                 }
         );
 
-        registrar.playBidirectional(
+        registrar.playToClient(
                 OpenTitleMenuPacket.TYPE,
                 OpenTitleMenuPacket.STREAM_CODEC,
                 (packet, ctx) -> {
                     OpenTitleMenuPacket.handle(packet);
                 }
         );
+
+        registrar.playToClient(
+                OpenSkyColorMenuPacket.TYPE,
+                OpenSkyColorMenuPacket.STREAM_CODEC,
+                (packet, ctx) -> {
+                    OpenSkyColorMenuPacket.handle(packet);
+                }
+        );
+
+        registrar.playToServer(
+                SkyColorChangePacket.TYPE,
+                SkyColorChangePacket.STREAM_CODEC,
+                (packet, ctx) -> {
+                    if (ctx.player() instanceof ServerPlayer player) {
+                        SkyColorChangePacket.handle(packet, player);
+                    }
+                }
+        );
+
+        registrar.playToClient(
+                SkyColorSyncPacket.TYPE,
+                SkyColorSyncPacket.STREAM_CODEC,
+                (packet, ctx) -> SkyColorSyncPacket.handle(packet)
+        );
     }
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         LOGGER.info("[FURSMP] Initializing server components.");
-        
-        // Register the OffRP command
-        OffRpCommand.register(event.getServer().getCommands().getDispatcher());
-        
-        // Register the LoveLevel command
-        LoveLevelCommand.register(event.getServer().getCommands().getDispatcher());
 
-        // Menu de title custom (/tmenu)
-        TitleMenuCommand.register(event.getServer().getCommands().getDispatcher());
+        OffRpCommand.register(event.getServer().getCommands().getDispatcher()); //offrp
+        LoveLevelCommand.register(event.getServer().getCommands().getDispatcher()); //lovelevel
+        TitleMenuCommand.register(event.getServer().getCommands().getDispatcher()); //tmenu
+        SkyColorCommand.register(event.getServer().getCommands().getDispatcher()); //skycolor
         
         LOGGER.info("[FURSMP] Commands registered successfully.");
     }

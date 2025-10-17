@@ -16,11 +16,13 @@ import java.util.TimerTask;
 
 @EventBusSubscriber(modid = FwMain.MODID)
 public class ServerLoader {
+    public static boolean DEBUG = false; // Usando pra testes
 
     public static final Map<String, String> pendingTokens = new ConcurrentHashMap<>();
 
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if(DEBUG) return;
         if (event.getEntity() instanceof ServerPlayer player) {
             String username = player.getName().getString();
 

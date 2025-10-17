@@ -1,4 +1,4 @@
-package net.nextfur.fwc.network;
+package net.nextfur.fwc.network.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
