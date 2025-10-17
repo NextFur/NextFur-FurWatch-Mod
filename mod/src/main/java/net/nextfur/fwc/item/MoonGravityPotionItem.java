@@ -2,8 +2,8 @@ package net.nextfur.fwc.item;
 
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class MoonGravityPotionItem extends PotionItem {
@@ -16,6 +16,6 @@ public class MoonGravityPotionItem extends PotionItem {
 
     @Override
     public ItemStack getDefaultInstance() {
-        return net.minecraft.world.item.alchemy.PotionContents.createItemStack(this, this.potion);
+        return PotionContents.createItemStack(this, this.potion);
     }
 }

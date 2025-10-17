@@ -2,7 +2,6 @@ package net.nextfur.fwc.client.world;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.nextfur.fwc.util.world.SkyColorState;

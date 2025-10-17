@@ -2,8 +2,7 @@ package net.nextfur.fwc.client;
 
 import net.nextfur.fwc.Config;
 import net.nextfur.fwc.FwMain;
-import net.nextfur.fwc.network.ClientAuthPacket; 
-import net.nextfur.fwc.network.TokenPayload;
+import net.nextfur.fwc.network.ClientAuthPacket;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

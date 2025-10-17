@@ -1,7 +1,6 @@
 package net.nextfur.fwc.server;
 
 import net.nextfur.fwc.FwMain;
-import net.nextfur.fwc.Config;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;

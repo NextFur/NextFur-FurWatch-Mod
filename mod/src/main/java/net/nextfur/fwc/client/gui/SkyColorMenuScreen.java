@@ -16,8 +16,8 @@ public class SkyColorMenuScreen extends Screen {
     private Button cancelButton;
     private Button resetButton;
 
-    public SkyColorMenuScreen(Component title) {
-        super(Component.literal(ChatFormatting.AQUA + "FurWatch - SkyColor ;3"));
+    public SkyColorMenuScreen(Component menuname) {
+        super(menuname);
     }
 
     @Override

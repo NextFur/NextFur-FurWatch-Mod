@@ -7,8 +7,6 @@ import net.minecraft.core.registries.Registries;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.effect.EffectPowerDown;
 import net.nextfur.fwc.effect.EffectMoonGravity;
-import net.nextfur.fwc.effect.EffectSmallSize;
-import net.nextfur.fwc.effect.EffectBigSize;
 
 public class FwModEffects {
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, FwMain.MODID);

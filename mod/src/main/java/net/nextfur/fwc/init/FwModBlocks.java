@@ -17,12 +17,6 @@ import net.nextfur.fwc.blocks.LightGraySteelPlatingBlock;
 import net.nextfur.fwc.blocks.RedSteelPlatingBlock;
 import net.nextfur.fwc.blocks.YellowSteelPlatingBlock;
 
-import net.nextfur.fwc.blocks.PolishedBlueSteelPlatingBlock;
-import net.nextfur.fwc.blocks.PolishedRedSteelPlatingBlock;
-import net.nextfur.fwc.blocks.PolishedGreenSteelPlatingBlock;
-import net.nextfur.fwc.blocks.PolishedLightGraySteelPlatingBlock;
-import net.nextfur.fwc.blocks.PolishedYellowSteelPlatingBlock;
-
 import net.nextfur.fwc.blocks.LightStoneBricksBlock;
 import net.nextfur.fwc.blocks.SandedStoneBlock;
 import net.nextfur.fwc.blocks.SandedDeepslateBlock;

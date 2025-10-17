@@ -17,8 +17,8 @@ public class TitleMenuScreen extends Screen {
     private Button sendButton;
     private Button cancelButton;
 
-    public TitleMenuScreen(Component title) {
-        super(Component.literal(ChatFormatting.AQUA + "FurWatch - Title ;3"));
+    public TitleMenuScreen(Component menuname) {
+        super(menuname);
     }
 
     @Override
