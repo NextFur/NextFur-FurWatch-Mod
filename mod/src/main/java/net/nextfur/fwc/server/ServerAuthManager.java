@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerAuthManager {
     private static final Map<UUID, AuthenticationState> playerStates = new ConcurrentHashMap<>();
-    private static final int AUTH_TIMEOUT_SECONDS = 30;
+    private static final int AUTH_TIMEOUT_SECONDS = 5; // Timeout duration in seconds
 
     private static class AuthenticationState {
         final long joinTime;
