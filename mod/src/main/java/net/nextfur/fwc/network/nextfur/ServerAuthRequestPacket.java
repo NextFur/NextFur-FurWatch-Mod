@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.nextfur.fwc.Config;
+import net.nextfur.fwc.CommonConfig;
 import net.nextfur.fwc.FwMain;
 
 public class ServerAuthRequestPacket implements CustomPacketPayload {
@@ -30,7 +30,7 @@ public class ServerAuthRequestPacket implements CustomPacketPayload {
         Minecraft mc = Minecraft.getInstance();
 
         PacketDistributor.sendToServer(new ClientAuthPacket(
-                Config.getAuthToken(),
+                CommonConfig.getAuthToken(),
                 mc.getUser().getName()
         ));
     }

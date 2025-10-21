@@ -33,7 +33,7 @@ public class FwMain {
         NeoForge.EVENT_BUS.register(new CustomSkyRenderer());
         NeoForge.EVENT_BUS.register(new ServerAuthManager());
         NeoForge.EVENT_BUS.register(this);
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
 
         new ServerAuthManager();
     }

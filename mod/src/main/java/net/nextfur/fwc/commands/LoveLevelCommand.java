@@ -8,7 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.nextfur.fwc.Config;
+import net.nextfur.fwc.CommonConfig;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.util.FurWatchApiClient;
 
@@ -42,7 +42,7 @@ public class LoveLevelCommand {
         FurWatchApiClient.setLoveLevel(username, level).thenAccept(response -> {
             if (response.isSuccess()) {
                 context.getSource().sendSuccess(() -> Component.literal("§a[FURSMP] Love level set to " + response.getLoveLevel() + " successfully!"), false);
-                if (Config.debugMode) {
+                if (CommonConfig.debugMode) {
                     FwMain.LOGGER.info("[FURSMP] Love level set for {}: {}", username, response.getLoveLevel());
                 }
             } else {
@@ -71,7 +71,7 @@ public class LoveLevelCommand {
         FurWatchApiClient.addLoveLevel(username, amount).thenAccept(response -> {
             if (response.isSuccess()) {
                 context.getSource().sendSuccess(() -> Component.literal("§a[FURSMP] Adicionado " + amount + " ao nível de amor! Nível atual: " + response.getLoveLevel()), false);
-                if (Config.debugMode) {
+                if (CommonConfig.debugMode) {
                     FwMain.LOGGER.info("[FURSMP] Love level increased for {}: {}", username, response.getLoveLevel());
                 }
             } else {
@@ -100,7 +100,7 @@ public class LoveLevelCommand {
         FurWatchApiClient.subtractLoveLevel(username, amount).thenAccept(response -> {
             if (response.isSuccess()) {
                 context.getSource().sendSuccess(() -> Component.literal("§a[FURSMP] Removido " + amount + " do nível de amor! Nível atual: " + response.getLoveLevel()), false);
-                if (Config.debugMode) {
+                if (CommonConfig.debugMode) {
                     FwMain.LOGGER.info("[FURSMP] Love level decreased for {}: {}", username, response.getLoveLevel());
                 }
             } else {
@@ -128,7 +128,7 @@ public class LoveLevelCommand {
         FurWatchApiClient.getLoveLevel(username).thenAccept(response -> {
             if (response.isSuccess()) {
                 context.getSource().sendSuccess(() -> Component.literal("§a [FURSMP] O Nível de Amor para " + username + " é: " + response.getLoveLevel()), false);
-                if (Config.debugMode) {
+                if (CommonConfig.debugMode) {
                     FwMain.LOGGER.info("[FURSMP] Love level retrieved for {}: {}", username, response.getLoveLevel());
                 }
             } else {
