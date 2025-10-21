@@ -10,7 +10,7 @@ import net.nextfur.fwc.network.world.SkyColorSyncPacket;
 import net.nextfur.fwc.util.world.SkyColorData;
 
 @EventBusSubscriber(modid = FwMain.MODID)
-public class SyncData {
+public class SyncClientData {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {

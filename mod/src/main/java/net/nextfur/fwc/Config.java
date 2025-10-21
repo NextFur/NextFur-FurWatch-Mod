@@ -37,10 +37,6 @@ public class Config {
             authToken = AUTH_TOKEN.get();
             enableLoginSystem = ENABLE_LOGIN_SYSTEM.get();
             debugMode = DEBUG_MODE.get();
-
-            FwMain.LOGGER.info("[FURSMP MOD] Loaded Mod Config. Debug Mode: {}", debugMode ? "ENABLED" : "DISABLED");
-            FwMain.LOGGER.info("[FURSMP MOD] Loaded Mod Config. Login System: {}", enableLoginSystem ? "ENABLED" : "DISABLED");
-            FwMain.LOGGER.info("[FURSMP MOD] Loaded Mod Config. Token status: {}", authToken.isEmpty() ? "NOT SET" : "SET");
         }
     }
 }
