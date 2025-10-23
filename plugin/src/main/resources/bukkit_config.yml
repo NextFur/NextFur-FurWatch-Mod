@@ -1,0 +1,7 @@
+# Dados para autenticação staff no furguard
+FurGuard:
+  ApiKey: ""
+  ApiUrl: "https://furguard.nextfur.com/"
+
+# ;3
+Config-Version: 1.0

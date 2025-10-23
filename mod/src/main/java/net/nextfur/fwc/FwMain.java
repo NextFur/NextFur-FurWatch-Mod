@@ -11,6 +11,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 import net.nextfur.fwc.client.world.CustomSkyRenderer;
 import net.nextfur.fwc.init.*;
+import net.nextfur.fwc.server.BlockClientInteractions;
 import net.nextfur.fwc.server.ServerAuthManager;
 import net.nextfur.fwc.util.events.HologramEventHandler;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class FwMain {
         NeoForge.EVENT_BUS.register(new HologramEventHandler());
         NeoForge.EVENT_BUS.register(new CustomSkyRenderer());
         NeoForge.EVENT_BUS.register(new ServerAuthManager());
+        NeoForge.EVENT_BUS.register(new BlockClientInteractions());
         NeoForge.EVENT_BUS.register(this);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC); // Client

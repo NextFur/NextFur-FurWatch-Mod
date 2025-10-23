@@ -2,6 +2,7 @@ package net.nextfur.fwc.init;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.nextfur.fwc.api.WebhookManager;
 import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
 import net.nextfur.fwc.network.nextfur.ClientAuthPacket;
@@ -13,7 +14,6 @@ import net.nextfur.fwc.network.world.SkyColorChangePacket;
 import net.nextfur.fwc.network.world.SkyColorSyncPacket;
 import net.nextfur.fwc.server.ServerAuthManager;
 
-import net.nextfur.fwc.util.net.WebhookManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -98,8 +98,6 @@ public class FwModPackets {
                         List<String> modList = packet.getModList();
 
                         WebhookManager.postWebhook(playerName, modList);
-
-                        LOGGER.info("Received mod list from " + playerName + ": " + String.join(", ", modList));
                     }
                 }
         );

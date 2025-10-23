@@ -1,17 +1,15 @@
 name: FurWatch
-version: '1.0.0-SNAPSHOT'
-main: net.nextfur.fws.FwMain
+version: '1.0'
+main: net.nextfur.fws.bukkit.FurWatchBukkit
 api-version: '1.21'
 load: STARTUP
-authors: [ KivixEletric, Diogo06221 ]
+authors: [ KivixEletric, Diogo06221, Niix-Dan ]
 website: https://fursmp.com/
-
 commands:
-  spawn:
-    description: Teleports the player to the lobby.
-    usage: /<command>
-    permission: fws.command.spawn
-  build:
-    description: Toggles build mode for the player.
-    usage: /<command>
-    permission: fws.command.build
+  setspawn:
+    permission: "furwatch.admin"
+
+permissions:
+  furwatch.admin:
+    default: op
+    description: "Libera acesso aos comandos do furwatch"
