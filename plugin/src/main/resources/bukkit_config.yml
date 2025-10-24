@@ -3,5 +3,8 @@ FurGuard:
   ApiKey: ""
   ApiUrl: "https://furguard.nextfur.com/"
 
+Messages:
+  BannedItem: "§cOpa! Um item banido foi removido do seu inventário."
+
 # ;3
 Config-Version: 1.0

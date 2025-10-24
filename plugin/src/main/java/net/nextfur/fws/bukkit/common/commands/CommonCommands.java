@@ -2,13 +2,15 @@ package net.nextfur.fws.bukkit.common.commands;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import net.nextfur.fws.bukkit.FurWatchBukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class CommonCommands implements CommandExecutor {
-    private FurWatchBukkit plugin;
+    private final FurWatchBukkit plugin;
     private YamlDocument config;
 
     public CommonCommands (FurWatchBukkit plugin, YamlDocument config) {
@@ -18,7 +20,19 @@ public class CommonCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        // meow meow
-        return false;
+        if (!(commandSender instanceof Player)) {
+            commandSender.sendMessage(ChatColor.RED + "Apenas jogadores podem executar este comando!");
+            return true;
+        }
+
+        if (s.equalsIgnoreCase("banitem") && commandSender.hasPermission(command.getPermission())) {
+            BanItemCommand.execute(this, (Player) commandSender, s, strings);
+        }
+
+        return true;
+    }
+
+    public FurWatchBukkit getPlugin() {
+        return this.plugin;
     }
 }

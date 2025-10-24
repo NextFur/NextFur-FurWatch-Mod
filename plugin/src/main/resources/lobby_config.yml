@@ -9,6 +9,9 @@ FurGuard:
   ApiKey: ""
   ApiUrl: "https://furguard.nextfur.com/"
 
+Messages:
+  BannedItem: "§cOpa! Um item banido foi removido do seu inventário."
+
 # Configs do lobby
 Lobby:
   SpawnPos: ""

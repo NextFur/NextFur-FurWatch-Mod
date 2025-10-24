@@ -2,11 +2,16 @@ package net.nextfur.fws.bukkit.common.events;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import net.nextfur.fws.bukkit.FurWatchBukkit;
-import org.bukkit.event.Listener;
+import org.bukkit.Bukkit;
 
-public class CommonEvents implements Listener {
-    // Eventos executados em todos os servidores (Lobby & Generic)
+public class CommonEvents {
+    private final FurWatchBukkit plugin;
+    private final YamlDocument config;
+
     public CommonEvents (FurWatchBukkit plugin, YamlDocument config) {
-        // ;3
+        this.config = config;
+        this.plugin = plugin;
+
+        Bukkit.getServer().getPluginManager().registerEvents(new BannedItemsListener(plugin, config), plugin);
     }
 }

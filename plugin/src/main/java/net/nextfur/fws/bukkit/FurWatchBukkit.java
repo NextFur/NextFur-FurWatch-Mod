@@ -3,19 +3,14 @@ package net.nextfur.fws.bukkit;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
 import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
 import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
-import net.nextfur.fws.bukkit.common.commands.CommonCommands;
-import net.nextfur.fws.bukkit.common.events.CommonEvents;
-import net.nextfur.fws.bukkit.generic.commands.GenericCommands;
-import net.nextfur.fws.bukkit.generic.events.GenericEvents;
-import net.nextfur.fws.bukkit.lobby.commands.LobbyCommands;
-import net.nextfur.fws.bukkit.lobby.events.LobbyEvents;
-import net.nextfur.fws.bukkit.utils.Logger;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -23,7 +18,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import net.nextfur.fws.api.NextFurAPI;
+import net.nextfur.fws.bukkit.common.commands.CommonCommands;
+import net.nextfur.fws.bukkit.common.events.CommonEvents;
+import net.nextfur.fws.bukkit.generic.commands.GenericCommands;
+import net.nextfur.fws.bukkit.generic.events.GenericEvents;
+import net.nextfur.fws.bukkit.lobby.commands.LobbyCommands;
+import net.nextfur.fws.bukkit.lobby.events.LobbyEvents;
+import net.nextfur.fws.bukkit.utils.Logger;
 
 public class FurWatchBukkit extends JavaPlugin implements PluginMessageListener {
     private static final String CHANNEL = "furwatch:main";
@@ -33,6 +39,9 @@ public class FurWatchBukkit extends JavaPlugin implements PluginMessageListener 
 
     private String server = "generic";
     private YamlDocument config;
+
+    private List<String> bannedItems = new ArrayList<>();
+    public NextFurAPI api;
 
     @Override
     public void onEnable() {
@@ -93,7 +102,10 @@ public class FurWatchBukkit extends JavaPlugin implements PluginMessageListener 
                             .build()
             );
 
+            this.api = new NextFurAPI(config.getString("FurGuard.ApiUrl"), config.getString("FurGuard.ApiKey"));
             LOGGER.info("Config carregada com sucesso!");
+
+            syncBannedItems();
         } catch (Exception err) {
             LOGGER.error("Erro ao carregar config!");
             err.printStackTrace();
@@ -102,7 +114,7 @@ public class FurWatchBukkit extends JavaPlugin implements PluginMessageListener 
         }
 
         new CommonCommands(this, this.config);
-        getServer().getPluginManager().registerEvents(new CommonEvents(this, config), this);
+        new CommonEvents(this, config);
 
         if(role.equals("lobby")) {
             new LobbyCommands(this, this.config);
@@ -111,5 +123,30 @@ public class FurWatchBukkit extends JavaPlugin implements PluginMessageListener 
             new GenericCommands(this, this.config);
             getServer().getPluginManager().registerEvents(new GenericEvents(this, config), this);
         }
+    }
+
+    private void syncBannedItems() {
+        LOGGER.info("Sincronizando lista de itens banidos com a API NextFur...");
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            try {
+                @SuppressWarnings("unchecked")
+                List<String> apiItems = (List<String>) api.get("banitem", null);
+                if (apiItems == null) return;
+
+                this.setBannedItems(apiItems);
+            } catch (Exception ignored) {}
+        });
+    }
+
+    public List<String> getBannedItems() {
+        return this.bannedItems;
+    }
+
+    public void setBannedItems(List<String> items) {
+        this.bannedItems = items;
+    }
+
+    public NextFurAPI getApi() {
+        return this.api;
     }
 }

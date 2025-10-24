@@ -1,9 +1,3 @@
-/*
- * Copyright (c) 2025 NiixLabs
- * Todos os direitos reservados.
- *
- * Autor: Niix-Dan
- */
 package net.nextfur.fws.bukkit.utils;
 
 import org.bukkit.Bukkit;
@@ -15,13 +9,6 @@ public final class PositionParser {
         throw new UnsupportedOperationException("Esta é uma classe utilitária e não pode ser instanciada.");
     }
 
-    /**
-     * Serializa uma {@link Location} do Bukkit para uma String.
-     *
-     * @param location A localização a ser serializada.
-     * @return A string formatada (ex: "100.5,64.0,200.0,90.0,0.0:world")
-     * @throws IllegalArgumentException Se a localização for nula ou o mundo for nulo.
-     */
     public static String serialize(Location location) {
         if (location == null) {
             throw new IllegalArgumentException("A localização não pode ser nula.");
@@ -38,14 +25,6 @@ public final class PositionParser {
                 location.getWorld().getName();
     }
 
-    /**
-     * Desserializa uma string de volta para uma {@link Location} do Bukkit.
-     *
-     * @param input A string formatada (ex: "100.5,64.0,200.0,90.0,0.0:world")
-     * @return O objeto {@link Location} correspondente.
-     * @throws IllegalArgumentException Se o formato da string for inválido,
-     * os números forem inválidos, ou o mundo não for encontrado.
-     */
     public static Location deserialize(String input) {
         if (input == null || input.isEmpty()) {
             throw new IllegalArgumentException("A string de entrada não pode ser nula ou vazia.");

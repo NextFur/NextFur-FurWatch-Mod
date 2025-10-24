@@ -8,6 +8,8 @@ website: https://fursmp.com/
 commands:
   setspawn:
     permission: "furwatch.admin"
+  banitem:
+    permission: "furwatch.admin"
 
 permissions:
   furwatch.admin:
