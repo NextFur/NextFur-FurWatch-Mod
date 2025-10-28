@@ -6,10 +6,10 @@
 # Dados para autenticação staff no furguard
 FurGuard:
   ApiKey: ""
-  ApiUrl: "https://furguard.nextfur.com/"
+  ApiUrl: "https://api.nextfur.net/"
 
 Messages:
-  BannedItem: "§cOpa! Um item banido foi removido do seu inventário."
+  BannedItem: "§cOpa! Um item banido foi removido do seu inventário. §5[ x%amount% %item% ]"
 
 # Configs do lobby
 Lobby:

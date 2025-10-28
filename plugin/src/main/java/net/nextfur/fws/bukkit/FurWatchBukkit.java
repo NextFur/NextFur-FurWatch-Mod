@@ -1,7 +1,6 @@
 package net.nextfur.fws.bukkit;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
 import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
@@ -50,8 +49,8 @@ public class FurWatchBukkit extends JavaPlugin {
             LOGGER.warn("----------------------------------------------------");
             LOGGER.warn(" config.yml não encontrado! O plugin está em modo de setup.");
             LOGGER.warn(" ");
-            LOGGER.warn(" Por favor, peça a um Administrador para entrar no servidor");
-            LOGGER.warn(" e digitar: /furwatch setserver <lobby|generic>");
+            LOGGER.warn(" Por favor, entre no servidor e digite:");
+            LOGGER.warn(" /furwatch setserver <lobby|generic>");
             LOGGER.warn("----------------------------------------------------");
             return;
         }

@@ -8,8 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class GenericEvents implements Listener {
-    // Eventos executados em todos os servidores exceto o lobby
-
     private YamlDocument config;
     private FurWatchBukkit plugin;
 

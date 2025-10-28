@@ -1,6 +1,5 @@
 package net.nextfur.fws.bukkit.common.commands;
 
-import dev.dejvokep.boostedyaml.YamlDocument;
 import net.nextfur.fws.bukkit.FurWatchBukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

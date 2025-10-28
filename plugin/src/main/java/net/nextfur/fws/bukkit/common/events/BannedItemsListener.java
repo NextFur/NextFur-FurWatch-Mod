@@ -1,6 +1,5 @@
 package net.nextfur.fws.bukkit.common.events;
 
-import dev.dejvokep.boostedyaml.YamlDocument;
 import net.nextfur.fws.bukkit.FurWatchBukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,7 +18,7 @@ import org.bukkit.inventory.PlayerInventory;
 public class BannedItemsListener implements Listener {
     private FurWatchBukkit plugin;
 
-    private String banMessage = "§cOpa! Um item banido foi removido do seu inventário.";
+    private String banMessage = "§cOpa! Um item banido foi removido do seu inventário. §5[ x%amount% %item% ]";
 
     public BannedItemsListener(FurWatchBukkit plugin) {
         this.plugin = plugin;
@@ -33,9 +32,21 @@ public class BannedItemsListener implements Listener {
         return plugin.getBannedItems().contains(item.getType().getKey().toString());
     }
 
+    private void sendFeedbackMsg(ItemStack item, Player player) {
+        String msg = plugin._getConfig().getString("Messages.BannedItem", banMessage);
+
+        msg = msg.replaceAll("%amount%", String.valueOf(item.getAmount()));
+        msg = msg.replaceAll("%item%", item.getType().getKey().toString());
+
+        player.sendMessage(msg);
+    }
+
     private void removeBannedItem(ItemStack item, Player player) {
-        if (item != null) item.setAmount(0);
-        player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
+        if (item == null) return;
+
+        sendFeedbackMsg(item, player);
+
+        item.setAmount(0);
         player.updateInventory();
     }
 
@@ -46,8 +57,8 @@ public class BannedItemsListener implements Listener {
 
         if (player.hasPermission("furwatch.admin")) return;
 
-        for (ItemStack item : inv.getContents()) if (isBanned(item)) inv.remove(item);
-        for (ItemStack item : inv.getArmorContents()) if (isBanned(item)) inv.remove(item);
+        for (ItemStack item : inv.getContents()) if (isBanned(item)) removeBannedItem(item, player);
+        for (ItemStack item : inv.getArmorContents()) if (isBanned(item)) removeBannedItem(item, player);
 
         if (isBanned(player.getItemOnCursor())) player.setItemOnCursor(null);
 
@@ -62,13 +73,13 @@ public class BannedItemsListener implements Listener {
         if (isBanned(event.getCurrentItem())) {
             event.setCancelled(true);
             event.setCurrentItem(null);
-            player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
+            sendFeedbackMsg(event.getCurrentItem(), player);
         }
 
         if (isBanned(event.getCursor())) {
             event.setCancelled(true);
             event.setCursor(null);
-            player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
+            sendFeedbackMsg(event.getCursor(), player);
         }
     }
 
@@ -81,8 +92,8 @@ public class BannedItemsListener implements Listener {
 
         if (isBanned(event.getItem().getItemStack())) {
             event.setCancelled(true);
+            sendFeedbackMsg(event.getItem().getItemStack(), player);
             event.getItem().remove();
-            player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
         }
     }
 
@@ -106,7 +117,7 @@ public class BannedItemsListener implements Listener {
 
         if (isBanned(event.getItemInHand())) {
             event.setCancelled(true);
-            player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
+            sendFeedbackMsg(event.getItemInHand(), player);
         }
     }
 
