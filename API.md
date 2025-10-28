@@ -1,5 +1,3 @@
----
-
 # 🛠️ API Docs - FurWatch
 
 ## 📋 Sumário
