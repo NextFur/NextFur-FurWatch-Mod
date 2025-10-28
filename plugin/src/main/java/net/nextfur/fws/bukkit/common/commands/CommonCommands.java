@@ -11,11 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class CommonCommands implements CommandExecutor {
     private final FurWatchBukkit plugin;
-    private YamlDocument config;
 
-    public CommonCommands (FurWatchBukkit plugin, YamlDocument config) {
-        this.config = config;
+    public CommonCommands (FurWatchBukkit plugin) {
         this.plugin = plugin;
+
+        plugin.getCommand("banitem").setExecutor(this);
+        plugin.getCommand("furwatch").setExecutor(this);
     }
 
     @Override
@@ -27,6 +28,10 @@ public class CommonCommands implements CommandExecutor {
 
         if (s.equalsIgnoreCase("banitem") && commandSender.hasPermission(command.getPermission())) {
             BanItemCommand.execute(this, (Player) commandSender, s, strings);
+        }
+
+        if (s.equalsIgnoreCase("furwatch") && commandSender.hasPermission(command.getPermission())) {
+            FurWatchCommand.execute(this, (Player) commandSender, s, strings);
         }
 
         return true;

@@ -10,6 +10,8 @@ commands:
     permission: "furwatch.admin"
   banitem:
     permission: "furwatch.admin"
+  furwatch:
+    permission: "furwatch.admin"
 
 permissions:
   furwatch.admin:

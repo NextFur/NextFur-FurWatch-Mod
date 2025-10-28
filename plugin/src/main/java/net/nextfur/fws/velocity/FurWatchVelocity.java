@@ -1,23 +1,20 @@
 package net.nextfur.fws.velocity;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
-import com.velocitypowered.api.event.connection.PluginMessageEvent;
+
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
+
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
 import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
 import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
+
 import net.nextfur.fws.api.NextFurAPI;
 import net.nextfur.fws.velocity.listeners.ConnectionListener;
 import net.nextfur.fws.velocity.utils.Logger;
@@ -37,18 +34,13 @@ public class FurWatchVelocity {
     private final Path dataFolder;
     private NextFurAPI api;
 
-    private static final LegacyChannelIdentifier CHANNEL = new LegacyChannelIdentifier("furwatch:main");
-
     private YamlDocument velocityConfig;
-    private String lobbyName;
 
     @Inject
     public FurWatchVelocity(ProxyServer server, org.slf4j.Logger _logger, @DataDirectory Path dataFolder) {
         this.server = server;
         this.logger = new Logger(server, "FurWatch");
         this.dataFolder = dataFolder;
-
-        this.lobbyName = "lobby";
 
         try {
             velocityConfig = YamlDocument.create(
@@ -63,42 +55,13 @@ public class FurWatchVelocity {
                             .build()
             );
 
-            this.lobbyName = velocityConfig.getString("Lobby-Server", "lobby");
             this.api = new NextFurAPI(velocityConfig.getString("FurGuard.ApiUrl"), velocityConfig.getString("FurGuard.ApiKey"));
-        } catch (IOException e) {
-            this.lobbyName = "lobby";
-        }
+        } catch (IOException ignored) {}
     }
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        server.getChannelRegistrar().register(CHANNEL);
         server.getEventManager().register(this, new ConnectionListener(server, logger, api));
         logger.info("FurWatch Inicializado com sucesso!");
-    }
-
-    @Subscribe
-    public void onPluginMessage(PluginMessageEvent event) {
-        if(!event.getIdentifier().equals(CHANNEL)) return;
-        if(event.getSource() instanceof ServerConnection) {
-            ServerConnection backendServer = (ServerConnection) event.getSource();
-            String serverName = backendServer.getServerInfo().getName();
-
-            ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
-            String subChannel = in.readUTF();
-
-            if(subChannel.equalsIgnoreCase("whoami")) {
-                logger.info("Connected Server " + serverName + ". Assigning functions...");
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-
-                if(serverName.equalsIgnoreCase(this.lobbyName)) {
-                    out.writeUTF("lobby");
-                } else {
-                    out.writeUTF("generic");
-                }
-
-                backendServer.sendPluginMessage(CHANNEL, out.toByteArray());
-            }
-        }
     }
 }

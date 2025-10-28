@@ -1,7 +1,6 @@
 
 #
-#  Este servidor foi identificado como lobby
-# Isso pode ser alterado na config do velocity!
+#  Este servidor está definido como lobby
 #
 
 # Dados para autenticação staff no furguard
@@ -21,3 +20,4 @@ Lobby:
 
 
 Config-Version: 1.0
+Server-Role: "lobby"

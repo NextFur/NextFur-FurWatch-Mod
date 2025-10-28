@@ -31,7 +31,7 @@ public class Logger {
     public Logger(String prefix) {
         this.prefix = prefix + ChatColor.RESET;
         this.debugEnabled = false;
-        this.showTimestamp = true;
+        this.showTimestamp = false;
     }
 
     public void setDebug(boolean enabled) {

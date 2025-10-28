@@ -34,7 +34,7 @@ public class Logger {
         this.server = server;
         this.prefix = prefix;
         this.debugEnabled = false;
-        this.showTimestamp = true;
+        this.showTimestamp = false;
     }
 
     public void setDebug(boolean enabled) {

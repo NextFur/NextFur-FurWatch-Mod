@@ -27,8 +27,8 @@ public class APIClient {
             connection.setRequestMethod(method);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Authorization", "Bearer " + apiKey);
-            connection.setConnectTimeout(8000);
-            connection.setReadTimeout(8000);
+            connection.setConnectTimeout(2000);
+            connection.setReadTimeout(2000);
 
             if (body != null && !body.isEmpty()) {
                 connection.setDoOutput(true);

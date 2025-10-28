@@ -18,12 +18,10 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class BannedItemsListener implements Listener {
     private FurWatchBukkit plugin;
-    private YamlDocument config;
 
-    private String banMessage = "";
+    private String banMessage = "§cOpa! Um item banido foi removido do seu inventário.";
 
-    public BannedItemsListener(FurWatchBukkit plugin, YamlDocument config) {
-        this.config = config;
+    public BannedItemsListener(FurWatchBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -37,7 +35,7 @@ public class BannedItemsListener implements Listener {
 
     private void removeBannedItem(ItemStack item, Player player) {
         if (item != null) item.setAmount(0);
-        player.sendMessage(config.getString("Messages.BannedItem", banMessage));
+        player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
         player.updateInventory();
     }
 
@@ -64,13 +62,13 @@ public class BannedItemsListener implements Listener {
         if (isBanned(event.getCurrentItem())) {
             event.setCancelled(true);
             event.setCurrentItem(null);
-            player.sendMessage(config.getString("Messages.BannedItem", banMessage));
+            player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
         }
 
         if (isBanned(event.getCursor())) {
             event.setCancelled(true);
             event.setCursor(null);
-            player.sendMessage(config.getString("Messages.BannedItem", banMessage));
+            player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
         }
     }
 
@@ -84,7 +82,7 @@ public class BannedItemsListener implements Listener {
         if (isBanned(event.getItem().getItemStack())) {
             event.setCancelled(true);
             event.getItem().remove();
-            player.sendMessage(config.getString("Messages.BannedItem", banMessage));
+            player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
         }
     }
 
@@ -108,7 +106,7 @@ public class BannedItemsListener implements Listener {
 
         if (isBanned(event.getItemInHand())) {
             event.setCancelled(true);
-            player.sendMessage(config.getString("Messages.BannedItem", banMessage));
+            player.sendMessage(plugin._getConfig().getString("Messages.BannedItem", banMessage));
         }
     }
 

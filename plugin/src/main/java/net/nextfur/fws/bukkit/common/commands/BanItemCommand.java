@@ -1,8 +1,5 @@
 package net.nextfur.fws.bukkit.common.commands;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.nextfur.fws.bukkit.FurWatchBukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -57,7 +54,7 @@ public class BanItemCommand {
                 plugin.getApi().postAsync("banitem", apiData);
 
                 player.sendMessage(ChatColor.GREEN + "Item " + ChatColor.GOLD + itemKey + ChatColor.GREEN + " foi banido. Motivo: " + reason);
-                plugin.LOGGER.info("Item " + itemKey + " banido por " + player.getName() + ". Motivo: " + reason);
+                plugin._getLogger().info("Item " + itemKey + " banido por " + player.getName() + ". Motivo: " + reason);
                 break;
             }
             case "remove": {
@@ -72,7 +69,7 @@ public class BanItemCommand {
                 plugin.getApi().postAsync("banitem", apiData);
 
                 player.sendMessage(ChatColor.GREEN + "Item " + ChatColor.GOLD + itemKey + ChatColor.GREEN + " foi desbanido.");
-                plugin.LOGGER.info("Item " + itemKey + " desbanido por " + player.getName() + ".");
+                plugin._getLogger().info("Item " + itemKey + " desbanido por " + player.getName() + ".");
                 break;
             }
             default:
