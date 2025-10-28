@@ -5,14 +5,13 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.nextfur.fwc.api.WebhookManager;
 import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
-import net.nextfur.fwc.network.nextfur.ClientAuthPacket;
 import net.nextfur.fwc.network.gui.OpenGamerulesMenuPacket;
 import net.nextfur.fwc.network.gui.OpenSkyColorMenuPacket;
 import net.nextfur.fwc.network.gui.OpenTitleMenuPacket;
-import net.nextfur.fwc.network.nextfur.ServerAuthRequestPacket;
+import net.nextfur.fwc.network.nextfur.packets.AuthRequestPacket;
+import net.nextfur.fwc.network.nextfur.packets.AuthResponsePacket;
 import net.nextfur.fwc.network.world.SkyColorChangePacket;
 import net.nextfur.fwc.network.world.SkyColorSyncPacket;
-import net.nextfur.fwc.server.ServerAuthManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,25 +24,18 @@ public class FwModPackets {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar(FwMain.MODID);
+        var registrar = event.registrar(FwMain.MODID).versioned("1.0");
 
-        registrar.playToClient(
-                ServerAuthRequestPacket.TYPE,
-                ServerAuthRequestPacket.STREAM_CODEC,
-                (packet, ctx) -> ServerAuthRequestPacket.handle(packet)
+        registrar.configurationToClient(
+                AuthRequestPacket.TYPE,
+                AuthRequestPacket.STREAM_CODEC,
+                AuthRequestPacket::handle
         );
 
-        registrar.playToServer(
-                ClientAuthPacket.TYPE,
-                ClientAuthPacket.STREAM_CODEC,
-                (packet, ctx) -> {
-                    if (ctx.player() instanceof ServerPlayer player) {
-                        String playerName = packet.getUsername();
-                        String token = packet.getToken();
-
-                        ServerAuthManager.handleAuthResponse(player, token, playerName);
-                    }
-                }
+        registrar.configurationToServer(
+                AuthResponsePacket.TYPE,
+                AuthResponsePacket.STREAM_CODEC,
+                AuthResponsePacket::handle
         );
 
         registrar.playToClient(

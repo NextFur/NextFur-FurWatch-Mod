@@ -7,6 +7,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
+import net.nextfur.fwc.network.nextfur.packets.AuthRequestPacket;
 import net.nextfur.fwc.network.world.SkyColorSyncPacket;
 import net.nextfur.fwc.util.world.SkyColorData;
 
