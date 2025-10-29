@@ -16,15 +16,25 @@ public class FwModBlocks {
         public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(FwMain.MODID);
 
-        public static final Supplier<Block> PLUSHIE = BLOCKS.register("niix_plushie", rname ->
-                        new NiixPlushieBlock(BlockBehaviour.Properties.of()
-                                .destroyTime(2.0f)
-                                .explosionResistance(10.0f)
-                                .sound(SoundType.SLIME_BLOCK)
-                                .noOcclusion()
-                                .noCollission()
-                        )
-                );
+        public static final Supplier<Block> NIIX_PLUSHIE = BLOCKS.register("niix_plushie", rname ->
+                new NiixPlushieBlock(BlockBehaviour.Properties.of()
+                        .destroyTime(2.0f)
+                        .explosionResistance(10.0f)
+                        .sound(SoundType.SLIME_BLOCK)
+                        .noOcclusion()
+                        .noCollission()
+                )
+        );
+
+        public static final Supplier<Block> POPOSA_PLUSHIE = BLOCKS.register("poposa_plushie", rname ->
+                new PoposaPlushieBlock(BlockBehaviour.Properties.of()
+                        .destroyTime(2.0f)
+                        .explosionResistance(10.0f)
+                        .sound(SoundType.SLIME_BLOCK)
+                        .noOcclusion()
+                        .noCollission()
+                )
+        );
 
         public static final DeferredBlock<Block> ANIMATED_SERVER_RACK = BLOCKS.register("animated_server_rack",
         () -> new AnimatedServerRackBlock(BlockBehaviour.Properties.of()
