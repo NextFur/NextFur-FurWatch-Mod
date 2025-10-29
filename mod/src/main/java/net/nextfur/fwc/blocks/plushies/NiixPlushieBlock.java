@@ -1,4 +1,4 @@
-package net.nextfur.fwc.blocks;
+package net.nextfur.fwc.blocks.plushies;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -8,8 +8,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import javax.annotation.Nullable;
-
-import static net.nextfur.fwc.init.FwModCodec.PLUSHIE_CODEC;
 
 public class NiixPlushieBlock extends Block {
     public NiixPlushieBlock(Properties properties) {
@@ -29,7 +27,9 @@ public class NiixPlushieBlock extends Block {
 
     @Override
     public MapCodec<NiixPlushieBlock> codec() {
-        return PLUSHIE_CODEC.get();
+        return simpleCodec(NiixPlushieBlock::new);
     }
+
+    // item description (lore line 1) = "block.fursmp.niix_plushie.description"
 
 }

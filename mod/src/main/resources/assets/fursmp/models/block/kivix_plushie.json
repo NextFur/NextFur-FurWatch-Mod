@@ -3,8 +3,8 @@
   "credit": "Made with Blockbench",
   "render_type": "minecraft:cutout",
   "textures": {
-    "particle": "fursmp:block/niix",
-    "plushie_texture": "fursmp:block/niix"
+    "particle": "fursmp:block/kivix",
+    "plushie_texture": "fursmp:block/kivix"
   },
   "elements": [
     {

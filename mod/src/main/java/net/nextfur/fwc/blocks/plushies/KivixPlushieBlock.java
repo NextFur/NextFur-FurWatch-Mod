@@ -1,4 +1,4 @@
-package net.nextfur.fwc.blocks;
+package net.nextfur.fwc.blocks.plushies;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -9,10 +9,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import javax.annotation.Nullable;
 
-import static net.nextfur.fwc.init.FwModCodec.POPOSA_CODEC;
-
-public class PoposaPlushieBlock extends Block {
-    public PoposaPlushieBlock(Properties properties) {
+public class KivixPlushieBlock extends Block {
+    public KivixPlushieBlock(Properties properties) {
         super(properties);
     }
 
@@ -28,8 +26,8 @@ public class PoposaPlushieBlock extends Block {
     }
 
     @Override
-    public MapCodec<PoposaPlushieBlock> codec() {
-        return POPOSA_CODEC.get();
+    public MapCodec<KivixPlushieBlock> codec() {
+        return simpleCodec(KivixPlushieBlock::new);
     }
 
 }

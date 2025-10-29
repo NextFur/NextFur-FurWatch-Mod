@@ -27,8 +27,6 @@
   "block.fursmp.smaller_white_tiles_really_dirty_block": "Smaller White Tiles Really Dirty Block",
   "block.fursmp.red_tiles_block": "Red Tiles Block",
   "block.fursmp.white_dirty_tiles_block": "White Dirty Tiles Block",
-  "block.fursmp.niix_plushie": "Niix Plushie",
-  "block.fursmp.poposa_plushie": "Poposa Plushie",
   "item.fursmp.scrap_metal": "Scrap Metal",
   "item.fursmp.moon_gravity_potion": "Potion of Moon Gravity",
   "item.fursmp.moon_gravity_potion.effect.moon_gravity_potion": "Potion of Moon Gravity",
@@ -39,5 +37,16 @@
   "effect.fursmp.power_down": "Power Down",
   "effect.fursmp.big_size": "Big Size",
   "effect.fursmp.small_size": "Small Size",
-  "effect.fursmp.moon_gravity": "Moon Gravity"
+  "effect.fursmp.moon_gravity": "Moon Gravity",
+
+
+
+  "block.fursmp.niix_plushie": "§aN§ei§di§fx §bPlushie",
+  "block.fursmp.niix_plushie.description": "§d§lWhy is it sticky? Ewww",
+
+  "block.fursmp.poposa_plushie": "§dPoposa §bPlushie",
+  "block.fursmp.poposa_plushie.description": "§d§leu sou uma poposa ;3",
+
+  "block.fursmp.kivix_plushie": "§eKivix Eletric §bPlushie",
+  "block.fursmp.kivix_plushie.description": "§d§lpoposa peta :3"
 }

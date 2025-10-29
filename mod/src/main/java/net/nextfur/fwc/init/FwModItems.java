@@ -1,11 +1,18 @@
 package net.nextfur.fwc.init;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nextfur.fwc.FwMain;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class FwModItems {
@@ -26,11 +33,20 @@ public class FwModItems {
         () -> new net.minecraft.world.item.SplashPotionItem(new Item.Properties())
     );
 
-
     static {
-        FwModBlocks.BLOCKS.getEntries().forEach(block ->
-                ITEMS.register(block.getId().getPath(),
-                        () -> new BlockItem(block.get(), new Item.Properties()))
-        );
+        FwModBlocks.BLOCKS.getEntries().forEach(block -> {
+            String blockName = block.getId().getPath();
+            if (blockName.contains("plushie")) {
+                ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()) {
+                    @Override
+                    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                        tooltipComponents.add(Component.translatable("block.fursmp." + blockName + ".description").withStyle(ChatFormatting.GRAY));
+                        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                    }
+                });
+            } else {
+                ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
+            }
+        });
     }
 }

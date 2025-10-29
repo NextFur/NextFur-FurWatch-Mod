@@ -9,6 +9,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nextfur.fwc.FwMain;
 
 import net.nextfur.fwc.blocks.*;
+import net.nextfur.fwc.blocks.plushies.KivixPlushieBlock;
+import net.nextfur.fwc.blocks.plushies.NiixPlushieBlock;
+import net.nextfur.fwc.blocks.plushies.PoposaPlushieBlock;
 
 import java.util.function.Supplier;
 
@@ -30,7 +33,17 @@ public class FwModBlocks {
                 new PoposaPlushieBlock(BlockBehaviour.Properties.of()
                         .destroyTime(2.0f)
                         .explosionResistance(10.0f)
-                        .sound(SoundType.SLIME_BLOCK)
+                        .sound(SoundType.WOOL)
+                        .noOcclusion()
+                        .noCollission()
+                )
+        );
+
+        public static final Supplier<Block> KIVIX_PLUSHIE = BLOCKS.register("kivix_plushie", rname ->
+                new KivixPlushieBlock(BlockBehaviour.Properties.of()
+                        .destroyTime(2.0f)
+                        .explosionResistance(10.0f)
+                        .sound(SoundType.WOOL)
                         .noOcclusion()
                         .noCollission()
                 )
