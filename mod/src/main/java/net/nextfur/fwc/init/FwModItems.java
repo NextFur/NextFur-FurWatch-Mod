@@ -6,6 +6,8 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nextfur.fwc.FwMain;
 
+import java.util.function.Supplier;
+
 public class FwModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FwMain.MODID);
 
@@ -25,7 +27,12 @@ public class FwModItems {
         () -> new net.minecraft.world.item.SplashPotionItem(new Item.Properties())
     );
 
-    //Register Blocks 
+    //Register Blocks
+    public static final Supplier<Item> PLUSHIE = ITEMS.register(
+            "niix_plushie",
+            () -> new BlockItem(FwModBlocks.PLUSHIE.get(), new Item.Properties())
+    );
+
     public static final DeferredItem<Item> ANIMATED_SERVER_RACK_ITEM = ITEMS.register(
         "animated_server_rack",
         () -> new BlockItem(FwModBlocks.ANIMATED_SERVER_RACK.get(), new Item.Properties())

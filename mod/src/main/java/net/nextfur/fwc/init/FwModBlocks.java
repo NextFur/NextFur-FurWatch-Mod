@@ -8,30 +8,23 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nextfur.fwc.FwMain;
 
-import net.nextfur.fwc.blocks.AnimatedServerRackBlock; 
-import net.nextfur.fwc.blocks.BlackSteelPlatingBlock;
-import net.nextfur.fwc.blocks.GraySteelPlatingBlock;
-import net.nextfur.fwc.blocks.BlueSteelPlatingBlock;
-import net.nextfur.fwc.blocks.GreenSteelPlatingBlock;
-import net.nextfur.fwc.blocks.LightGraySteelPlatingBlock;
-import net.nextfur.fwc.blocks.RedSteelPlatingBlock;
-import net.nextfur.fwc.blocks.YellowSteelPlatingBlock;
+import net.nextfur.fwc.blocks.*;
 
-import net.nextfur.fwc.blocks.LightStoneBricksBlock;
-import net.nextfur.fwc.blocks.SandedStoneBlock;
-import net.nextfur.fwc.blocks.SandedDeepslateBlock;
-import net.nextfur.fwc.blocks.WhiteTilesBlock;
-import net.nextfur.fwc.blocks.WhiteDirtyTilesBlock;
-
-import net.nextfur.fwc.blocks.SmallerWhiteTiles;
-import net.nextfur.fwc.blocks.SmallerWhiteTilesDirty;
-import net.nextfur.fwc.blocks.SmallerWhiteTilesReallyDirty;
-import net.nextfur.fwc.blocks.RedTilesBlock;
-import net.nextfur.fwc.blocks.PolishedBlackSteelPlatingBlock;
+import java.util.function.Supplier;
 
 public class FwModBlocks {
         public static final DeferredRegister.Blocks BLOCKS =
             DeferredRegister.createBlocks(FwMain.MODID);
+
+        public static final Supplier<Block> PLUSHIE = BLOCKS.register("niix_plushie", rname ->
+                        new NiixPlushieBlock(BlockBehaviour.Properties.of()
+                                .destroyTime(2.0f)
+                                .explosionResistance(10.0f)
+                                .sound(SoundType.SLIME_BLOCK)
+                                .noOcclusion()
+                                .noCollission()
+                        )
+                );
 
         public static final DeferredBlock<Block> ANIMATED_SERVER_RACK = BLOCKS.register("animated_server_rack",
         () -> new AnimatedServerRackBlock(BlockBehaviour.Properties.of()

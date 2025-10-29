@@ -52,6 +52,7 @@ public class FwModCreativeTabs {
                     .title(Component.translatable("creative.fursmp_items_tab"))
                     .displayItems((displayParameters, output) -> {
                         //Accept Items
+                        output.accept(FwModItems.PLUSHIE.get());
                         output.accept(FwModItems.SCRAP_METAL.get());
                         output.accept(PotionContents.createItemStack(FwModItems.MOON_GRAVITY_POTION.get(), FwModPotions.MOON_GRAVITY_POTION));
                         output.accept(PotionContents.createItemStack(FwModItems.MOON_GRAVITY_SPLASH_POTION.get(), FwModPotions.MOON_GRAVITY_POTION));
