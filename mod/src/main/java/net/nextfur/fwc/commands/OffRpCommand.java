@@ -6,59 +6,42 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.Display.TextDisplay;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.nextfur.fwc.network.world.OffRpSyncPacket;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class OffRpCommand {
-    public static final Map<UUID, TextDisplay> activeHolograms = new HashMap<>();
+    public static final List<UUID> activeHolograms = new ArrayList<>();
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("offrp")
-                .executes(OffRpCommand::execute));
+                .executes((context) -> {
+                    execute(context);
+                    return 1;
+                }));
     }
 
-    private static int execute(CommandContext<CommandSourceStack> context) {
-        if (context.getSource().getEntity() instanceof Player player) {
-            UUID playerUUID = player.getUUID();
+    private static void execute(CommandContext<CommandSourceStack> context) {
+        if(!context.getSource().isPlayer()) return;
 
-            if (activeHolograms.containsKey(playerUUID)) {
-                TextDisplay existingHologram = activeHolograms.get(playerUUID);
-                if (existingHologram != null) {
-                    existingHologram.discard(); 
-                }
-                activeHolograms.remove(playerUUID);
-                player.sendSystemMessage(Component.literal("[FURSMP] Você saiu do modo OFF RP!"));
-            } else {
-                TextDisplay hologram = new TextDisplay(EntityType.TEXT_DISPLAY, player.level());
-                
-                CompoundTag nbt = new CompoundTag();
-                hologram.saveWithoutId(nbt);
-                
-                nbt.putString("text", Component.Serializer.toJson(Component.literal("Off RP"), context.getSource().registryAccess()));
-                nbt.putInt("background", 0x40000000); // Semi-transparent background
-                nbt.putString("billboard", "center");
-                nbt.putByte("text_opacity", (byte) 255);
-                nbt.putInt("line_width", 200);
-                nbt.putBoolean("see_through", true);
-                
-                hologram.load(nbt);
-                
-                hologram.setPos(player.getX(), player.getY() + player.getBbHeight() + 0.5, player.getZ());
-                hologram.setNoGravity(true);
-                
-                player.level().addFreshEntity(hologram);
-                activeHolograms.put(playerUUID, hologram);
+        ServerPlayer player = context.getSource().getPlayer();
+        UUID playerUUID = player.getUUID();
 
-                player.sendSystemMessage(Component.literal("[FURSMP] Você está no modo OFF RP!"));
-            }
-
-            return 1;
+        if (activeHolograms.contains(playerUUID)) {
+            activeHolograms.remove(playerUUID);
+            player.sendSystemMessage(Component.literal("[FURSMP] | Voce saiu do modo OFFRP"));
+        } else {
+            activeHolograms.add(playerUUID);
+            player.sendSystemMessage(Component.literal("[FURSMP] | Voce entrou no modo OFFRP"));
         }
-        return 0;
+
+        for(ServerPlayer p : player.getServer().getPlayerList().getPlayers()) {
+            PacketDistributor.sendToPlayer(p, new OffRpSyncPacket(activeHolograms));
+        }
     }
 }

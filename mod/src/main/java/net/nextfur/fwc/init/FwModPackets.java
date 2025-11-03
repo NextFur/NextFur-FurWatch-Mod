@@ -3,6 +3,7 @@ package net.nextfur.fwc.init;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.nextfur.fwc.api.WebhookManager;
+import net.nextfur.fwc.client.world.OffRpRenderer;
 import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
 import net.nextfur.fwc.network.gui.OpenGamerulesMenuPacket;
@@ -10,6 +11,7 @@ import net.nextfur.fwc.network.gui.OpenSkyColorMenuPacket;
 import net.nextfur.fwc.network.gui.OpenTitleMenuPacket;
 import net.nextfur.fwc.network.nextfur.packets.AuthRequestPacket;
 import net.nextfur.fwc.network.nextfur.packets.AuthResponsePacket;
+import net.nextfur.fwc.network.world.OffRpSyncPacket;
 import net.nextfur.fwc.network.world.SkyColorChangePacket;
 import net.nextfur.fwc.network.world.SkyColorSyncPacket;
 
@@ -36,6 +38,18 @@ public class FwModPackets {
                 AuthResponsePacket.TYPE,
                 AuthResponsePacket.STREAM_CODEC,
                 AuthResponsePacket::handle
+        );
+
+        registrar.playToClient(
+                OffRpSyncPacket.TYPE,
+                OffRpSyncPacket.STREAM_CODEC,
+                (packet, ctx) -> {
+                    ctx.enqueueWork(() -> {
+                        OffRpRenderer.OFFRP_PLAYERS.clear();
+                        OffRpRenderer.OFFRP_PLAYERS.addAll(packet.getOffRpPlayers());
+                        LOGGER.info("Recebido sincronizacao contendo "+packet.getOffRpPlayers().size() + " jogadores offrp");
+                    });
+                }
         );
 
         registrar.playToClient(

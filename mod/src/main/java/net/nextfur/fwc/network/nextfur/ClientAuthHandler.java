@@ -13,6 +13,5 @@ public class ClientAuthHandler {
         String username = Minecraft.getInstance().getUser().getName();
 
         context.reply(new AuthResponsePacket(username, token));
-        //context.handle(new AuthResponsePacket(username, token));
     }
 }
