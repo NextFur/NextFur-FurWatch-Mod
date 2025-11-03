@@ -12,6 +12,7 @@ import net.minecraft.world.entity.EntityAttachment;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import java.util.HashSet;
@@ -29,6 +30,12 @@ public class OffRpRenderer {
         if (mc.level == null || mc.player == null) return;
         for (Player player : mc.level.players()) {
             if (!OFFRP_PLAYERS.contains(player.getUUID())) continue;
+            if (mc.player.getUUID().equals(player.getUUID())) continue;
+
+            double distanceSqr = mc.getEntityRenderDispatcher().distanceToSqr(player);
+            if (!ClientHooks.isNameplateInRenderDistance(player, distanceSqr)) {
+                continue;
+            }
 
             renderNameTag(
                     player,
