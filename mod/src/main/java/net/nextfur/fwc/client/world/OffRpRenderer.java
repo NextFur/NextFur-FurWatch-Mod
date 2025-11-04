@@ -1,6 +1,7 @@
 package net.nextfur.fwc.client.world;
 
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -70,7 +71,7 @@ public class OffRpRenderer {
         matrixStack.mulPose(instance.getEntityRenderDispatcher().cameraOrientation());
         matrixStack.scale(0.025F, -0.025F, 0.025F);
 
-        String text = "[OFFRP]";
+        String text = ChatFormatting.LIGHT_PURPLE + "[OFF-RP]";
 
         Font font = instance.font;
         float f = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);

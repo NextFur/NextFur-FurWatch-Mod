@@ -21,16 +21,22 @@ public class ServerAuthHandler {
             return;
         }
 
-        LOGGER.info("Requisição de login recebida de " + packetUser+ "...");
-        if (PlayerAuthenticator.authenticatePlayer(packetUser, token)) {
-            ctx.finishCurrentTask(AuthTaskPayload.TYPE);
-            LOGGER.info("Login efetuado com sucesso para o jogador " + packetUser);
-        } else {
-            ctx.disconnect(Component.literal(
-                    ChatFormatting.RED + "[FURSMP] Falha no login - Tente novamente." +
-                            "\nCaso este erro persista, abra um ticket em nosso Discord."
-            ));
-            LOGGER.info("Erro ao efetuar login para " + packetUser);
-        }
+        LOGGER.info("Requisicao de login recebida de " + packetUser+ "...");
+
+        PlayerAuthenticator.authenticatePlayerAsync(packetUser, token)
+                .thenAccept(isAuthenticated -> {
+                    ctx.enqueueWork(() -> {
+                        if (isAuthenticated) {
+                            ctx.finishCurrentTask(AuthTaskPayload.TYPE);
+                            LOGGER.info("Login efetuado com sucesso para o jogador " + packetUser);
+                        } else {
+                            ctx.disconnect(Component.literal(
+                                    ChatFormatting.RED + "[FURSMP] Falha no login - Tente novamente.\n" +
+                                            ChatFormatting.YELLOW + "! Caso este erro persista, abra um ticket em nosso Discord. !"
+                            ));
+                            LOGGER.info("Erro ao efetuar login para " + packetUser);
+                        }
+                    });
+                });
     }
 }

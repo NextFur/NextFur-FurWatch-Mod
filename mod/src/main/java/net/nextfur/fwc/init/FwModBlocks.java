@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nextfur.fwc.FwMain;
 
 import net.nextfur.fwc.blocks.*;
+import net.nextfur.fwc.blocks.plushies.DeepPedraPlushieBlock;
 import net.nextfur.fwc.blocks.plushies.KivixPlushieBlock;
 import net.nextfur.fwc.blocks.plushies.NiixPlushieBlock;
 import net.nextfur.fwc.blocks.plushies.PoposaPlushieBlock;
@@ -44,6 +45,16 @@ public class FwModBlocks {
                         .destroyTime(2.0f)
                         .explosionResistance(10.0f)
                         .sound(SoundType.WOOL)
+                        .noOcclusion()
+                        .noCollission()
+                )
+        );
+
+        public static final Supplier<Block> DEEP_PEDRA_PLUSHIE = BLOCKS.register("deeppedra_plushie", rname ->
+                new DeepPedraPlushieBlock(BlockBehaviour.Properties.of()
+                        .destroyTime(2.0f)
+                        .explosionResistance(10.0f)
+                        .sound(SoundType.DEEPSLATE)
                         .noOcclusion()
                         .noCollission()
                 )

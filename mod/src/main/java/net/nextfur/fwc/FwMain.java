@@ -1,6 +1,7 @@
 package net.nextfur.fwc;
 
 import com.mojang.logging.LogUtils;
+import io.netty.util.internal.UnstableApi;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -9,6 +10,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
+import net.nextfur.fwc.api.NextFurAPI;
 import net.nextfur.fwc.init.*;
 import org.slf4j.Logger;
 
@@ -16,10 +18,13 @@ import org.slf4j.Logger;
 public class FwMain {
     public static final String MODID = "fursmp";
     public static final Logger LOGGER = LogUtils.getLogger();
+    public static NextFurAPI FUR_API;
+    public static String CLIENT_TOKEN;
 
     public FwMain(IEventBus modEventBus, ModContainer modContainer) {
-        modContainer.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC); // Client
-        modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC); // Server
+        CLIENT_TOKEN = System.getProperty("net.nextfur.fwc.authtoken");
+
+        modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
 
         modEventBus.addListener(FwModPackets::register);
 

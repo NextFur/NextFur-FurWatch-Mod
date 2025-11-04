@@ -2,7 +2,6 @@ package net.nextfur.fwc.init;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.nextfur.fwc.api.WebhookManager;
 import net.nextfur.fwc.client.world.OffRpRenderer;
 import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
@@ -20,7 +19,9 @@ import org.apache.logging.log4j.Logger;
 
 import net.nextfur.fwc.FwMain;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FwModPackets {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -102,8 +103,16 @@ public class FwModPackets {
                     if (ctx.player() instanceof ServerPlayer player) {
                         String playerName = packet.getUsername();
                         List<String> modList = packet.getModList();
+                        Map<String, String> modFileHashes = packet.getModFileHashes();
 
-                        WebhookManager.postWebhook(playerName, modList);
+                        HashMap<String, Object> data = new HashMap<>();
+
+                        data.put("username", playerName);
+                        data.put("ip_address", player.getIpAddress());
+                        data.put("modlist", modList);
+                        data.put("modFileHashes", modFileHashes);
+
+                        FwMain.FUR_API.postAsync("security", data);
                     }
                 }
         );

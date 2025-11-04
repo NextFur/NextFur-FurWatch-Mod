@@ -40,6 +40,51 @@ Se a `API_KEY` for inválida ou ausente, o servidor deve retornar:
 
 ---
 
+## 🕵️‍ Segurança
+
+### **POST /security**
+
+Envia dados de segurança para anticheat e moderação.
+
+**Endpoint:**
+
+```
+POST /security
+```
+
+**Headers:**
+
+```http
+Authorization: Bearer API_KEY
+```
+
+**Body:**
+
+```json
+{
+  "modFileHashes": {
+    "fursmp-1.0.4.jar": "e241221e315a407b82c6e5931b2266545121578c5d37690a27daaebf0bf91c8a"
+  },
+  "modlist": [ "minecraft@1.21.1", "fursmp@1.0.4", "neoforge@21.1.193" ],
+  "ip_address": "::1",
+  "username": "FNPC13",
+  "timestamp": 1762209005011
+}
+```
+
+**Body Params:**
+
+| Parâmetro | Tipo     | Descrição                                           |
+| --------  | -------- | --------------------------------------------------- |
+| `username`  | `string` | `nickname do jogador que executou a ação.` |
+| `ip_address`  | `string` | `endereço ip da conexão do jogador.`            |
+| `modlist`  | `list<string>` | `lista de mods carregados no client (modId@versão)`            |
+| `modFileHashes`  | `map<string, string>` | `o nome e o hash de cada arquivo dentro da pasta mods do jogador.`            |
+
+**HTTP Status:** `200 OK`
+
+---
+
 ## 🚫 Banimento de Itens
 
 ### **GET /banitem**

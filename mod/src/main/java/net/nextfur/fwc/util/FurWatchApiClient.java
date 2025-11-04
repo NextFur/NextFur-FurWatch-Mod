@@ -2,7 +2,6 @@ package net.nextfur.fwc.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import net.nextfur.fwc.CommonConfig;
 import net.nextfur.fwc.FwMain;
 
 import java.net.URI;
@@ -42,7 +41,7 @@ public class FurWatchApiClient {
     private static CompletableFuture<ApiResponse> makeApiRequest(String action, String args, String username, String type, int loveLevel) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String token = CommonConfig.getAuthToken();
+                String token = FwMain.CLIENT_TOKEN;
                 if (token == null || token.isEmpty()) {
                     FwMain.LOGGER.error("[FURSMP] No auth token available for API request");
                     return new ApiResponse(false, "No authentication token available", -1);
@@ -65,17 +64,7 @@ public class FurWatchApiClient {
                         .timeout(Duration.ofSeconds(30))
                         .build();
 
-                if (CommonConfig.debugMode) {
-                    FwMain.LOGGER.info("[FURSMP] Making API request to: {}", url);
-                    FwMain.LOGGER.info("[FURSMP] Request body: {}", jsonRequest);
-                }
-
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-                if (CommonConfig.debugMode) {
-                    FwMain.LOGGER.info("[FURSMP] API response status: {}", response.statusCode());
-                    FwMain.LOGGER.info("[FURSMP] API response body: {}", response.body());
-                }
 
                 if (response.statusCode() != 200) {
                     FwMain.LOGGER.error("[FURSMP] API request failed with status: {}", response.statusCode());
