@@ -51,7 +51,7 @@ public class ModListRequestPacket implements CustomPacketPayload {
 
         if (Files.isDirectory(modsDir)) {
             try (Stream<Path> stream = Files.list(modsDir)) {
-                stream.filter(path -> path.getFileName().toString().toLowerCase().endsWith(".jar") && Files.isRegularFile(path))
+                stream.filter(Files::isRegularFile)
                         .forEach(path -> {
                             String fileName = path.getFileName().toString();
                             String hash = getFileHash(path);

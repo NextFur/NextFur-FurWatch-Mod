@@ -24,18 +24,20 @@ public class ServerAuthHandler {
         LOGGER.info("Requisicao de login recebida de " + packetUser+ "...");
 
         PlayerAuthenticator.authenticatePlayerAsync(packetUser, token)
-                .thenAccept(isAuthenticated -> {
+                .thenAccept(statusCode -> {
                     ctx.enqueueWork(() -> {
-                        if (isAuthenticated) {
-                            ctx.finishCurrentTask(AuthTaskPayload.TYPE);
-                            LOGGER.info("Login efetuado com sucesso para o jogador " + packetUser);
-                        } else {
+                        if(statusCode != 200) { // owo
                             ctx.disconnect(Component.literal(
-                                    ChatFormatting.RED + "[FURSMP] Falha no login - Tente novamente.\n" +
-                                            ChatFormatting.YELLOW + "! Caso este erro persista, abra um ticket em nosso Discord. !"
+                                    ChatFormatting.RED + "[FURSMP] Falha no login - tente novamente.\n" +
+                                            ChatFormatting.YELLOW + "! Caso este erro persista, abra um ticket em nosso Discord. !\n\n"+
+                                            ChatFormatting.GRAY + "0x" + statusCode
                             ));
                             LOGGER.info("Erro ao efetuar login para " + packetUser);
+                            return;
                         }
+
+                        LOGGER.info("Login efetuado com sucesso para o jogador " + packetUser);
+                        ctx.finishCurrentTask(AuthTaskPayload.TYPE);
                     });
                 });
     }
