@@ -1,9 +1,0 @@
-# Dados para autenticação staff no furguard
-FurGuard:
-  ApiKey: ""
-  ApiUrl: "https://api.nextfur.net/"
-
-# Nome do servidor lobby no seu velocity.toml
-Lobby-Server: "lobby"
-
-Config-Version: 1.0
