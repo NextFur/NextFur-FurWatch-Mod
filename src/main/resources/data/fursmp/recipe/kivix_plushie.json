@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SXS",
+    "RBR",
+    "YWY"
+  ],
+  "key": {
+    "S": { "item": "minecraft:black_dye" },
+    "X": { "item": "minecraft:redstone" },
+    "R": { "item": "minecraft:red_dye" },
+    "B": { "item": "minecraft:slime_ball" },
+    "Y": { "item": "minecraft:purple_dye" },
+    "W": { "item": "minecraft:black_wool" }
+  },
+  "result": {
+    "count": 1,
+    "id": "fursmp:kivix_plushie"
+  }
+}
