@@ -1,7 +1,6 @@
 package net.nextfur.fwc;
 
 import com.mojang.logging.LogUtils;
-import io.netty.util.internal.UnstableApi;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -19,10 +18,11 @@ public class FwMain {
     public static final String MODID = "fursmp";
     public static final Logger LOGGER = LogUtils.getLogger();
     public static NextFurAPI FUR_API;
-    public static String CLIENT_TOKEN;
+    public static String CLIENT_TOKEN, CLIENT_ID;
 
     public FwMain(IEventBus modEventBus, ModContainer modContainer) {
-        CLIENT_TOKEN = System.getProperty("net.nextfur.fwc.authtoken");
+        CLIENT_TOKEN = System.getProperty("net.nextfur.fwc.authtoken", "Invalid User Token");
+        CLIENT_ID = System.getProperty("net.nextfur.fwc.nextfurid", "Undefined");
 
         modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
 

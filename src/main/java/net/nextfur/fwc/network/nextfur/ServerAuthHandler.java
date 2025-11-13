@@ -14,6 +14,9 @@ public class ServerAuthHandler {
     public static void onAuthResponse(AuthResponsePacket packet, IPayloadContext ctx) {
         String packetUser = packet.getUsername();
         String token = packet.getToken();
+        String userId = packet.getNextId();
+
+        boolean DEBUG = true;
 
         if (!FMLEnvironment.dist.isDedicatedServer()) {
             LOGGER.info("Mundo singleplayer detectado, ignorando login...");
@@ -26,11 +29,13 @@ public class ServerAuthHandler {
         PlayerAuthenticator.authenticatePlayerAsync(packetUser, token)
                 .thenAccept(statusCode -> {
                     ctx.enqueueWork(() -> {
-                        if(statusCode != 200) { // owo
+                        int code = DEBUG ? 402 : statusCode;
+                        if(code != 200) { // owo
                             ctx.disconnect(Component.literal(
                                     ChatFormatting.RED + "[FURSMP] Falha no login - tente novamente.\n" +
                                             ChatFormatting.YELLOW + "! Caso este erro persista, abra um ticket em nosso Discord. !\n\n"+
-                                            ChatFormatting.GRAY + "0x" + statusCode
+                                            ChatFormatting.GRAY + "0x" + code + "\n\n"+
+                                            ChatFormatting.RED + "[ " + packetUser + " ] "+ChatFormatting.RESET + "-" + ChatFormatting.GOLD + " NextFurID: " + userId
                             ));
                             LOGGER.info("Erro ao efetuar login para " + packetUser);
                             return;
