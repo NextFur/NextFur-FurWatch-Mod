@@ -14,18 +14,21 @@ public class AuthResponsePacket implements CustomPacketPayload {
 
     private final String username;
     private final String token;
+    private final String nextId;
 
-    public AuthResponsePacket(String username, String token) {
+    public AuthResponsePacket(String username, String token, String nextId) {
         this.username = username;
         this.token = token;
+        this.nextId = nextId;
     }
 
     public static final StreamCodec<FriendlyByteBuf, AuthResponsePacket> STREAM_CODEC = StreamCodec.of(
             (buffer, packet) -> {
                 buffer.writeUtf(packet.username);
                 buffer.writeUtf(packet.token);
+                buffer.writeUtf(packet.nextId);
             },
-            buffer -> new AuthResponsePacket(buffer.readUtf(), buffer.readUtf())
+            buffer -> new AuthResponsePacket(buffer.readUtf(), buffer.readUtf(), buffer.readUtf())
     );
 
     @Override
@@ -40,6 +43,8 @@ public class AuthResponsePacket implements CustomPacketPayload {
     public String getToken() {
         return this.token;
     }
+
+    public String getNextId() { return this.nextId; }
 
     public static void handle(AuthResponsePacket packet, IPayloadContext context) {
         context.enqueueWork(() -> ServerAuthHandler.onAuthResponse(packet, context));
