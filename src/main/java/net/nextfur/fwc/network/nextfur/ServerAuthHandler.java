@@ -16,7 +16,7 @@ public class ServerAuthHandler {
         String token = packet.getToken();
         String userId = packet.getNextId();
 
-        boolean DEBUG = true;
+        boolean DEBUG = false;
 
         if (!FMLEnvironment.dist.isDedicatedServer()) {
             LOGGER.info("Mundo singleplayer detectado, ignorando login...");
