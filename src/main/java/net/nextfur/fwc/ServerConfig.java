@@ -23,7 +23,7 @@ public class ServerConfig {
     public static String api_key;
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event) {
+    static void onLoad(final ModConfigEvent.Loading event) {
         if (event.getConfig().getSpec() == ServerConfig.SPEC) {
             login_url = LOGIN_URL.get();
             api_url = NEXTFUR_API_URL.get();
