@@ -25,7 +25,6 @@ public class FwMain {
         CLIENT_ID = System.getProperty("net.nextfur.fwc.nextfurid", "Undefined");
 
         modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
-
         modEventBus.addListener(FwModPackets::register);
 
         FwModParticles.PARTICLES.register(modEventBus);
