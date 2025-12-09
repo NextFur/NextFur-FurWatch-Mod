@@ -3,8 +3,8 @@
 ## 📋 Sumário
 
 * [Autenticação](#-autenticação)
+* [Segurança](#-segurança)
 * [Banimento de Itens](#-banimento-de-itens)
-
   * [GET /banitem](#get-banitem)
   * [POST /banitem (banir)](#post-banitem-banir)
   * [POST /banitem (desbanir)](#post-banitem-desbanir)

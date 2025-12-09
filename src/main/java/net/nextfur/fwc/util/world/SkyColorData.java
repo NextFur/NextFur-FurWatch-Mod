@@ -7,7 +7,6 @@ public class SkyColorData {
     public static int getCurrentFogColor() {
         return currentFogColor;
     }
-
     public static int getCurrentBoxColor() {
         return currentBoxColor;
     }
@@ -15,7 +14,6 @@ public class SkyColorData {
     public static void setCurrentFogColor(int color) {
         currentFogColor = color;
     }
-
     public static void setCurrentBoxColor(int color) {
         currentBoxColor = color;
     }

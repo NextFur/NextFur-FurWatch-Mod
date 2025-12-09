@@ -6,7 +6,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -29,18 +28,14 @@ public class FwModCreativeTabs {
 
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> FWC_ITEMS_TAB = CREATIVE_MODE_TABS.register("fursmp_items_tab",
             () -> CreativeModeTab.builder()
-                    .icon(() -> new ItemStack(FwModItems.SCRAP_METAL.get()))
+                    .icon(() -> new ItemStack(FwModItems.LUXMARK_COIN.get()))
                     .title(Component.translatable("creative.fursmp_items_tab"))
                     .displayItems((displayParameters, output) -> {
-
                         for (DeferredHolder<Item, ? extends Item> item : FwModItems.ITEMS.getEntries()) {
                             if (!(item.get() instanceof BlockItem)) {
                                 output.accept(item.get());
                             }
                         }
-
-                        //output.accept(PotionContents.createItemStack(FwModItems.MOON_GRAVITY_POTION.get(), FwModPotions.MOON_GRAVITY_POTION));
-                        //output.accept(PotionContents.createItemStack(FwModItems.MOON_GRAVITY_SPLASH_POTION.get(), FwModPotions.MOON_GRAVITY_POTION));
                     })
                     .build());
 }

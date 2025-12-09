@@ -13,6 +13,5 @@ public class FwModCommands {
         LoveLevelCommand.register(event.getServer().getCommands().getDispatcher()); //lovelevel
         TitleMenuCommand.register(event.getServer().getCommands().getDispatcher()); //tmenu
         SkyColorCommand.register(event.getServer().getCommands().getDispatcher()); //skycolor
-        GamerulesMenuCommand.register(event.getServer().getCommands().getDispatcher()); //debugmenu
     }
 }

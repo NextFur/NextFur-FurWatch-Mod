@@ -5,7 +5,6 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.nextfur.fwc.client.world.OffRpRenderer;
 import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
-import net.nextfur.fwc.network.gui.OpenGamerulesMenuPacket;
 import net.nextfur.fwc.network.gui.OpenSkyColorMenuPacket;
 import net.nextfur.fwc.network.gui.OpenTitleMenuPacket;
 import net.nextfur.fwc.network.nextfur.packets.AuthRequestPacket;
@@ -51,12 +50,6 @@ public class FwModPackets {
                         LOGGER.info("Recebido sincronizacao contendo "+packet.getOffRpPlayers().size() + " jogadores offrp");
                     });
                 }
-        );
-
-        registrar.playToClient(
-                OpenGamerulesMenuPacket.TYPE,
-                OpenGamerulesMenuPacket.STREAM_CODEC,
-                (packet, ctx) -> OpenGamerulesMenuPacket.handle(packet)
         );
 
         registrar.playToClient(

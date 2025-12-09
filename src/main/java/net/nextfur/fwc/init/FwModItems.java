@@ -27,6 +27,11 @@ public class FwModItems {
         () -> new SplashPotionItem(new Item.Properties())
     );
 
+    public static final DeferredItem<Item> LUXMARK_COIN = ITEMS.register(
+            "luxmark_coin",
+            () -> new Item(new Item.Properties())
+    );
+
     static {
         FwModBlocks.BLOCKS.getEntries().forEach(block -> {
             String blockName = block.getId().getPath();

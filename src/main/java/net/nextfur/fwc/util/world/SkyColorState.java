@@ -7,7 +7,6 @@ public class SkyColorState {
     public static void setFogColor(int newColor) {
         fogcolor = newColor;
     }
-
     public static void setBoxcolor(int newColor) {
         boxcolor = newColor;
     }
@@ -15,7 +14,6 @@ public class SkyColorState {
     public static int getFogColor() {
         return fogcolor;
     }
-
     public static int getBoxColor() {
         return boxcolor;
     }
