@@ -22,8 +22,6 @@ public class OffRpCommand {
         dispatcher.register(Commands.literal("offrp")
                 .executes((ctx) -> {
                     if (ctx.getSource().getEntity() instanceof ServerPlayer player) {
-                        if(!player.hasPermissions(2)) return 1;
-
                         execute(ctx);
                     } else {
                         ctx.getSource().sendFailure(Component.literal("Somente jogadores podem usar este comando."));
