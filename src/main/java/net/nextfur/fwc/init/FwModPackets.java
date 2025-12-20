@@ -47,7 +47,7 @@ public class FwModPackets {
                     ctx.enqueueWork(() -> {
                         OffRpRenderer.OFFRP_PLAYERS.clear();
                         OffRpRenderer.OFFRP_PLAYERS.addAll(packet.getOffRpPlayers());
-                        LOGGER.info("Recebido sincronizacao contendo "+packet.getOffRpPlayers().size() + " jogadores offrp");
+                        LOGGER.info("Sincronizando lista contendo "+packet.getOffRpPlayers().size() + " jogadores offrp");
                     });
                 }
         );
@@ -70,6 +70,7 @@ public class FwModPackets {
                 SkyColorChangePacket.STREAM_CODEC,
                 (packet, ctx) -> {
                     if (ctx.player() instanceof ServerPlayer player) {
+                        if(!ctx.player().hasPermissions(2)) return;
                         SkyColorChangePacket.handle(packet, player);
                     }
                 }

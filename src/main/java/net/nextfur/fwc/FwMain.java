@@ -32,7 +32,6 @@ public class FwMain {
         FwModItems.ITEMS.register(modEventBus);
         FwModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         FwModEffects.EFFECTS.register(modEventBus);
-        FwModPotions.POTIONS.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
 

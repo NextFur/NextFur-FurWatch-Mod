@@ -78,14 +78,25 @@ public class OffRpRenderer {
         int j = (int)(f * 255.0F) << 24;
         float f1 = (float)(-font.width(text) / 2);
 
+        boolean flag = !player.isDiscrete(); // Obsoleto, deixei pra caso eu invente algo deposi
 
-        boolean flag = !player.isDiscrete();
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 
         int packedLight = LightTexture.pack(15, 15);
 
-        instance.font.drawInBatch(text, f1, -offset, 553648127, false, matrixStack.last().pose(), bufferSource, flag ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, j, packedLight);
-        if (flag) instance.font.drawInBatch(text, f1, -offset, -1, false, matrixStack.last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, packedLight);
+
+        instance.font.drawInBatch(
+                text,
+                f1,
+                -offset,
+                553648127,
+                false,
+                matrixStack.last().pose(),
+                bufferSource,
+                Font.DisplayMode.NORMAL,
+                j,
+                packedLight
+        );
 
         matrixStack.popPose();
     }

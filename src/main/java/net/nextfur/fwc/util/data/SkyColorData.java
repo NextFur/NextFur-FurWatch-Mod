@@ -1,4 +1,4 @@
-package net.nextfur.fwc.util.world;
+package net.nextfur.fwc.util.data;
 
 public class SkyColorData {
     private static int currentFogColor = -1; // -1 = default

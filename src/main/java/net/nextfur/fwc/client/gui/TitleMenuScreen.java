@@ -33,10 +33,10 @@ public class TitleMenuScreen extends Screen {
         targetBox = new EditBox(this.font, centerX - boxWidth / 2, centerY - 10, boxWidth, boxHeight, Component.literal("Alvo"));
         colorBox = new EditBox(this.font, centerX - boxWidth / 2, centerY + 20, boxWidth, boxHeight, Component.literal("Cor (#RRGGBB)"));
 
-        textBox.setMaxLength(200); // ;3
+        textBox.setMaxLength(200);
         subtitleBox.setMaxLength(200);
         targetBox.setMaxLength(32);
-        colorBox.setMaxLength(7); // #123456
+        colorBox.setMaxLength(7);
 
         textBox.setHint(Component.literal("Titulo *"));
         subtitleBox.setHint(Component.literal("Subtitulo (Opcional)"));
@@ -44,22 +44,19 @@ public class TitleMenuScreen extends Screen {
         colorBox.setHint(Component.literal("Cor"));
 
         targetBox.setValue("@a");
-        colorBox.setValue("#FFFFFF"); // Branquinhu
-
-        previewButton = Button.builder(Component.literal(ChatFormatting.GREEN + "Preview"), b -> previewTitle())
-                .pos(centerX - 110, centerY + 60).size(100, 20).build();
+        colorBox.setValue("#FFFFFF");
 
         sendButton = Button.builder(Component.literal(ChatFormatting.GOLD + "Enviar"), b -> sendTitle())
-                .pos(centerX + 10, centerY + 60).size(100, 20).build();
+                .pos(centerX - 110, centerY + 60).size(100, 20).build();
 
         cancelButton = Button.builder(Component.literal(ChatFormatting.RED + "Cancelar"), b -> onClose())
                 .pos(centerX - 50, centerY + 90).size(100, 20).build();
+
 
         addRenderableWidget(textBox);
         addRenderableWidget(subtitleBox);
         addRenderableWidget(targetBox);
         addRenderableWidget(colorBox);
-        addRenderableWidget(previewButton);
         addRenderableWidget(sendButton);
         addRenderableWidget(cancelButton);
     }
@@ -80,19 +77,6 @@ public class TitleMenuScreen extends Screen {
 
                 gui.fill(x1, y1, x2, y2, col);
             } catch (Exception ignored) {}
-        }
-    }
-
-    private void previewTitle() {
-        Minecraft mc = Minecraft.getInstance();
-        String text = textBox.getValue();
-        String subtitle = subtitleBox.getValue();
-        String target = "@p"; // preview
-        String color = colorBox.getValue();
-
-        mc.player.connection.sendCommand(String.format("title %s title {\"text\":\"%s\",\"color\":\"%s\"}", target, text, color));
-        if (!subtitle.isEmpty()) {
-            mc.player.connection.sendCommand(String.format("title %s subtitle {\"text\":\"%s\"}", target, subtitle));
         }
     }
 

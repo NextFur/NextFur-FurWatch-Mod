@@ -17,16 +17,6 @@ public class FwModItems {
         () -> new Item(new Item.Properties())
     );
 
-    public static final DeferredItem<Item> MOON_GRAVITY_POTION = ITEMS.register(
-        "moon_gravity_potion",
-        () -> new PotionItem(new Item.Properties())
-    ); 
-    
-    public static final DeferredItem<Item> MOON_GRAVITY_SPLASH_POTION = ITEMS.register(
-        "moon_gravity_splash_potion",
-        () -> new SplashPotionItem(new Item.Properties())
-    );
-
     public static final DeferredItem<Item> LUXMARK_COIN = ITEMS.register(
             "luxmark_coin",
             () -> new Item(new Item.Properties())

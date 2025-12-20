@@ -13,7 +13,8 @@ public class SkyColorCommand {
         dispatcher.register(Commands.literal("skycolor")
                 .executes(ctx -> {
                     if (ctx.getSource().getEntity() instanceof ServerPlayer player) {
-                        if(!player.hasPermissions(2)) return 1; // only staff
+                        if(!player.hasPermissions(2)) return 1;
+
                         openClientMenu(player);
                     } else {
                         ctx.getSource().sendFailure(Component.literal("Somente jogadores podem usar este comando."));

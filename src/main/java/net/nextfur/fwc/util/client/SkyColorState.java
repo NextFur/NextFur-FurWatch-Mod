@@ -1,4 +1,4 @@
-package net.nextfur.fwc.util.world;
+package net.nextfur.fwc.util.client;
 
 public class SkyColorState {
     private static int fogcolor = -1; // -1 = default
@@ -14,6 +14,7 @@ public class SkyColorState {
     public static int getFogColor() {
         return fogcolor;
     }
+
     public static int getBoxColor() {
         return boxcolor;
     }

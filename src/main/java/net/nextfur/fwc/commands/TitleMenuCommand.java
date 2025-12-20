@@ -13,6 +13,8 @@ public class TitleMenuCommand {
         dispatcher.register(Commands.literal("tmenu")
                 .executes(ctx -> {
                     if (ctx.getSource().getEntity() instanceof ServerPlayer player) {
+                        if(!player.hasPermissions(2)) return 1;
+
                         openClientMenu(player);
                     } else {
                         ctx.getSource().sendFailure(Component.literal("Somente jogadores podem usar este comando."));

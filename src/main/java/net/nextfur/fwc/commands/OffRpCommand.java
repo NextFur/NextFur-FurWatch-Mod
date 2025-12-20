@@ -20,8 +20,14 @@ public class OffRpCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("offrp")
-                .executes((context) -> {
-                    execute(context);
+                .executes((ctx) -> {
+                    if (ctx.getSource().getEntity() instanceof ServerPlayer player) {
+                        if(!player.hasPermissions(2)) return 1;
+
+                        execute(ctx);
+                    } else {
+                        ctx.getSource().sendFailure(Component.literal("Somente jogadores podem usar este comando."));
+                    }
                     return 1;
                 }));
     }
@@ -34,10 +40,10 @@ public class OffRpCommand {
 
         if (activeHolograms.contains(playerUUID)) {
             activeHolograms.remove(playerUUID);
-            player.sendSystemMessage(Component.literal("[FURSMP] | Voce saiu do modo OFFRP"));
+            player.sendSystemMessage(Component.literal("[FURSMP] | Voce saiu do modo OFF-RP"));
         } else {
             activeHolograms.add(playerUUID);
-            player.sendSystemMessage(Component.literal("[FURSMP] | Voce entrou no modo OFFRP"));
+            player.sendSystemMessage(Component.literal("[FURSMP] | Voce entrou no modo OFF-RP"));
         }
 
         for(ServerPlayer p : player.getServer().getPlayerList().getPlayers()) {

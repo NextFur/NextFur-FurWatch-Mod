@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.nextfur.fwc.util.world.SkyColorState;
+import net.nextfur.fwc.util.client.SkyColorState;
 
 public class CustomSkyRenderer {
     @SubscribeEvent
@@ -13,7 +13,7 @@ public class CustomSkyRenderer {
         if (level == null) return;
 
         int color = SkyColorState.getFogColor();
-        if(color == -1) return; // default color
+        if(color == -1) return;
 
         float r = ((color >> 16) & 0xFF) / 255f;
         float g = ((color >> 8) & 0xFF) / 255f;

@@ -10,7 +10,6 @@ public class FwModCommands {
 
     public static void register(ServerStartingEvent event) {
         OffRpCommand.register(event.getServer().getCommands().getDispatcher()); //offrp
-        LoveLevelCommand.register(event.getServer().getCommands().getDispatcher()); //lovelevel
         TitleMenuCommand.register(event.getServer().getCommands().getDispatcher()); //tmenu
         SkyColorCommand.register(event.getServer().getCommands().getDispatcher()); //skycolor
     }
