@@ -6,6 +6,7 @@ import net.nextfur.fwc.client.world.OffRpRenderer;
 import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
 import net.nextfur.fwc.network.gui.OpenSkyColorMenuPacket;
+import net.nextfur.fwc.network.gui.OpenSoundMenuPacket;
 import net.nextfur.fwc.network.gui.OpenTitleMenuPacket;
 import net.nextfur.fwc.network.nextfur.packets.AuthRequestPacket;
 import net.nextfur.fwc.network.nextfur.packets.AuthResponsePacket;
@@ -56,6 +57,12 @@ public class FwModPackets {
                 OpenTitleMenuPacket.TYPE,
                 OpenTitleMenuPacket.STREAM_CODEC,
                 (packet, ctx) -> OpenTitleMenuPacket.handle(packet)
+        );
+
+        registrar.playToClient(
+                OpenSoundMenuPacket.TYPE,
+                OpenSoundMenuPacket.STREAM_CODEC,
+                (packet, ctx) -> OpenSoundMenuPacket.handle(packet)
         );
 
         registrar.playToClient(

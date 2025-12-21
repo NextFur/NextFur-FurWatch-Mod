@@ -19,7 +19,7 @@ public class SyncClientData {
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             PacketDistributor.sendToPlayer(player, new SkyColorSyncPacket(SkyColorData.getCurrentFogColor(), SkyColorData.getCurrentBoxColor()));
-            PacketDistributor.sendToPlayer(player, new OffRpSyncPacket(OffRpCommand.activeHolograms));
+            PacketDistributor.sendToPlayer(player, new OffRpSyncPacket(OffRpCommand.offrp));
 
             if (player.getServer() != null && player.getServer().isDedicatedServer()) {
                 PacketDistributor.sendToPlayer(player, new ModListRequestPacket());

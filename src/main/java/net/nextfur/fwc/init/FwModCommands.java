@@ -1,5 +1,7 @@
 package net.nextfur.fwc.init;
 
+import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.nextfur.fwc.commands.*;
 import org.apache.logging.log4j.LogManager;
@@ -9,8 +11,11 @@ public class FwModCommands {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void register(ServerStartingEvent event) {
-        OffRpCommand.register(event.getServer().getCommands().getDispatcher()); //offrp
-        TitleMenuCommand.register(event.getServer().getCommands().getDispatcher()); //tmenu
-        SkyColorCommand.register(event.getServer().getCommands().getDispatcher()); //skycolor
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getServer().getCommands().getDispatcher();
+
+        OffRpCommand.register(dispatcher);      // offrp
+        TitleMenuCommand.register(dispatcher);  // tmenu
+        SkyColorCommand.register(dispatcher);   // skycolor
+        SoundMenuCommand.register(dispatcher);  // soundmenu
     }
 }

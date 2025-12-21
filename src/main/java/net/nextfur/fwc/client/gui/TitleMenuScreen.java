@@ -13,7 +13,6 @@ public class TitleMenuScreen extends Screen {
     private EditBox targetBox;
     private EditBox colorBox;
     private EditBox subtitleBox;
-    private Button previewButton;
     private Button sendButton;
     private Button cancelButton;
 

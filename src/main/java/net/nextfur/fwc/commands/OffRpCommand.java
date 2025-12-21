@@ -16,7 +16,7 @@ import net.nextfur.fwc.network.world.OffRpSyncPacket;
 import java.util.*;
 
 public class OffRpCommand {
-    public static final List<UUID> activeHolograms = new ArrayList<>();
+    public static final List<UUID> offrp = new ArrayList<>();
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("offrp")
@@ -36,16 +36,16 @@ public class OffRpCommand {
         ServerPlayer player = context.getSource().getPlayer();
         UUID playerUUID = player.getUUID();
 
-        if (activeHolograms.contains(playerUUID)) {
-            activeHolograms.remove(playerUUID);
+        if (offrp.contains(playerUUID)) {
+            offrp.remove(playerUUID);
             player.sendSystemMessage(Component.literal("[FURSMP] | Voce saiu do modo OFF-RP"));
         } else {
-            activeHolograms.add(playerUUID);
+            offrp.add(playerUUID);
             player.sendSystemMessage(Component.literal("[FURSMP] | Voce entrou no modo OFF-RP"));
         }
 
         for(ServerPlayer p : player.getServer().getPlayerList().getPlayers()) {
-            PacketDistributor.sendToPlayer(p, new OffRpSyncPacket(activeHolograms));
+            PacketDistributor.sendToPlayer(p, new OffRpSyncPacket(offrp));
         }
     }
 }

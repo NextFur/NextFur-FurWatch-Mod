@@ -74,7 +74,6 @@ public class ModListRequestPacket implements CustomPacketPayload {
     @OnlyIn(Dist.CLIENT)
     private static String getFileHash(Path path) {
         try (InputStream is = Files.newInputStream(path)) {
-            // SHA-256 (mais seguro) | MD5 (mais rápido)
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] buffer = new byte[8192];
             int bytesRead;
