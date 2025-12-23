@@ -14,6 +14,7 @@ import net.nextfur.fwc.network.world.OffRpSyncPacket;
 import net.nextfur.fwc.network.world.SkyColorChangePacket;
 import net.nextfur.fwc.network.world.SkyColorSyncPacket;
 
+import net.nextfur.fwc.network.world.SoundControlPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,6 +70,12 @@ public class FwModPackets {
                 OpenSkyColorMenuPacket.TYPE,
                 OpenSkyColorMenuPacket.STREAM_CODEC,
                 (packet, ctx) -> OpenSkyColorMenuPacket.handle(packet)
+        );
+
+        registrar.playBidirectional(
+                SoundControlPacket.TYPE,
+                SoundControlPacket.STREAM_CODEC,
+                SoundControlPacket::handle
         );
 
         // Cliente -> Servidor

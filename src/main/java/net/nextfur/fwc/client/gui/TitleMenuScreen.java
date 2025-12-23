@@ -101,6 +101,7 @@ public class TitleMenuScreen extends Screen {
 
     @Override
     public void onClose() {
+        super.onClose();
         Minecraft.getInstance().setScreen(null);
     }
 }

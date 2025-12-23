@@ -1,6 +1,7 @@
 package net.nextfur.fwc.client.gui;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -57,7 +58,6 @@ public class SkyColorMenuScreen extends Screen {
         super.render(gui, mouseX, mouseY, partialTick);
         gui.drawCenteredString(this.font, ChatFormatting.LIGHT_PURPLE + "FurSMP - SkyColor", this.width / 2, this.height / 2 - 100, 0xFFFFFF);
 
-        // Preview SkyBox color
         String boxVal = colorBox.getValue();
         if (boxVal.startsWith("#") && boxVal.length() == 7) {
             try {
@@ -70,7 +70,6 @@ public class SkyColorMenuScreen extends Screen {
             } catch (Exception ignored) {}
         }
 
-        // Preview Fog color
         String fogVal = colorFog.getValue();
         if (fogVal.startsWith("#") && fogVal.length() == 7) {
             try {
@@ -113,4 +112,10 @@ public class SkyColorMenuScreen extends Screen {
         this.onClose();
     }
 
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        Minecraft.getInstance().setScreen(null);
+    }
 }
