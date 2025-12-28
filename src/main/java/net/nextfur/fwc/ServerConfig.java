@@ -7,7 +7,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.nextfur.fwc.api.NextFurAPI;
 
-
 @EventBusSubscriber(modid = FwMain.MODID)
 public class ServerConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();

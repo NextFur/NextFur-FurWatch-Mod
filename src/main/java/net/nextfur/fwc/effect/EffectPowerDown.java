@@ -11,9 +11,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.nextfur.fwc.FwMain;
 
 public class EffectPowerDown extends MobEffect {
-    private int lastDuration = -1;
-    private int firstDuration = -1;
-
     public EffectPowerDown() {
         super(MobEffectCategory.HARMFUL, 0x000000);
         this.addAttributeModifier(

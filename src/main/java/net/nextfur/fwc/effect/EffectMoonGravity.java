@@ -9,9 +9,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.nextfur.fwc.FwMain;
 
 public class EffectMoonGravity extends MobEffect {
-    private int lastDuration = -1;
-    private int firstDuration = -1;
-
     public EffectMoonGravity() {
         super(MobEffectCategory.BENEFICIAL, 0xAAAAFF);
         this.addAttributeModifier(

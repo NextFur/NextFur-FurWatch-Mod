@@ -4,19 +4,15 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.Display.TextDisplay;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.nextfur.fwc.network.world.OffRpSyncPacket;
 
 import java.util.*;
 
 public class OffRpCommand {
-    public static final List<UUID> offrp = new ArrayList<>();
+    public static final Set<UUID> offrp = new HashSet<>();
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("offrp")
@@ -44,8 +40,10 @@ public class OffRpCommand {
             player.sendSystemMessage(Component.literal("[FURSMP] | Voce entrou no modo OFF-RP"));
         }
 
-        for(ServerPlayer p : player.getServer().getPlayerList().getPlayers()) {
-            PacketDistributor.sendToPlayer(p, new OffRpSyncPacket(offrp));
-        }
+        syncAll();
+    }
+
+    public static void syncAll() {
+        PacketDistributor.sendToAllPlayers(new OffRpSyncPacket(new ArrayList<>(offrp)));
     }
 }

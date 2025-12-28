@@ -9,7 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.nextfur.fwc.FwMain; // Assumindo que você tem um LOGGER aqui
+import net.nextfur.fwc.FwMain;
 
 import java.io.IOException;
 import java.io.InputStream;
