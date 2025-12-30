@@ -1,8 +1,7 @@
 package net.nextfur.fwc.api;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import net.nextfur.fwc.FwMain; // Importe o FwMain para usar o LOGGER
+import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.ServerConfig;
 
 import java.net.URI;
@@ -11,7 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture; // Importação necessária
+import java.util.concurrent.CompletableFuture;
 
 public class PlayerAuthenticator {
     private static final HttpClient CLIENT = HttpClient.newBuilder()

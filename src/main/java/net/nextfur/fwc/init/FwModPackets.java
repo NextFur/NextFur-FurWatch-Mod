@@ -3,8 +3,11 @@ package net.nextfur.fwc.init;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.nextfur.fwc.client.world.OffRpRenderer;
+import net.nextfur.fwc.network.common.RollDiceC2SPacket;
+import net.nextfur.fwc.network.common.RollDiceS2CPacket;
 import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
+import net.nextfur.fwc.network.gui.OpenDiceRollMenuPacket;
 import net.nextfur.fwc.network.gui.OpenSkyColorMenuPacket;
 import net.nextfur.fwc.network.gui.OpenSoundMenuPacket;
 import net.nextfur.fwc.network.gui.OpenTitleMenuPacket;
@@ -29,6 +32,28 @@ public class FwModPackets {
 
     public static void register(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar(FwMain.MODID).versioned("1.0");
+
+        registrar.playToClient(
+                OpenDiceRollMenuPacket.TYPE,
+                OpenDiceRollMenuPacket.STREAM_CODEC,
+                (packet, ctx) -> OpenDiceRollMenuPacket.handle(packet)
+        );
+
+        registrar.playToClient(
+                RollDiceS2CPacket.TYPE,
+                RollDiceS2CPacket.STREAM_CODEC,
+                RollDiceS2CPacket::handle
+        );
+
+        registrar.playToServer(
+                RollDiceC2SPacket.TYPE,
+                RollDiceC2SPacket.STREAM_CODEC,
+                (packet, ctx) -> {
+                    if (ctx.player() instanceof ServerPlayer player) {
+                        RollDiceC2SPacket.handle(packet, player);
+                    }
+                }
+        );
 
         registrar.configurationToClient(
                 AuthRequestPacket.TYPE,
