@@ -11,10 +11,9 @@ import net.nextfur.fwc.network.gui.OpenTitleMenuPacket;
 public class TitleMenuCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("tmenu")
+                .requires(e -> e.hasPermission(2))
                 .executes(ctx -> {
                     if (ctx.getSource().getEntity() instanceof ServerPlayer player) {
-                        if(!player.hasPermissions(2)) return 1;
-
                         openClientMenu(player);
                     } else {
                         ctx.getSource().sendFailure(Component.literal("Somente jogadores podem usar este comando."));
