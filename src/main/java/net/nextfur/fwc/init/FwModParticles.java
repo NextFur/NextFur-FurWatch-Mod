@@ -16,4 +16,11 @@ public class FwModParticles {
             "emp_particle", () -> new SimpleParticleType(false)
     );
 
+    public static final Supplier<SimpleParticleType> SPURS_PARTICLE = PARTICLES.register(
+            "spurs_particle", () -> new SimpleParticleType(false)
+    );
+
+    public static final Supplier<SimpleParticleType> CARMESIM_SPURS_PARTICLE = PARTICLES.register(
+            "carmesim_spurs_particle", () -> new SimpleParticleType(false)
+    );
 }

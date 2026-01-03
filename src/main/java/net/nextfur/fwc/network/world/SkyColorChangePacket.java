@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.nextfur.fwc.FwMain;
-import net.nextfur.fwc.util.data.SkyColorData;
+import net.nextfur.fwc.util.data.SkyColorSavedData;
 
 public class SkyColorChangePacket implements CustomPacketPayload {
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FwMain.MODID, "skycolor_change");
@@ -37,8 +37,8 @@ public class SkyColorChangePacket implements CustomPacketPayload {
     public static void handle(SkyColorChangePacket packet, ServerPlayer sender) {
         if(!sender.hasPermissions(2)) return;
 
-        SkyColorData.setCurrentFogColor(packet.fogcolor);
-        SkyColorData.setCurrentBoxColor(packet.boxcolor);
+        SkyColorSavedData data = SkyColorSavedData.get(sender.serverLevel());
+        data.setColors(packet.fogcolor, packet.boxcolor);
 
         PacketDistributor.sendToAllPlayers(new SkyColorSyncPacket(packet.fogcolor, packet.boxcolor));
     }

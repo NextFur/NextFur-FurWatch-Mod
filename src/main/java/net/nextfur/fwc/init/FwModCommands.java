@@ -12,7 +12,6 @@ public class FwModCommands {
         OffRpCommand.register(dispatcher);          // offrp
         TitleMenuCommand.register(dispatcher);      // tmenu
         SkyColorCommand.register(dispatcher);       // skycolor
-        //SoundMenuCommand.register(dispatcher);    // soundmenu
         DiceRollMenuCommand.register(dispatcher);   // roll
     }
 }

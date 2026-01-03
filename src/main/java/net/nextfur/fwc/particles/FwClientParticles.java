@@ -13,6 +13,9 @@ public class FwClientParticles {
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(FwModParticles.EMP_PARTICLE.get(), ParticleProviderEMP::new);
+
+        event.registerSpriteSet(FwModParticles.CARMESIM_SPURS_PARTICLE.get(), ParticleProviderSpurs::new);
+        event.registerSpriteSet(FwModParticles.SPURS_PARTICLE.get(), ParticleProviderSpurs::new);
     }
 
 }

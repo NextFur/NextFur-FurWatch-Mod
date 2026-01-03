@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -50,18 +51,31 @@ public class RollDiceS2CPacket implements CustomPacketPayload {
     @OnlyIn(Dist.CLIENT)
     private static void handleClient(String formula, int result, int entityId) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) return;
+        if (mc.level == null || mc.player == null) return;
 
         Entity entity = mc.level.getEntity(entityId);
+        boolean isMe = (entity != null && entity.getId() == mc.player.getId());
         String name = (entity != null) ? entity.getName().getString() : "Desconhecido";
+        String displayName = isMe ? "Voce" : name;
 
-        Component msg = Component.literal("[Roll] ").withStyle(ChatFormatting.GOLD)
+        float pitch = 0.9f + (float)(Math.random() * 0.2f);
+        mc.player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.3f, pitch);
+
+        Component chatMsg = Component.empty()
                 .append(Component.literal(name).withStyle(ChatFormatting.YELLOW))
-                .append(Component.literal(" - ").withStyle(ChatFormatting.WHITE))
-                .append(Component.literal(formula).withStyle(ChatFormatting.RED))
-                .append(Component.literal(" : ").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(" rolou ").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal("[" + formula + "]").withStyle(ChatFormatting.AQUA))
+                .append(Component.literal(" >> ").withStyle(ChatFormatting.DARK_GRAY)) // Setas ASCII seguras
                 .append(Component.literal(String.valueOf(result)).withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD));
 
-        mc.player.displayClientMessage(msg, false);
+        mc.player.displayClientMessage(chatMsg, false);
+
+        ChatFormatting resultColor = result > 0 ? ChatFormatting.GREEN : ChatFormatting.RED;
+
+        Component actionBarMsg = Component.literal(displayName + ": ").withStyle(ChatFormatting.GOLD)
+                .append(Component.literal(String.valueOf(result)).withStyle(resultColor, ChatFormatting.BOLD))
+                .append(Component.literal(" (" + formula + ")").withStyle(ChatFormatting.GRAY));
+
+        mc.player.displayClientMessage(actionBarMsg, true);
     }
 }

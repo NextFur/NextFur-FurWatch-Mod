@@ -1,6 +1,8 @@
 package net.nextfur.fwc.network.common;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -53,9 +55,21 @@ public class RollDiceC2SPacket implements CustomPacketPayload {
             );
         }
 
-        for (ServerPlayer p : sender.serverLevel().players()) {
-            if (p.hasPermissions(2) && p.distanceToSqr(sender) < 64 * 64) {
-                // chat log to prevent private & public roll cheats
+        String visibilityText = packet.isPrivate ? "Privada" : "Publica";
+
+        Component adminlogmsg = Component.literal("[Logs] Roll ").withStyle(ChatFormatting.GRAY)
+                .append(Component.literal("[" + visibilityText + "] ").withStyle(ChatFormatting.WHITE))
+                .append(Component.literal(sender.getName().getString()).withStyle(ChatFormatting.YELLOW))
+                .append(Component.literal(" rolou ").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(packet.formula).withStyle(ChatFormatting.WHITE))
+                .append(Component.literal(" -> ").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(String.valueOf(result)).withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+
+        if (sender.getServer() != null) {
+            for (ServerPlayer p : sender.getServer().getPlayerList().getPlayers()) {
+                if (p.hasPermissions(2)) {
+                    p.sendSystemMessage(adminlogmsg);
+                }
             }
         }
     }

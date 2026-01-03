@@ -9,7 +9,6 @@ import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
 import net.nextfur.fwc.network.gui.OpenDiceRollMenuPacket;
 import net.nextfur.fwc.network.gui.OpenSkyColorMenuPacket;
-import net.nextfur.fwc.network.gui.OpenSoundMenuPacket;
 import net.nextfur.fwc.network.gui.OpenTitleMenuPacket;
 import net.nextfur.fwc.network.nextfur.packets.AuthRequestPacket;
 import net.nextfur.fwc.network.nextfur.packets.AuthResponsePacket;
@@ -17,7 +16,6 @@ import net.nextfur.fwc.network.world.OffRpSyncPacket;
 import net.nextfur.fwc.network.world.SkyColorChangePacket;
 import net.nextfur.fwc.network.world.SkyColorSyncPacket;
 
-import net.nextfur.fwc.network.world.SoundControlPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,21 +84,9 @@ public class FwModPackets {
         );
 
         registrar.playToClient(
-                OpenSoundMenuPacket.TYPE,
-                OpenSoundMenuPacket.STREAM_CODEC,
-                (packet, ctx) -> OpenSoundMenuPacket.handle(packet)
-        );
-
-        registrar.playToClient(
                 OpenSkyColorMenuPacket.TYPE,
                 OpenSkyColorMenuPacket.STREAM_CODEC,
                 (packet, ctx) -> OpenSkyColorMenuPacket.handle(packet)
-        );
-
-        registrar.playBidirectional(
-                SoundControlPacket.TYPE,
-                SoundControlPacket.STREAM_CODEC,
-                SoundControlPacket::handle
         );
 
         // Cliente -> Servidor
