@@ -1,26 +1,27 @@
 {
     "flashlight_toggle": {
-        "subtitle": "subtitle.fwc.flashlight_toggle",
+        "subtitle": "subtitle.fursmp.flashlight_toggle",
         "sounds": [
-        "fwc:flashlight_toggle"
+            "fursmp:flashlight_click1",
+            "fursmp:flashlight_click2"
         ]
     },
     "flashlight_click": {
-        "subtitle": "subtitle.fwc.flashlight_click",
+        "subtitle": "subtitle.fursmp.flashlight_click",
         "sounds": [
-        "fwc:flashlight_click"
+            "fursmp:flashlight_click"
         ]
     },
     "lights_on": {
-        "subtitle": "subtitle.fwc.lights_on",
+        "subtitle": "subtitle.fursmp.lights_on",
         "sounds": [
-        "fwc:lights_on"
+            "fursmp:lights_on"
         ]
     },
     "lights_off": {
-        "subtitle": "subtitle.fwc.lights_off",
+        "subtitle": "subtitle.fursmp.lights_off",
         "sounds": [
-        "fwc:lights_off"
+            "fursmp:lights_off"
         ]
     }
 }
