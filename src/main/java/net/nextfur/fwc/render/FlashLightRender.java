@@ -1,14 +1,15 @@
 package net.nextfur.fwc.render;
 
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.light.data.PointLightData;
+import foundry.veil.api.client.render.light.data.AreaLightData;
 import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
-import foundry.veil.api.client.render.rendertype.layer.RenderTypeLayer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.nextfur.fwc.util.client.PlayerComponent;
+import org.joml.Quaternionf;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,11 +19,13 @@ import java.util.UUID;
 
 public class FlashLightRender {
 
-    private static final Class<?> VEIL_RENDER_LAYER = RenderTypeLayer.class;
-    private static final float LIGHT_RADIUS = 10.0F;
-    private static final float LIGHT_BRIGHTNESS = 1.2F;
+    private static final float LIGHT_BRIGHTNESS = 1.0F;
+    private static final float LIGHT_DISTANCE = 24.0F;
+    private static final float LIGHT_ANGLE = 0.26F;
+    private static final float LIGHT_FILL_ANGLE = (float) Math.toRadians(85.0F);
+    private static final float ORIENTATION_SMOOTHING = 0.35F;
     private static final double MAX_DISTANCE_SQR = 96.0D * 96.0D;
-    private static final Map<UUID, LightRenderHandle<PointLightData>> ACTIVE_LIGHTS = new HashMap<>();
+    private static final Map<UUID, PlayerAreaLights> ACTIVE_LIGHTS = new HashMap<>();
 
     private FlashLightRender() {
     }
@@ -34,6 +37,10 @@ public class FlashLightRender {
 
         Minecraft client = Minecraft.getInstance();
         if (client.level == null || client.player == null) {
+            clearAllLights();
+            return;
+        }
+        if (VeilRenderSystem.renderer() == null || VeilRenderSystem.renderer().getLightRenderer() == null) {
             clearAllLights();
             return;
         }
@@ -49,30 +56,42 @@ public class FlashLightRender {
             if (!player.isAlive() || player.isRemoved()) {
                 continue;
             }
+            if (player.isSpectator() && !playerId.equals(client.player.getUUID())) {
+                continue;
+            }
             if (client.player.distanceToSqr(player) > MAX_DISTANCE_SQR) {
                 continue;
             }
 
-            Vec3 look = player.getViewVector(partialTick);
-            Vec3 lightPos = player.getEyePosition(partialTick).add(look.scale(0.45D));
+                Vec3 lightPos = player.getEyePosition(partialTick);
+                Quaternionf targetRotation = createOrientation(player, partialTick);
 
-            LightRenderHandle<PointLightData> handle = ACTIVE_LIGHTS.get(playerId);
-            if (handle == null || !handle.isValid()) {
-                PointLightData light = new PointLightData()
-                        .setColor(1.0F, 0.95F, 0.82F)
-                        .setBrightness(LIGHT_BRIGHTNESS)
-                        .setRadius(LIGHT_RADIUS)
-                        .setOcclusionEnabled(false)
-                        .setPosition(lightPos.x, lightPos.y, lightPos.z);
+                PlayerAreaLights playerLights = ACTIVE_LIGHTS.get(playerId);
+                if (playerLights == null || !playerLights.isValid()) {
+                AreaLightData fillLight = new AreaLightData()
+                    .setBrightness(LIGHT_BRIGHTNESS * 0.75F)
+                    .setDistance(LIGHT_DISTANCE)
+                    .setAngle(LIGHT_FILL_ANGLE)
+                    .setSize(0.0F, 0.0F)
+                    .setOcclusionEnabled(false);
+                fillLight.getPosition().set(lightPos.x, lightPos.y, lightPos.z);
+                fillLight.getOrientation().set(targetRotation);
 
-                handle = VeilRenderSystem.renderer().getLightRenderer().addLight(light);
-                ACTIVE_LIGHTS.put(playerId, handle);
+                AreaLightData coneLight = new AreaLightData()
+                    .setBrightness(LIGHT_BRIGHTNESS)
+                    .setDistance(LIGHT_DISTANCE)
+                    .setAngle(LIGHT_ANGLE)
+                    .setSize(0.0F, 0.0F)
+                    .setOcclusionEnabled(false);
+                coneLight.getPosition().set(lightPos.x, lightPos.y, lightPos.z);
+                coneLight.getOrientation().set(targetRotation);
+
+                LightRenderHandle<AreaLightData> fillHandle = VeilRenderSystem.renderer().getLightRenderer().addLight(fillLight);
+                LightRenderHandle<AreaLightData> coneHandle = VeilRenderSystem.renderer().getLightRenderer().addLight(coneLight);
+                ACTIVE_LIGHTS.put(playerId, new PlayerAreaLights(fillHandle, coneHandle));
             } else {
-                PointLightData light = handle.getLightData();
-                light.setPosition(lightPos.x, lightPos.y, lightPos.z);
-                light.setBrightness(LIGHT_BRIGHTNESS);
-                light.setRadius(LIGHT_RADIUS);
-                handle.markDirty();
+                updateLight(playerLights.fillHandle(), lightPos, targetRotation);
+                updateLight(playerLights.coneHandle(), lightPos, targetRotation);
             }
 
             visibleActiveLights.add(playerId);
@@ -86,17 +105,51 @@ public class FlashLightRender {
         toRemove.removeAll(keep);
 
         for (UUID uuid : toRemove) {
-            LightRenderHandle<PointLightData> handle = ACTIVE_LIGHTS.remove(uuid);
-            if (handle != null) {
-                handle.free();
+            PlayerAreaLights lights = ACTIVE_LIGHTS.remove(uuid);
+            if (lights != null) {
+                lights.free();
             }
         }
     }
 
     public static void clearAllLights() {
-        for (LightRenderHandle<PointLightData> handle : ACTIVE_LIGHTS.values()) {
-            handle.free();
+        for (PlayerAreaLights lights : ACTIVE_LIGHTS.values()) {
+            lights.free();
         }
         ACTIVE_LIGHTS.clear();
+    }
+
+    private static Quaternionf createOrientation(Player player, float partialTick) {
+        float yaw = (float) Math.toRadians(Mth.rotLerp(partialTick, player.yRotO, player.getYRot()));
+        float pitch = (float) -Math.toRadians(Mth.lerp(partialTick, player.xRotO, player.getXRot()));
+        return new Quaternionf().rotateXYZ(pitch, yaw, 0.0F);
+    }
+
+    private static void updateLight(LightRenderHandle<AreaLightData> handle, Vec3 lightPos, Quaternionf targetRotation) {
+        AreaLightData light = handle.getLightData();
+        light.getOrientation().slerp(targetRotation, ORIENTATION_SMOOTHING);
+        light.getPosition().set(lightPos.x, lightPos.y, lightPos.z);
+        handle.markDirty();
+    }
+
+    private record PlayerAreaLights(
+            LightRenderHandle<AreaLightData> fillHandle,
+            LightRenderHandle<AreaLightData> coneHandle
+    ) {
+        private boolean isValid() {
+            return this.fillHandle != null
+                    && this.fillHandle.isValid()
+                    && this.coneHandle != null
+                    && this.coneHandle.isValid();
+        }
+
+        private void free() {
+            if (this.fillHandle != null) {
+                this.fillHandle.free();
+            }
+            if (this.coneHandle != null) {
+                this.coneHandle.free();
+            }
+        }
     }
 }
