@@ -1,0 +1,26 @@
+{
+    "flashlight_toggle": {
+        "subtitle": "subtitle.fwc.flashlight_toggle",
+        "sounds": [
+        "fwc:flashlight_toggle"
+        ]
+    },
+    "flashlight_click": {
+        "subtitle": "subtitle.fwc.flashlight_click",
+        "sounds": [
+        "fwc:flashlight_click"
+        ]
+    },
+    "lights_on": {
+        "subtitle": "subtitle.fwc.lights_on",
+        "sounds": [
+        "fwc:lights_on"
+        ]
+    },
+    "lights_off": {
+        "subtitle": "subtitle.fwc.lights_off",
+        "sounds": [
+        "fwc:lights_off"
+        ]
+    }
+}

@@ -54,5 +54,8 @@
   "block.fursmp.kivix_plushie.description": "§d§lpoposa peta :3",
 
   "block.fursmp.deeppedra_plushie": "§dDeep§6slat3 Plushie",
-  "block.fursmp.deeppedra_plushie.description": "§d§lNão é femboy!"
+  "block.fursmp.deeppedra_plushie.description": "§d§lNão é femboy!",
+
+  "key.categories.fursmp": "FurSMP Controls",
+  "key.fursmp.flashlight": "Liga e desliga a lanterna"
 }

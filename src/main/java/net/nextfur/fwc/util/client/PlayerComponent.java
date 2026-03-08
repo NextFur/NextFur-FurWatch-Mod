@@ -3,6 +3,7 @@ package net.nextfur.fwc.util.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -12,6 +13,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.network.common.FlashlightToggleC2SPacket;
+import net.nextfur.fwc.init.FwModSounds;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
@@ -65,6 +67,10 @@ public class PlayerComponent {
 		if (enabled) {
 			FLASHLIGHT_STATES.put(playerId, true);
 			return;
+		}
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level != null) {
+			mc.getSoundManager().play(SimpleSoundInstance.forUI(FwModSounds.FLASHLIGHT_TOGGLE.get(), 1.0F));
 		}
 		FLASHLIGHT_STATES.remove(playerId);
 	}

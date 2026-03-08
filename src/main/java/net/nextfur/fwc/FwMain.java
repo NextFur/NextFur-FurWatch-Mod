@@ -28,6 +28,7 @@ public class FwMain {
         modEventBus.addListener(FwModPackets::register);
 
         FwModParticles.PARTICLES.register(modEventBus);
+        FwModSounds.SOUND_EVENTS.register(modEventBus);
         FwModBlocks.BLOCKS.register(modEventBus);
         FwModItems.ITEMS.register(modEventBus);
         FwModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
