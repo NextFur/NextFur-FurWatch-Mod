@@ -27,4 +27,8 @@
 
 > `npm run build` para compilação oficial do plugin e mod;
 
+## Dependencias de Terceiros
+* O mod inclui o Veil empacotado via `jarJar` no artefato final (`META-INF/jarjar`).
+* Licenca do Veil: GNU (consulte o repositorio oficial do Veil para os termos e a versao exata da licenca).
+
 ### Feito com 💖 pela [NextFUR](https://nextfur.net) para o 🦊 [FurSMP](https://fursmp.com)
