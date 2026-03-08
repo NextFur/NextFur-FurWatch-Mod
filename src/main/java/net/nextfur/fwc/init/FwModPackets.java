@@ -5,6 +5,9 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.nextfur.fwc.client.world.OffRpRenderer;
 import net.nextfur.fwc.network.common.RollDiceC2SPacket;
 import net.nextfur.fwc.network.common.RollDiceS2CPacket;
+import net.nextfur.fwc.network.common.FlashlightBulkSyncS2CPacket;
+import net.nextfur.fwc.network.common.FlashlightStateS2CPacket;
+import net.nextfur.fwc.network.common.FlashlightToggleC2SPacket;
 import net.nextfur.fwc.network.furguard.ModListPacket;
 import net.nextfur.fwc.network.furguard.ModListRequestPacket;
 import net.nextfur.fwc.network.gui.OpenDiceRollMenuPacket;
@@ -43,12 +46,34 @@ public class FwModPackets {
                 RollDiceS2CPacket::handle
         );
 
+        registrar.playToClient(
+                FlashlightStateS2CPacket.TYPE,
+                FlashlightStateS2CPacket.STREAM_CODEC,
+                FlashlightStateS2CPacket::handle
+        );
+
+        registrar.playToClient(
+                FlashlightBulkSyncS2CPacket.TYPE,
+                FlashlightBulkSyncS2CPacket.STREAM_CODEC,
+                FlashlightBulkSyncS2CPacket::handle
+        );
+
         registrar.playToServer(
                 RollDiceC2SPacket.TYPE,
                 RollDiceC2SPacket.STREAM_CODEC,
                 (packet, ctx) -> {
                     if (ctx.player() instanceof ServerPlayer player) {
                         RollDiceC2SPacket.handle(packet, player);
+                    }
+                }
+        );
+
+        registrar.playToServer(
+                FlashlightToggleC2SPacket.TYPE,
+                FlashlightToggleC2SPacket.STREAM_CODEC,
+                (packet, ctx) -> {
+                    if (ctx.player() instanceof ServerPlayer player) {
+                        FlashlightToggleC2SPacket.handle(packet, player);
                     }
                 }
         );

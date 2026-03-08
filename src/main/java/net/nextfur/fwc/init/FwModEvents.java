@@ -7,6 +7,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.nextfur.fwc.client.gui.OffRpScreenRenderer;
 import net.nextfur.fwc.client.world.CustomSkyRenderer;
 import net.nextfur.fwc.client.world.OffRpRenderer;
+import net.nextfur.fwc.render.FlashLightRender;
+import net.nextfur.fwc.util.client.PlayerComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,6 +28,9 @@ public class FwModEvents {
             eventBus.register(new CustomSkyRenderer());
             eventBus.addListener(OffRpRenderer::onRenderWorld);
             eventBus.addListener(OffRpScreenRenderer::onRenderOverlay);
+            eventBus.addListener(PlayerComponent::onClientTick);
+            eventBus.addListener(PlayerComponent::onClientLogout);
+            eventBus.addListener(FlashLightRender::onRenderWorld);
         }
     }
 
