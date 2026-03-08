@@ -64,13 +64,13 @@ public class PlayerComponent {
 	}
 
 	public static void setPlayerFlashlight(UUID playerId, boolean enabled) {
-		if (enabled) {
-			FLASHLIGHT_STATES.put(playerId, true);
-			return;
-		}
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level != null) {
 			mc.getSoundManager().play(SimpleSoundInstance.forUI(FwModSounds.FLASHLIGHT_TOGGLE.get(), 1.0F));
+		}
+		if (enabled) {
+			FLASHLIGHT_STATES.put(playerId, true);
+			return;
 		}
 		FLASHLIGHT_STATES.remove(playerId);
 	}

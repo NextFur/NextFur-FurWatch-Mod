@@ -18,10 +18,10 @@
             "fursmp:lights_on"
         ]
     },
-    "lights_off": {
-        "subtitle": "subtitle.fursmp.lights_off",
+    "lights_out": {
+        "subtitle": "subtitle.fursmp.lights_out",
         "sounds": [
-            "fursmp:lights_off"
+            "fursmp:lights_out"
         ]
     }
 }
