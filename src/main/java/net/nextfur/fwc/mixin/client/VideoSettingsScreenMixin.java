@@ -16,7 +16,7 @@ public abstract class VideoSettingsScreenMixin extends Screen {
         super(title);
     }
 
-    @Inject(method = "init", at = @At("TAIL"))
+    @Inject(method = "addOptions", at = @At("TAIL"))
     private void furwatch$addButton(CallbackInfo callbackInfo) {
         this.addRenderableWidget(Button.builder(Component.translatable("button.fursmp.open_shader_settings"), button ->
                 Minecraft.getInstance().setScreen(new FurWatchShaderOptionsScreen((Screen) (Object) this)))
