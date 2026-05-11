@@ -12,6 +12,9 @@ public final class FurWatchShaderState {
     private static float localLightBrightness;
     private static String preset = "balanced";
     private static boolean occlusionEnabled;
+    private static boolean postEffectsEnabled;
+    private static float postEffectsStrength;
+    private static float blurStrength;
 
     private FurWatchShaderState() {
     }
@@ -25,6 +28,9 @@ public final class FurWatchShaderState {
         localLightBrightness = (float) ClientConfig.getLocalLightBrightness();
         preset = ClientConfig.getLightingPreset();
         occlusionEnabled = ClientConfig.isOcclusionEnabled();
+        postEffectsEnabled = ClientConfig.isPostEffectsEnabled();
+        postEffectsStrength = (float) ClientConfig.getPostEffectsStrength();
+        blurStrength = (float) ClientConfig.getBlurStrength();
     }
 
     public static void reset() {
@@ -36,6 +42,9 @@ public final class FurWatchShaderState {
         localLightBrightness = 1.0F;
         preset = "balanced";
         occlusionEnabled = false;
+        postEffectsEnabled = false;
+        postEffectsStrength = 0.65F;
+        blurStrength = 0.15F;
     }
 
     public static boolean isEnabled() {
@@ -106,6 +115,30 @@ public final class FurWatchShaderState {
         FurWatchShaderState.occlusionEnabled = occlusionEnabled;
     }
 
+    public static boolean isPostEffectsEnabled() {
+        return postEffectsEnabled;
+    }
+
+    public static void setPostEffectsEnabled(boolean postEffectsEnabled) {
+        FurWatchShaderState.postEffectsEnabled = postEffectsEnabled;
+    }
+
+    public static float getPostEffectsStrength() {
+        return postEffectsStrength;
+    }
+
+    public static void setPostEffectsStrength(float postEffectsStrength) {
+        FurWatchShaderState.postEffectsStrength = Mth.clamp(postEffectsStrength, 0.0F, 1.5F);
+    }
+
+    public static float getBlurStrength() {
+        return blurStrength;
+    }
+
+    public static void setBlurStrength(float blurStrength) {
+        FurWatchShaderState.blurStrength = Mth.clamp(blurStrength, 0.0F, 1.0F);
+    }
+
     public static void persist() {
         ClientConfig.setLightingEnabled(enabled);
         ClientConfig.setGlobalIntensity(globalIntensity);
@@ -115,6 +148,9 @@ public final class FurWatchShaderState {
         ClientConfig.setLocalLightBrightness(localLightBrightness);
         ClientConfig.setLightingPreset(preset);
         ClientConfig.setOcclusionEnabled(occlusionEnabled);
+        ClientConfig.setPostEffectsEnabled(postEffectsEnabled);
+        ClientConfig.setPostEffectsStrength(postEffectsStrength);
+        ClientConfig.setBlurStrength(blurStrength);
         ClientConfig.save();
     }
 
@@ -127,6 +163,9 @@ public final class FurWatchShaderState {
         localLightBrightness = 1.0F;
         preset = "balanced";
         occlusionEnabled = false;
+        postEffectsEnabled = false;
+        postEffectsStrength = 0.65F;
+        blurStrength = 0.15F;
     }
 
     public static int getPresetIndex() {

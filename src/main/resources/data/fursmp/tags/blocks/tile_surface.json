@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "fursmp:white_tiles_block",
+    "fursmp:red_tiles_block",
+    "fursmp:white_dirty_tiles_block",
+    "fursmp:smaller_white_tiles_block",
+    "fursmp:smaller_white_tiles_dirty_block",
+    "fursmp:smaller_white_tiles_really_dirty_block"
+  ]
+}

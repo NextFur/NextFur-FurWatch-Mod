@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "fursmp:sanded_stone_block",
+    "fursmp:sanded_deepslate_block",
+    "fursmp:light_stone_bricks"
+  ]
+}

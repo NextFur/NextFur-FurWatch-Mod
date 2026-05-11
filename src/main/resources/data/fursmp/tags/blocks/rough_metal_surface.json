@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "fursmp:black_steel_plating",
+    "fursmp:gray_steel_plating",
+    "fursmp:light_gray_steel_plating",
+    "fursmp:blue_steel_plating",
+    "fursmp:green_steel_plating",
+    "fursmp:red_steel_plating",
+    "fursmp:yellow_steel_plating"
+  ]
+}

@@ -58,10 +58,10 @@
 
   "key.categories.fursmp": "FurSMP Controls",
   "key.fursmp.flashlight": "Liga e desliga a lanterna",
-  "key.fursmp.shader_toggle": "Toggle FurWatch lighting",
-  "button.fursmp.open_shader_settings": "FurWatch",
-  "screen.fursmp.shader_options": "FurWatch Lighting",
-  "screen.fursmp.shader_options.subtitle": "Raster lighting controls powered by Veil",
+  "key.fursmp.shader_toggle": "Toggle FurWatch shaders",
+  "button.fursmp.open_shader_settings": "FurWatch ;3",
+  "screen.fursmp.shader_options": "FurWatch Shaders",
+  "screen.fursmp.shader_options.subtitle": "powered by Veil",
   "option.fursmp.shader.enabled": "Lighting: %s",
   "option.fursmp.shader.global_intensity": "Global Intensity: %s",
   "option.fursmp.shader.ambient_intensity": "Ambient Strength: %s",
@@ -72,5 +72,8 @@
   "option.fursmp.shader.preset.balanced": "Balanced",
   "option.fursmp.shader.preset.warm": "Warm",
   "option.fursmp.shader.preset.moonlit": "Moonlit",
-  "option.fursmp.shader.occlusion": "Occlusion: %s"
+  "option.fursmp.shader.occlusion": "Occlusion: %s",
+  "option.fursmp.shader.post_effects": "Legacy Effects: %s",
+  "option.fursmp.shader.post_strength": "Legacy Effect Strength: %s",
+  "option.fursmp.shader.blur_strength": "Visual Blur: %s"
 }

@@ -20,6 +20,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
     private Button enabledButton;
     private Button presetButton;
     private Button occlusionButton;
+    private Button postEffectsButton;
 
     public FurWatchShaderOptionsScreen(Screen parent) {
         super(Component.translatable("screen.fursmp.shader_options"));
@@ -29,7 +30,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
     @Override
     protected void init() {
         int left = this.width / 2 - 110;
-        int top = this.height / 2 - 108;
+        int top = this.height / 2 - 132;
         int rowHeight = 22;
         int fullWidth = 220;
         int halfWidth = 106;
@@ -92,14 +93,36 @@ public class FurWatchShaderOptionsScreen extends Screen {
             refreshLabels();
         }).pos(left, top + rowHeight * 7).size(fullWidth, 20).build());
 
+        this.postEffectsButton = this.addRenderableWidget(Button.builder(toggleLabel("option.fursmp.shader.post_effects", FurWatchShaderState.isPostEffectsEnabled()), button -> {
+            FurWatchShaderState.setPostEffectsEnabled(!FurWatchShaderState.isPostEffectsEnabled());
+            FurWatchShaderState.persist();
+            refreshLabels();
+        }).pos(left, top + rowHeight * 8).size(fullWidth, 20).build());
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 9, fullWidth, 20,
+            "option.fursmp.shader.post_strength",
+            0.0D,
+            1.5D,
+            FurWatchShaderState::getPostEffectsStrength,
+            value -> FurWatchShaderState.setPostEffectsStrength((float) value),
+            "%.2f"));
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 10, fullWidth, 20,
+            "option.fursmp.shader.blur_strength",
+            0.0D,
+            1.0D,
+            FurWatchShaderState::getBlurStrength,
+            value -> FurWatchShaderState.setBlurStrength((float) value),
+            "%.2f"));
+
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
-                .pos(left, top + rowHeight * 9).size(halfWidth, 20).build());
+            .pos(left, top + rowHeight * 12).size(halfWidth, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("controls.reset"), button -> {
             FurWatchShaderState.restoreDefaults();
             FurWatchShaderState.persist();
             this.rebuildWidgets();
-        }).pos(left + halfWidth + 8, top + rowHeight * 9).size(halfWidth, 20).build());
+        }).pos(left + halfWidth + 8, top + rowHeight * 12).size(halfWidth, 20).build());
     }
 
     @Override
@@ -131,6 +154,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
         this.enabledButton.setMessage(enabledLabel());
         this.presetButton.setMessage(presetLabel());
         this.occlusionButton.setMessage(toggleLabel("option.fursmp.shader.occlusion", FurWatchShaderState.isOcclusionEnabled()));
+        this.postEffectsButton.setMessage(toggleLabel("option.fursmp.shader.post_effects", FurWatchShaderState.isPostEffectsEnabled()));
     }
 
     private Component enabledLabel() {

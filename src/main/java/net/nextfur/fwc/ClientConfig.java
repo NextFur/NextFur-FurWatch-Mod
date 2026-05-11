@@ -34,6 +34,15 @@ public class ClientConfig {
     private static final ModConfigSpec.BooleanValue OCCLUSION_ENABLED = BUILDER
         .comment("Enables occlusion for FurWatch scene lights.")
         .define("lighting.occlusion", false);
+    private static final ModConfigSpec.BooleanValue POST_EFFECTS_ENABLED = BUILDER
+        .comment("Enables FurWatch post effects after lighting has been composited.")
+        .define("effects.enabled", false);
+    private static final ModConfigSpec.DoubleValue POST_EFFECTS_STRENGTH = BUILDER
+        .comment("Strength multiplier for FurWatch legacy post effects.")
+        .defineInRange("effects.strength", 0.65D, 0.0D, 1.5D);
+    private static final ModConfigSpec.DoubleValue BLUR_STRENGTH = BUILDER
+        .comment("Blend amount for FurWatch visual blur.")
+        .defineInRange("effects.blur", 0.15D, 0.0D, 1.0D);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
@@ -45,6 +54,9 @@ public class ClientConfig {
     private static double localLightBrightness;
     private static String lightingPreset = "balanced";
     private static boolean occlusionEnabled;
+    private static boolean postEffectsEnabled;
+    private static double postEffectsStrength;
+    private static double blurStrength;
 
     private ClientConfig() {
     }
@@ -63,6 +75,9 @@ public class ClientConfig {
         localLightBrightness = LOCAL_LIGHT_BRIGHTNESS.get();
         lightingPreset = LIGHTING_PRESET.get();
         occlusionEnabled = OCCLUSION_ENABLED.get();
+        postEffectsEnabled = POST_EFFECTS_ENABLED.get();
+        postEffectsStrength = POST_EFFECTS_STRENGTH.get();
+        blurStrength = BLUR_STRENGTH.get();
         FurWatchShaderState.reloadFromConfig();
     }
 
@@ -103,6 +118,18 @@ public class ClientConfig {
         return occlusionEnabled;
     }
 
+    public static boolean isPostEffectsEnabled() {
+        return postEffectsEnabled;
+    }
+
+    public static double getPostEffectsStrength() {
+        return postEffectsStrength;
+    }
+
+    public static double getBlurStrength() {
+        return blurStrength;
+    }
+
     public static void setLightingEnabled(boolean enabled) {
         LIGHTING_ENABLED.set(enabled);
         lightingEnabled = enabled;
@@ -141,6 +168,21 @@ public class ClientConfig {
     public static void setOcclusionEnabled(boolean enabled) {
         OCCLUSION_ENABLED.set(enabled);
         occlusionEnabled = enabled;
+    }
+
+    public static void setPostEffectsEnabled(boolean enabled) {
+        POST_EFFECTS_ENABLED.set(enabled);
+        postEffectsEnabled = enabled;
+    }
+
+    public static void setPostEffectsStrength(double strength) {
+        POST_EFFECTS_STRENGTH.set(strength);
+        postEffectsStrength = strength;
+    }
+
+    public static void setBlurStrength(double strength) {
+        BLUR_STRENGTH.set(strength);
+        blurStrength = strength;
     }
 
     public static void save() {
