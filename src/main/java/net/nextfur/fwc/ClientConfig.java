@@ -43,6 +43,21 @@ public class ClientConfig {
     private static final ModConfigSpec.DoubleValue BLUR_STRENGTH = BUILDER
         .comment("Blend amount for FurWatch visual blur.")
         .defineInRange("effects.blur", 0.15D, 0.0D, 1.0D);
+    private static final ModConfigSpec.DoubleValue REFLECTION_STRENGTH = BUILDER
+        .comment("Screen-space reflection and highlight strength.")
+        .defineInRange("effects.reflectionStrength", 0.45D, 0.0D, 1.5D);
+    private static final ModConfigSpec.DoubleValue REFLECTION_SOFTNESS = BUILDER
+        .comment("Softness of FurWatch reflective highlights.")
+        .defineInRange("effects.reflectionSoftness", 0.35D, 0.0D, 1.0D);
+    private static final ModConfigSpec.DoubleValue FOG_INTENSITY = BUILDER
+        .comment("Intensity of FurWatch atmospheric fog.")
+        .defineInRange("effects.fogIntensity", 0.65D, 0.0D, 1.5D);
+    private static final ModConfigSpec.DoubleValue FOG_VARIATION = BUILDER
+        .comment("Noise variation amount for FurWatch atmospheric fog.")
+        .defineInRange("effects.fogVariation", 0.3D, 0.0D, 1.0D);
+    private static final ModConfigSpec.DoubleValue LIGHT_VARIATION = BUILDER
+        .comment("Variation amount applied to FurWatch local light sources and composite lighting.")
+        .defineInRange("effects.lightVariation", 0.35D, 0.0D, 1.0D);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
@@ -57,6 +72,11 @@ public class ClientConfig {
     private static boolean postEffectsEnabled;
     private static double postEffectsStrength;
     private static double blurStrength;
+    private static double reflectionStrength;
+    private static double reflectionSoftness;
+    private static double fogIntensity;
+    private static double fogVariation;
+    private static double lightVariation;
 
     private ClientConfig() {
     }
@@ -78,6 +98,11 @@ public class ClientConfig {
         postEffectsEnabled = POST_EFFECTS_ENABLED.get();
         postEffectsStrength = POST_EFFECTS_STRENGTH.get();
         blurStrength = BLUR_STRENGTH.get();
+        reflectionStrength = REFLECTION_STRENGTH.get();
+        reflectionSoftness = REFLECTION_SOFTNESS.get();
+        fogIntensity = FOG_INTENSITY.get();
+        fogVariation = FOG_VARIATION.get();
+        lightVariation = LIGHT_VARIATION.get();
         FurWatchShaderState.reloadFromConfig();
     }
 
@@ -128,6 +153,26 @@ public class ClientConfig {
 
     public static double getBlurStrength() {
         return blurStrength;
+    }
+
+    public static double getReflectionStrength() {
+        return reflectionStrength;
+    }
+
+    public static double getReflectionSoftness() {
+        return reflectionSoftness;
+    }
+
+    public static double getFogIntensity() {
+        return fogIntensity;
+    }
+
+    public static double getFogVariation() {
+        return fogVariation;
+    }
+
+    public static double getLightVariation() {
+        return lightVariation;
     }
 
     public static void setLightingEnabled(boolean enabled) {
@@ -183,6 +228,31 @@ public class ClientConfig {
     public static void setBlurStrength(double strength) {
         BLUR_STRENGTH.set(strength);
         blurStrength = strength;
+    }
+
+    public static void setReflectionStrength(double strength) {
+        REFLECTION_STRENGTH.set(strength);
+        reflectionStrength = strength;
+    }
+
+    public static void setReflectionSoftness(double softness) {
+        REFLECTION_SOFTNESS.set(softness);
+        reflectionSoftness = softness;
+    }
+
+    public static void setFogIntensity(double intensity) {
+        FOG_INTENSITY.set(intensity);
+        fogIntensity = intensity;
+    }
+
+    public static void setFogVariation(double variation) {
+        FOG_VARIATION.set(variation);
+        fogVariation = variation;
+    }
+
+    public static void setLightVariation(double variation) {
+        LIGHT_VARIATION.set(variation);
+        lightVariation = variation;
     }
 
     public static void save() {

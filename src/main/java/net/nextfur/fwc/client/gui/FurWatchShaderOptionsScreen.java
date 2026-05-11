@@ -30,7 +30,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
     @Override
     protected void init() {
         int left = this.width / 2 - 110;
-        int top = this.height / 2 - 132;
+        int top = this.height / 2 - 154;
         int rowHeight = 22;
         int fullWidth = 220;
         int halfWidth = 106;
@@ -115,14 +115,54 @@ public class FurWatchShaderOptionsScreen extends Screen {
             value -> FurWatchShaderState.setBlurStrength((float) value),
             "%.2f"));
 
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 11, halfWidth, 20,
+            "option.fursmp.shader.reflection_strength",
+            0.0D,
+            1.5D,
+            FurWatchShaderState::getReflectionStrength,
+            value -> FurWatchShaderState.setReflectionStrength((float) value),
+            "%.2f"));
+
+        this.addRenderableWidget(new LightingSlider(left + halfWidth + 8, top + rowHeight * 11, halfWidth, 20,
+            "option.fursmp.shader.reflection_softness",
+            0.0D,
+            1.0D,
+            FurWatchShaderState::getReflectionSoftness,
+            value -> FurWatchShaderState.setReflectionSoftness((float) value),
+            "%.2f"));
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 12, halfWidth, 20,
+            "option.fursmp.shader.fog_intensity",
+            0.0D,
+            1.5D,
+            FurWatchShaderState::getFogIntensity,
+            value -> FurWatchShaderState.setFogIntensity((float) value),
+            "%.2f"));
+
+        this.addRenderableWidget(new LightingSlider(left + halfWidth + 8, top + rowHeight * 12, halfWidth, 20,
+            "option.fursmp.shader.fog_variation",
+            0.0D,
+            1.0D,
+            FurWatchShaderState::getFogVariation,
+            value -> FurWatchShaderState.setFogVariation((float) value),
+            "%.2f"));
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 13, fullWidth, 20,
+            "option.fursmp.shader.light_variation",
+            0.0D,
+            1.0D,
+            FurWatchShaderState::getLightVariation,
+            value -> FurWatchShaderState.setLightVariation((float) value),
+            "%.2f"));
+
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
-            .pos(left, top + rowHeight * 12).size(halfWidth, 20).build());
+            .pos(left, top + rowHeight * 15).size(halfWidth, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("controls.reset"), button -> {
             FurWatchShaderState.restoreDefaults();
             FurWatchShaderState.persist();
             this.rebuildWidgets();
-        }).pos(left + halfWidth + 8, top + rowHeight * 12).size(halfWidth, 20).build());
+        }).pos(left + halfWidth + 8, top + rowHeight * 15).size(halfWidth, 20).build());
     }
 
     @Override

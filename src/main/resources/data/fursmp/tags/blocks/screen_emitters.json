@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "fursmp:animated_server_rack"
+    "fursmp:animated_server_rack",
+    "minecraft:beacon"
   ]
 }

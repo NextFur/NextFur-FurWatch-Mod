@@ -5,6 +5,9 @@
     "minecraft:wall_torch",
     "minecraft:lantern",
     "minecraft:redstone_lamp",
-    "minecraft:campfire"
+    "minecraft:campfire",
+    "minecraft:candle",
+    "minecraft:jack_o_lantern",
+    "minecraft:shroomlight"
   ]
 }

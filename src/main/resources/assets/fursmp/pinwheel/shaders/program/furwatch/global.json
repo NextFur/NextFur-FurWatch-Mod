@@ -1,4 +1,11 @@
 {
   "vertex": "veil:blit_screen",
-  "fragment": "fursmp:furwatch/global"
+  "fragment": "fursmp:furwatch/global",
+  "textures": {
+    "LightSampler": {
+      "type": "framebuffer",
+      "name": "veil:light"
+    },
+    "NormalSampler": "veil:dynamic_buffer/normal"
+  }
 }

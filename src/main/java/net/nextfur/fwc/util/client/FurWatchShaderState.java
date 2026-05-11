@@ -15,6 +15,11 @@ public final class FurWatchShaderState {
     private static boolean postEffectsEnabled;
     private static float postEffectsStrength;
     private static float blurStrength;
+    private static float reflectionStrength;
+    private static float reflectionSoftness;
+    private static float fogIntensity;
+    private static float fogVariation;
+    private static float lightVariation;
 
     private FurWatchShaderState() {
     }
@@ -31,6 +36,11 @@ public final class FurWatchShaderState {
         postEffectsEnabled = ClientConfig.isPostEffectsEnabled();
         postEffectsStrength = (float) ClientConfig.getPostEffectsStrength();
         blurStrength = (float) ClientConfig.getBlurStrength();
+        reflectionStrength = (float) ClientConfig.getReflectionStrength();
+        reflectionSoftness = (float) ClientConfig.getReflectionSoftness();
+        fogIntensity = (float) ClientConfig.getFogIntensity();
+        fogVariation = (float) ClientConfig.getFogVariation();
+        lightVariation = (float) ClientConfig.getLightVariation();
     }
 
     public static void reset() {
@@ -45,6 +55,11 @@ public final class FurWatchShaderState {
         postEffectsEnabled = false;
         postEffectsStrength = 0.65F;
         blurStrength = 0.15F;
+        reflectionStrength = 0.45F;
+        reflectionSoftness = 0.35F;
+        fogIntensity = 0.65F;
+        fogVariation = 0.3F;
+        lightVariation = 0.35F;
     }
 
     public static boolean isEnabled() {
@@ -139,6 +154,46 @@ public final class FurWatchShaderState {
         FurWatchShaderState.blurStrength = Mth.clamp(blurStrength, 0.0F, 1.0F);
     }
 
+    public static float getReflectionStrength() {
+        return reflectionStrength;
+    }
+
+    public static void setReflectionStrength(float reflectionStrength) {
+        FurWatchShaderState.reflectionStrength = Mth.clamp(reflectionStrength, 0.0F, 1.5F);
+    }
+
+    public static float getReflectionSoftness() {
+        return reflectionSoftness;
+    }
+
+    public static void setReflectionSoftness(float reflectionSoftness) {
+        FurWatchShaderState.reflectionSoftness = Mth.clamp(reflectionSoftness, 0.0F, 1.0F);
+    }
+
+    public static float getFogIntensity() {
+        return fogIntensity;
+    }
+
+    public static void setFogIntensity(float fogIntensity) {
+        FurWatchShaderState.fogIntensity = Mth.clamp(fogIntensity, 0.0F, 1.5F);
+    }
+
+    public static float getFogVariation() {
+        return fogVariation;
+    }
+
+    public static void setFogVariation(float fogVariation) {
+        FurWatchShaderState.fogVariation = Mth.clamp(fogVariation, 0.0F, 1.0F);
+    }
+
+    public static float getLightVariation() {
+        return lightVariation;
+    }
+
+    public static void setLightVariation(float lightVariation) {
+        FurWatchShaderState.lightVariation = Mth.clamp(lightVariation, 0.0F, 1.0F);
+    }
+
     public static void persist() {
         ClientConfig.setLightingEnabled(enabled);
         ClientConfig.setGlobalIntensity(globalIntensity);
@@ -151,6 +206,11 @@ public final class FurWatchShaderState {
         ClientConfig.setPostEffectsEnabled(postEffectsEnabled);
         ClientConfig.setPostEffectsStrength(postEffectsStrength);
         ClientConfig.setBlurStrength(blurStrength);
+        ClientConfig.setReflectionStrength(reflectionStrength);
+        ClientConfig.setReflectionSoftness(reflectionSoftness);
+        ClientConfig.setFogIntensity(fogIntensity);
+        ClientConfig.setFogVariation(fogVariation);
+        ClientConfig.setLightVariation(lightVariation);
         ClientConfig.save();
     }
 
@@ -166,6 +226,11 @@ public final class FurWatchShaderState {
         postEffectsEnabled = false;
         postEffectsStrength = 0.65F;
         blurStrength = 0.15F;
+        reflectionStrength = 0.45F;
+        reflectionSoftness = 0.35F;
+        fogIntensity = 0.65F;
+        fogVariation = 0.3F;
+        lightVariation = 0.35F;
     }
 
     public static int getPresetIndex() {

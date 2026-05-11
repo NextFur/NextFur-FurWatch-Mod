@@ -29,6 +29,8 @@ public final class FurWatchTaggedEmitterRender {
     private static final TagKey<Block> WARM_EMITTERS = blockTag("warm_emitters");
     private static final TagKey<Block> COLD_EMITTERS = blockTag("cold_emitters");
     private static final TagKey<Block> SCREEN_EMITTERS = blockTag("screen_emitters");
+    private static final TagKey<Block> AMBIENT_EMITTERS = blockTag("ambient_emitters");
+    private static final TagKey<Block> EMERGENCY_EMITTERS = blockTag("emergency_emitters");
     private static final int SCAN_INTERVAL_TICKS = 10;
     private static final int MAX_SCAN_RADIUS = 12;
     private static final Map<BlockPos, EmitterLight> ACTIVE_LIGHTS = new HashMap<>();
@@ -167,7 +169,7 @@ public final class FurWatchTaggedEmitterRender {
         Vec3 position = resolvePosition(pos, direction, profile.directional);
         Quaternionf rotation = rotationForDirection(new Vector3f(direction.getStepX(), direction.getStepY(), direction.getStepZ()));
         float distance = FurWatchShaderState.getLocalLightRadius() * profile.distanceMultiplier;
-        float brightness = FurWatchShaderState.getLocalLightBrightness() * profile.brightnessMultiplier;
+        float brightness = FurWatchShaderState.getLocalLightBrightness() * profile.brightnessMultiplier * animatedBrightness(pos, profile);
 
         AreaLightData light = handle.getLightData();
         light.setColor(profile.color.x, profile.color.y, profile.color.z);
@@ -206,6 +208,12 @@ public final class FurWatchTaggedEmitterRender {
         if (state.is(SCREEN_EMITTERS)) {
             return EmitterProfile.SCREEN;
         }
+        if (state.is(EMERGENCY_EMITTERS)) {
+            return EmitterProfile.EMERGENCY;
+        }
+        if (state.is(AMBIENT_EMITTERS)) {
+            return EmitterProfile.AMBIENT;
+        }
         if (state.is(COLD_EMITTERS)) {
             return EmitterProfile.COLD;
         }
@@ -219,6 +227,19 @@ public final class FurWatchTaggedEmitterRender {
         Vector3f normalized = new Vector3f(direction).normalize();
         Vector3f up = Math.abs(normalized.y) > 0.95F ? new Vector3f(0.0F, 0.0F, 1.0F) : new Vector3f(0.0F, 1.0F, 0.0F);
         return new Quaternionf().lookAlong(normalized.negate(), up);
+    }
+
+    private static float animatedBrightness(BlockPos pos, EmitterProfile profile) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.level == null || FurWatchShaderState.getLightVariation() <= 0.0F || profile.variationAmplitude <= 0.0F) {
+            return 1.0F;
+        }
+
+        float time = (client.level.getGameTime() + client.getTimer().getGameTimeDeltaPartialTick(true)) * profile.variationSpeed;
+        float seed = (pos.asLong() & 1023L) * 0.03125F;
+        float wave = (Mth.sin(time + seed) * 0.6F) + (Mth.cos((time * 0.73F) + seed * 1.71F) * 0.4F);
+        float variation = 1.0F + (wave * profile.variationAmplitude * FurWatchShaderState.getLightVariation());
+        return Mth.clamp(variation, 0.35F, 1.85F);
     }
 
     private static TagKey<Block> blockTag(String path) {
@@ -246,9 +267,11 @@ public final class FurWatchTaggedEmitterRender {
     }
 
     private static final class EmitterProfile {
-        private static final EmitterProfile WARM = new EmitterProfile(new Vector3f(1.0F, 0.78F, 0.52F), 0.95F, 0.55F, (float) Math.toRadians(82.0D), 0.45F, false);
-        private static final EmitterProfile COLD = new EmitterProfile(new Vector3f(0.52F, 0.74F, 1.0F), 0.9F, 0.6F, (float) Math.toRadians(82.0D), 0.45F, false);
-        private static final EmitterProfile SCREEN = new EmitterProfile(new Vector3f(0.42F, 0.86F, 1.0F), 1.15F, 0.75F, (float) Math.toRadians(58.0D), 0.8F, true);
+        private static final EmitterProfile WARM = new EmitterProfile(new Vector3f(1.0F, 0.78F, 0.52F), 0.95F, 0.55F, (float) Math.toRadians(82.0D), 0.45F, false, 0.08F, 0.09F);
+        private static final EmitterProfile COLD = new EmitterProfile(new Vector3f(0.52F, 0.74F, 1.0F), 0.9F, 0.6F, (float) Math.toRadians(82.0D), 0.45F, false, 0.05F, 0.07F);
+        private static final EmitterProfile SCREEN = new EmitterProfile(new Vector3f(0.42F, 0.86F, 1.0F), 1.15F, 0.75F, (float) Math.toRadians(58.0D), 0.8F, true, 0.14F, 0.11F);
+        private static final EmitterProfile AMBIENT = new EmitterProfile(new Vector3f(0.96F, 0.92F, 0.78F), 0.72F, 0.48F, (float) Math.toRadians(86.0D), 0.55F, false, 0.03F, 0.05F);
+        private static final EmitterProfile EMERGENCY = new EmitterProfile(new Vector3f(1.0F, 0.24F, 0.16F), 1.2F, 0.8F, (float) Math.toRadians(64.0D), 0.68F, true, 0.42F, 0.2F);
 
         private final Vector3f color;
         private final float brightnessMultiplier;
@@ -256,14 +279,18 @@ public final class FurWatchTaggedEmitterRender {
         private final float angle;
         private final float size;
         private final boolean directional;
+        private final float variationAmplitude;
+        private final float variationSpeed;
 
-        private EmitterProfile(Vector3f color, float brightnessMultiplier, float distanceMultiplier, float angle, float size, boolean directional) {
+        private EmitterProfile(Vector3f color, float brightnessMultiplier, float distanceMultiplier, float angle, float size, boolean directional, float variationAmplitude, float variationSpeed) {
             this.color = color;
             this.brightnessMultiplier = brightnessMultiplier;
             this.distanceMultiplier = distanceMultiplier;
             this.angle = angle;
             this.size = size;
             this.directional = directional;
+            this.variationAmplitude = variationAmplitude;
+            this.variationSpeed = variationSpeed;
         }
     }
 }

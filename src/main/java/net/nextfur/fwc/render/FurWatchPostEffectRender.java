@@ -28,7 +28,7 @@ public final class FurWatchPostEffectRender {
             clearEffects();
             return;
         }
-        if (!FurWatchShaderState.isEnabled() || !FurWatchShaderState.isPostEffectsEnabled()) {
+        if (!FurWatchShaderState.isEnabled()) {
             clearEffects();
             return;
         }
@@ -54,11 +54,16 @@ public final class FurWatchPostEffectRender {
 
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
         float time = (client.level.getGameTime() + partialTick) / 20.0F;
-        float strength = FurWatchShaderState.getPostEffectsStrength();
         boolean effectEnabled = FurWatchShaderState.isPostEffectsEnabled();
+        float legacyStrength = effectEnabled ? FurWatchShaderState.getPostEffectsStrength() : 0.0F;
 
-        shader.getUniformSafe("Intensity").setFloat(strength);
-        shader.getUniformSafe("BlurAmount").setFloat(FurWatchShaderState.getBlurStrength());
+        shader.getUniformSafe("Intensity").setFloat(legacyStrength);
+        shader.getUniformSafe("BlurAmount").setFloat(effectEnabled ? FurWatchShaderState.getBlurStrength() : 0.0F);
+        shader.getUniformSafe("ReflectionStrength").setFloat(FurWatchShaderState.getReflectionStrength());
+        shader.getUniformSafe("ReflectionSoftness").setFloat(FurWatchShaderState.getReflectionSoftness());
+        shader.getUniformSafe("FogIntensity").setFloat(FurWatchShaderState.getFogIntensity());
+        shader.getUniformSafe("FogVariation").setFloat(FurWatchShaderState.getFogVariation());
+        shader.getUniformSafe("LightVariation").setFloat(FurWatchShaderState.getLightVariation());
         shader.getUniformSafe("GameTime").setFloat(time);
         shader.getUniformSafe("PresetIndex").setInt(FurWatchShaderState.getPresetIndex());
         shader.getUniformSafe("FilmGrainEnabled").setInt(effectEnabled ? 1 : 0);
