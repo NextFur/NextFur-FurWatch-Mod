@@ -10,37 +10,41 @@ import net.nextfur.fwc.util.client.FurWatchShaderState;
 public class ClientConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    private static final ModConfigSpec.BooleanValue SHADER_ENABLED = BUILDER
-            .comment("Enables the FurWatch post-processing shader pipeline.")
-            .define("shader.enabled", false);
-    private static final ModConfigSpec.DoubleValue SHADER_INTENSITY = BUILDER
-            .comment("Global intensity multiplier for the FurWatch post-processing shader.")
-            .defineInRange("shader.intensity", 1.0D, 0.0D, 2.0D);
-    private static final ModConfigSpec.ConfigValue<String> SHADER_PRESET = BUILDER
-            .comment("Selected FurWatch shader preset.")
-            .define("shader.preset", "default");
-    private static final ModConfigSpec.BooleanValue FILM_GRAIN_ENABLED = BUILDER
-            .comment("Enables film grain in the FurWatch shader pipeline.")
-            .define("shader.effects.filmGrain", true);
-    private static final ModConfigSpec.BooleanValue VIGNETTE_ENABLED = BUILDER
-            .comment("Enables vignette in the FurWatch shader pipeline.")
-            .define("shader.effects.vignette", true);
-    private static final ModConfigSpec.BooleanValue SCANLINES_ENABLED = BUILDER
-            .comment("Enables scanlines in the FurWatch shader pipeline.")
-            .define("shader.effects.scanlines", true);
-    private static final ModConfigSpec.BooleanValue CHROMATIC_ABERRATION_ENABLED = BUILDER
-            .comment("Enables chromatic aberration in the FurWatch shader pipeline.")
-            .define("shader.effects.chromaticAberration", true);
+    private static final ModConfigSpec.BooleanValue LIGHTING_ENABLED = BUILDER
+        .comment("Enables the FurWatch raster lighting pipeline.")
+        .define("lighting.enabled", false);
+    private static final ModConfigSpec.DoubleValue GLOBAL_INTENSITY = BUILDER
+        .comment("Master intensity multiplier for FurWatch lighting.")
+        .defineInRange("lighting.globalIntensity", 1.0D, 0.0D, 2.0D);
+    private static final ModConfigSpec.DoubleValue AMBIENT_INTENSITY = BUILDER
+        .comment("Ambient fill light strength.")
+        .defineInRange("lighting.ambientIntensity", 0.35D, 0.0D, 1.5D);
+    private static final ModConfigSpec.DoubleValue DIRECTIONAL_INTENSITY = BUILDER
+        .comment("Sun or moon directional lighting strength.")
+        .defineInRange("lighting.directionalIntensity", 0.75D, 0.0D, 2.0D);
+    private static final ModConfigSpec.DoubleValue LOCAL_LIGHT_RADIUS = BUILDER
+        .comment("Radius multiplier for local emissive lights.")
+        .defineInRange("lighting.localLightRadius", 24.0D, 8.0D, 96.0D);
+    private static final ModConfigSpec.DoubleValue LOCAL_LIGHT_BRIGHTNESS = BUILDER
+        .comment("Brightness multiplier for local emissive lights.")
+        .defineInRange("lighting.localLightBrightness", 1.0D, 0.1D, 4.0D);
+    private static final ModConfigSpec.ConfigValue<String> LIGHTING_PRESET = BUILDER
+        .comment("Selected FurWatch lighting preset.")
+        .define("lighting.preset", "balanced");
+    private static final ModConfigSpec.BooleanValue OCCLUSION_ENABLED = BUILDER
+        .comment("Enables occlusion for FurWatch scene lights.")
+        .define("lighting.occlusion", false);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
-    private static boolean shaderEnabled;
-    private static double shaderIntensity;
-    private static String shaderPreset = "default";
-    private static boolean filmGrainEnabled;
-    private static boolean vignetteEnabled;
-    private static boolean scanlinesEnabled;
-    private static boolean chromaticAberrationEnabled;
+    private static boolean lightingEnabled;
+    private static double globalIntensity;
+    private static double ambientIntensity;
+    private static double directionalIntensity;
+    private static double localLightRadius;
+    private static double localLightBrightness;
+    private static String lightingPreset = "balanced";
+    private static boolean occlusionEnabled;
 
     private ClientConfig() {
     }
@@ -51,13 +55,14 @@ public class ClientConfig {
             return;
         }
 
-        shaderEnabled = SHADER_ENABLED.get();
-        shaderIntensity = SHADER_INTENSITY.get();
-        shaderPreset = SHADER_PRESET.get();
-        filmGrainEnabled = FILM_GRAIN_ENABLED.get();
-        vignetteEnabled = VIGNETTE_ENABLED.get();
-        scanlinesEnabled = SCANLINES_ENABLED.get();
-        chromaticAberrationEnabled = CHROMATIC_ABERRATION_ENABLED.get();
+        lightingEnabled = LIGHTING_ENABLED.get();
+        globalIntensity = GLOBAL_INTENSITY.get();
+        ambientIntensity = AMBIENT_INTENSITY.get();
+        directionalIntensity = DIRECTIONAL_INTENSITY.get();
+        localLightRadius = LOCAL_LIGHT_RADIUS.get();
+        localLightBrightness = LOCAL_LIGHT_BRIGHTNESS.get();
+        lightingPreset = LIGHTING_PRESET.get();
+        occlusionEnabled = OCCLUSION_ENABLED.get();
         FurWatchShaderState.reloadFromConfig();
     }
 
@@ -66,67 +71,76 @@ public class ClientConfig {
         onLoad(new ModConfigEvent.Loading(event.getConfig()));
     }
 
-    public static boolean isShaderEnabled() {
-        return shaderEnabled;
+    public static boolean isLightingEnabled() {
+        return lightingEnabled;
     }
 
-    public static double getShaderIntensity() {
-        return shaderIntensity;
+    public static double getGlobalIntensity() {
+        return globalIntensity;
     }
 
-    public static String getShaderPreset() {
-        return shaderPreset;
+    public static double getAmbientIntensity() {
+        return ambientIntensity;
     }
 
-    public static boolean isFilmGrainEnabled() {
-        return filmGrainEnabled;
+    public static double getDirectionalIntensity() {
+        return directionalIntensity;
     }
 
-    public static boolean isVignetteEnabled() {
-        return vignetteEnabled;
+    public static double getLocalLightRadius() {
+        return localLightRadius;
     }
 
-    public static boolean isScanlinesEnabled() {
-        return scanlinesEnabled;
+    public static double getLocalLightBrightness() {
+        return localLightBrightness;
     }
 
-    public static boolean isChromaticAberrationEnabled() {
-        return chromaticAberrationEnabled;
+    public static String getLightingPreset() {
+        return lightingPreset;
     }
 
-    public static void setShaderEnabled(boolean enabled) {
-        SHADER_ENABLED.set(enabled);
-        shaderEnabled = enabled;
+    public static boolean isOcclusionEnabled() {
+        return occlusionEnabled;
     }
 
-    public static void setShaderIntensity(double intensity) {
-        SHADER_INTENSITY.set(intensity);
-        shaderIntensity = intensity;
+    public static void setLightingEnabled(boolean enabled) {
+        LIGHTING_ENABLED.set(enabled);
+        lightingEnabled = enabled;
     }
 
-    public static void setShaderPreset(String preset) {
-        SHADER_PRESET.set(preset);
-        shaderPreset = preset;
+    public static void setGlobalIntensity(double intensity) {
+        GLOBAL_INTENSITY.set(intensity);
+        globalIntensity = intensity;
     }
 
-    public static void setFilmGrainEnabled(boolean enabled) {
-        FILM_GRAIN_ENABLED.set(enabled);
-        filmGrainEnabled = enabled;
+    public static void setAmbientIntensity(double intensity) {
+        AMBIENT_INTENSITY.set(intensity);
+        ambientIntensity = intensity;
     }
 
-    public static void setVignetteEnabled(boolean enabled) {
-        VIGNETTE_ENABLED.set(enabled);
-        vignetteEnabled = enabled;
+    public static void setDirectionalIntensity(double intensity) {
+        DIRECTIONAL_INTENSITY.set(intensity);
+        directionalIntensity = intensity;
     }
 
-    public static void setScanlinesEnabled(boolean enabled) {
-        SCANLINES_ENABLED.set(enabled);
-        scanlinesEnabled = enabled;
+    public static void setLocalLightRadius(double radius) {
+        LOCAL_LIGHT_RADIUS.set(radius);
+        localLightRadius = radius;
     }
 
-    public static void setChromaticAberrationEnabled(boolean enabled) {
-        CHROMATIC_ABERRATION_ENABLED.set(enabled);
-        chromaticAberrationEnabled = enabled;
+    public static void setLocalLightBrightness(double brightness) {
+        LOCAL_LIGHT_BRIGHTNESS.set(brightness);
+        localLightBrightness = brightness;
+    }
+
+    public static void setLightingPreset(String preset) {
+        LIGHTING_PRESET.set(preset);
+        lightingPreset = preset;
+    }
+
+    public static void setOcclusionEnabled(boolean enabled) {
+        OCCLUSION_ENABLED.set(enabled);
+        occlusionEnabled = enabled;
     }
 
     public static void save() {

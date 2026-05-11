@@ -10,16 +10,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.nextfur.fwc.util.client.FurWatchShaderState;
 
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
+
 public class FurWatchShaderOptionsScreen extends Screen {
-    private static final String[] PRESETS = {"default", "cinematic", "surveillance"};
+    private static final String[] PRESETS = {"balanced", "warm", "moonlit"};
 
     private final Screen parent;
     private Button enabledButton;
     private Button presetButton;
-    private Button filmGrainButton;
-    private Button vignetteButton;
-    private Button scanlinesButton;
-    private Button chromaticAberrationButton;
+    private Button occlusionButton;
 
     public FurWatchShaderOptionsScreen(Screen parent) {
         super(Component.translatable("screen.fursmp.shader_options"));
@@ -29,8 +29,8 @@ public class FurWatchShaderOptionsScreen extends Screen {
     @Override
     protected void init() {
         int left = this.width / 2 - 110;
-        int top = this.height / 2 - 94;
-        int rowHeight = 24;
+        int top = this.height / 2 - 108;
+        int rowHeight = 22;
         int fullWidth = 220;
         int halfWidth = 106;
 
@@ -40,46 +40,66 @@ public class FurWatchShaderOptionsScreen extends Screen {
             refreshLabels();
         }).pos(left, top).size(fullWidth, 20).build());
 
-        this.addRenderableWidget(new IntensitySlider(left, top + rowHeight, fullWidth, 20));
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight, fullWidth, 20,
+                "option.fursmp.shader.global_intensity",
+                0.0D,
+                2.0D,
+                FurWatchShaderState::getGlobalIntensity,
+                value -> FurWatchShaderState.setGlobalIntensity((float) value),
+                "%.2f"));
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 2, fullWidth, 20,
+                "option.fursmp.shader.ambient_intensity",
+                0.0D,
+                1.5D,
+                FurWatchShaderState::getAmbientIntensity,
+                value -> FurWatchShaderState.setAmbientIntensity((float) value),
+                "%.2f"));
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 3, fullWidth, 20,
+                "option.fursmp.shader.directional_intensity",
+                0.0D,
+                2.0D,
+                FurWatchShaderState::getDirectionalIntensity,
+                value -> FurWatchShaderState.setDirectionalIntensity((float) value),
+                "%.2f"));
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 4, fullWidth, 20,
+                "option.fursmp.shader.local_radius",
+                8.0D,
+                96.0D,
+                FurWatchShaderState::getLocalLightRadius,
+                value -> FurWatchShaderState.setLocalLightRadius((float) value),
+                "%.0f"));
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 5, fullWidth, 20,
+                "option.fursmp.shader.local_brightness",
+                0.1D,
+                4.0D,
+                FurWatchShaderState::getLocalLightBrightness,
+                value -> FurWatchShaderState.setLocalLightBrightness((float) value),
+                "%.2f"));
 
         this.presetButton = this.addRenderableWidget(Button.builder(presetLabel(), button -> {
             cyclePreset();
             FurWatchShaderState.persist();
             refreshLabels();
-        }).pos(left, top + rowHeight * 2).size(fullWidth, 20).build());
+        }).pos(left, top + rowHeight * 6).size(fullWidth, 20).build());
 
-        this.filmGrainButton = this.addRenderableWidget(Button.builder(toggleLabel("option.fursmp.shader.film_grain", FurWatchShaderState.isFilmGrainEnabled()), button -> {
-            FurWatchShaderState.setFilmGrainEnabled(!FurWatchShaderState.isFilmGrainEnabled());
+        this.occlusionButton = this.addRenderableWidget(Button.builder(toggleLabel("option.fursmp.shader.occlusion", FurWatchShaderState.isOcclusionEnabled()), button -> {
+            FurWatchShaderState.setOcclusionEnabled(!FurWatchShaderState.isOcclusionEnabled());
             FurWatchShaderState.persist();
             refreshLabels();
-        }).pos(left, top + rowHeight * 3).size(halfWidth, 20).build());
-
-        this.vignetteButton = this.addRenderableWidget(Button.builder(toggleLabel("option.fursmp.shader.vignette", FurWatchShaderState.isVignetteEnabled()), button -> {
-            FurWatchShaderState.setVignetteEnabled(!FurWatchShaderState.isVignetteEnabled());
-            FurWatchShaderState.persist();
-            refreshLabels();
-        }).pos(left + halfWidth + 8, top + rowHeight * 3).size(halfWidth, 20).build());
-
-        this.scanlinesButton = this.addRenderableWidget(Button.builder(toggleLabel("option.fursmp.shader.scanlines", FurWatchShaderState.isScanlinesEnabled()), button -> {
-            FurWatchShaderState.setScanlinesEnabled(!FurWatchShaderState.isScanlinesEnabled());
-            FurWatchShaderState.persist();
-            refreshLabels();
-        }).pos(left, top + rowHeight * 4).size(halfWidth, 20).build());
-
-        this.chromaticAberrationButton = this.addRenderableWidget(Button.builder(toggleLabel("option.fursmp.shader.chromatic_aberration", FurWatchShaderState.isChromaticAberrationEnabled()), button -> {
-            FurWatchShaderState.setChromaticAberrationEnabled(!FurWatchShaderState.isChromaticAberrationEnabled());
-            FurWatchShaderState.persist();
-            refreshLabels();
-        }).pos(left + halfWidth + 8, top + rowHeight * 4).size(halfWidth, 20).build());
+        }).pos(left, top + rowHeight * 7).size(fullWidth, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
-                .pos(left, top + rowHeight * 6).size(halfWidth, 20).build());
+                .pos(left, top + rowHeight * 9).size(halfWidth, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("controls.reset"), button -> {
             FurWatchShaderState.restoreDefaults();
             FurWatchShaderState.persist();
             this.rebuildWidgets();
-        }).pos(left + halfWidth + 8, top + rowHeight * 6).size(halfWidth, 20).build());
+        }).pos(left + halfWidth + 8, top + rowHeight * 9).size(halfWidth, 20).build());
     }
 
     @Override
@@ -110,10 +130,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
     private void refreshLabels() {
         this.enabledButton.setMessage(enabledLabel());
         this.presetButton.setMessage(presetLabel());
-        this.filmGrainButton.setMessage(toggleLabel("option.fursmp.shader.film_grain", FurWatchShaderState.isFilmGrainEnabled()));
-        this.vignetteButton.setMessage(toggleLabel("option.fursmp.shader.vignette", FurWatchShaderState.isVignetteEnabled()));
-        this.scanlinesButton.setMessage(toggleLabel("option.fursmp.shader.scanlines", FurWatchShaderState.isScanlinesEnabled()));
-        this.chromaticAberrationButton.setMessage(toggleLabel("option.fursmp.shader.chromatic_aberration", FurWatchShaderState.isChromaticAberrationEnabled()));
+        this.occlusionButton.setMessage(toggleLabel("option.fursmp.shader.occlusion", FurWatchShaderState.isOcclusionEnabled()));
     }
 
     private Component enabledLabel() {
@@ -128,30 +145,41 @@ public class FurWatchShaderOptionsScreen extends Screen {
         return Component.translatable(key, Component.translatable(enabled ? "options.on" : "options.off"));
     }
 
-    private static class IntensitySlider extends AbstractSliderButton {
-        private IntensitySlider(int x, int y, int width, int height) {
-            super(x, y, width, height, Component.empty(), normalize(FurWatchShaderState.getIntensity()));
+    private static class LightingSlider extends AbstractSliderButton {
+        private final String translationKey;
+        private final double minValue;
+        private final double maxValue;
+        private final DoubleConsumer setter;
+        private final String format;
+
+        private LightingSlider(int x, int y, int width, int height, String translationKey, double minValue, double maxValue, DoubleSupplier getter, DoubleConsumer setter, String format) {
+            super(x, y, width, height, Component.empty(), normalize(getter.getAsDouble(), minValue, maxValue));
+            this.translationKey = translationKey;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+            this.setter = setter;
+            this.format = format;
             this.updateMessage();
         }
 
         @Override
         protected void updateMessage() {
-            this.setMessage(Component.translatable("option.fursmp.shader.intensity", String.format("%.2f", denormalize(this.value))));
+            this.setMessage(Component.translatable(this.translationKey, String.format(this.format, denormalize(this.value, this.minValue, this.maxValue))));
         }
 
         @Override
         protected void applyValue() {
-            FurWatchShaderState.setIntensity(denormalize(this.value));
+            this.setter.accept(denormalize(this.value, this.minValue, this.maxValue));
             FurWatchShaderState.persist();
             this.updateMessage();
         }
 
-        private static double normalize(float intensity) {
-            return Mth.clamp(intensity / 2.0F, 0.0F, 1.0F);
+        private static double normalize(double value, double minValue, double maxValue) {
+            return Mth.clamp((value - minValue) / (maxValue - minValue), 0.0D, 1.0D);
         }
 
-        private static float denormalize(double sliderValue) {
-            return (float) Mth.clamp(sliderValue * 2.0D, 0.0D, 2.0D);
+        private static double denormalize(double sliderValue, double minValue, double maxValue) {
+            return Mth.clamp(minValue + ((maxValue - minValue) * sliderValue), minValue, maxValue);
         }
     }
 }

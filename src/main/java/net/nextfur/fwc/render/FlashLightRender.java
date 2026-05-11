@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.nextfur.fwc.util.client.PlayerComponent;
+import net.nextfur.fwc.util.client.FurWatchShaderState;
 import org.joml.Quaternionf;
 
 import java.util.HashMap;
@@ -69,20 +70,20 @@ public class FlashLightRender {
                 PlayerAreaLights playerLights = ACTIVE_LIGHTS.get(playerId);
                 if (playerLights == null || !playerLights.isValid()) {
                 AreaLightData fillLight = new AreaLightData()
-                    .setBrightness(LIGHT_BRIGHTNESS * 0.75F)
-                    .setDistance(LIGHT_DISTANCE)
+                    .setBrightness(configuredBrightness() * 0.75F)
+                    .setDistance(configuredDistance())
                     .setAngle(LIGHT_FILL_ANGLE)
                     .setSize(0.0F, 0.0F)
-                    .setOcclusionEnabled(false);
+                    .setOcclusionEnabled(FurWatchShaderState.isOcclusionEnabled());
                 fillLight.getPosition().set(lightPos.x, lightPos.y, lightPos.z);
                 fillLight.getOrientation().set(targetRotation);
 
                 AreaLightData coneLight = new AreaLightData()
-                    .setBrightness(LIGHT_BRIGHTNESS)
-                    .setDistance(LIGHT_DISTANCE)
+                    .setBrightness(configuredBrightness())
+                    .setDistance(configuredDistance())
                     .setAngle(LIGHT_ANGLE)
                     .setSize(0.0F, 0.0F)
-                    .setOcclusionEnabled(false);
+                    .setOcclusionEnabled(FurWatchShaderState.isOcclusionEnabled());
                 coneLight.getPosition().set(lightPos.x, lightPos.y, lightPos.z);
                 coneLight.getOrientation().set(targetRotation);
 
@@ -90,8 +91,8 @@ public class FlashLightRender {
                 LightRenderHandle<AreaLightData> coneHandle = VeilRenderSystem.renderer().getLightRenderer().addLight(coneLight);
                 ACTIVE_LIGHTS.put(playerId, new PlayerAreaLights(fillHandle, coneHandle));
             } else {
-                updateLight(playerLights.fillHandle(), lightPos, targetRotation);
-                updateLight(playerLights.coneHandle(), lightPos, targetRotation);
+                updateLight(playerLights.fillHandle(), lightPos, targetRotation, configuredBrightness() * 0.75F, configuredDistance());
+                updateLight(playerLights.coneHandle(), lightPos, targetRotation, configuredBrightness(), configuredDistance());
             }
 
             visibleActiveLights.add(playerId);
@@ -125,10 +126,21 @@ public class FlashLightRender {
         return new Quaternionf().rotateXYZ(pitch, yaw, 0.0F);
     }
 
-    private static void updateLight(LightRenderHandle<AreaLightData> handle, Vec3 lightPos, Quaternionf targetRotation) {
+    private static float configuredBrightness() {
+        return LIGHT_BRIGHTNESS * FurWatchShaderState.getLocalLightBrightness();
+    }
+
+    private static float configuredDistance() {
+        return FurWatchShaderState.getLocalLightRadius();
+    }
+
+    private static void updateLight(LightRenderHandle<AreaLightData> handle, Vec3 lightPos, Quaternionf targetRotation, float brightness, float distance) {
         AreaLightData light = handle.getLightData();
         light.getOrientation().slerp(targetRotation, ORIENTATION_SMOOTHING);
         light.getPosition().set(lightPos.x, lightPos.y, lightPos.z);
+        light.setBrightness(brightness);
+        light.setDistance(distance);
+        light.setOcclusionEnabled(FurWatchShaderState.isOcclusionEnabled());
         handle.markDirty();
     }
 
