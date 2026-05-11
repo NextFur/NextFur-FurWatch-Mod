@@ -24,6 +24,7 @@ public class FwMain {
         CLIENT_TOKEN = System.getProperty("net.nextfur.fwc.authtoken", "Invalid User Token");
         CLIENT_ID = System.getProperty("net.nextfur.fwc.nextfurid", "Undefined");
 
+        modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
         modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
         modEventBus.addListener(FwModPackets::register);
 

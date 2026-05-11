@@ -30,6 +30,12 @@ public class PlayerComponent {
 			GLFW.GLFW_KEY_F,
 			KEY_CATEGORY
 	);
+	private static final KeyMapping SHADER_TOGGLE_KEY = new KeyMapping(
+			"key.fursmp.shader_toggle",
+			InputConstants.Type.KEYSYM,
+			GLFW.GLFW_KEY_G,
+			KEY_CATEGORY
+	);
 
 	private static final Map<UUID, Boolean> FLASHLIGHT_STATES = new HashMap<>();
 
@@ -39,12 +45,20 @@ public class PlayerComponent {
 	@SubscribeEvent
 	public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
 		event.register(FLASHLIGHT_KEY);
+		event.register(SHADER_TOGGLE_KEY);
 	}
 
 	public static void onClientTick(ClientTickEvent.Post event) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null || mc.level == null) {
 			return;
+		}
+
+		if (!mc.isPaused()) {
+			while (SHADER_TOGGLE_KEY.consumeClick()) {
+				FurWatchShaderState.toggleEnabled();
+				FurWatchShaderState.persist();
+			}
 		}
 
 		while (FLASHLIGHT_KEY.consumeClick()) {
@@ -57,6 +71,7 @@ public class PlayerComponent {
 
 	public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
 		FLASHLIGHT_STATES.clear();
+		FurWatchShaderState.reloadFromConfig();
 	}
 
 	public static boolean isFlashlightEnabled(UUID playerId) {

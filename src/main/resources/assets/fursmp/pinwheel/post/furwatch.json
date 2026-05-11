@@ -1,0 +1,9 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "fursmp:furwatch/global",
+      "in": "minecraft:main"
+    }
+  ]
+}
