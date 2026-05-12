@@ -78,6 +78,7 @@
   "option.fursmp.shader.blur_strength": "Visual Blur: %s",
   "option.fursmp.shader.reflection_strength": "Reflection Strength: %s",
   "option.fursmp.shader.reflection_softness": "Reflection Softness: %s",
+  "option.fursmp.shader.water_effects": "Water Reflections: %s",
   "option.fursmp.shader.fog_intensity": "Fog Intensity: %s",
   "option.fursmp.shader.fog_variation": "Fog Variation: %s",
   "option.fursmp.shader.light_variation": "Light Variation: %s"

@@ -7,9 +7,12 @@ import foundry.veil.api.client.render.shader.ShaderManager;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.util.client.FurWatchShaderState;
+import net.nextfur.fwc.util.client.SkyColorState;
 
 public final class FurWatchPostEffectRender {
     private static final ResourceLocation PIPELINE_ID = ResourceLocation.fromNamespaceAndPath(FwMain.MODID, "furwatch");
@@ -61,6 +64,8 @@ public final class FurWatchPostEffectRender {
         shader.getUniformSafe("BlurAmount").setFloat(effectEnabled ? FurWatchShaderState.getBlurStrength() : 0.0F);
         shader.getUniformSafe("ReflectionStrength").setFloat(FurWatchShaderState.getReflectionStrength());
         shader.getUniformSafe("ReflectionSoftness").setFloat(FurWatchShaderState.getReflectionSoftness());
+        shader.getUniformSafe("WaterEffectsEnabled").setInt(FurWatchShaderState.isWaterEffectsEnabled() ? 1 : 0);
+        shader.getUniformSafe("NightSkyStrength").setFloat(resolveNightSkyStrength(client, partialTick));
         shader.getUniformSafe("FogIntensity").setFloat(FurWatchShaderState.getFogIntensity());
         shader.getUniformSafe("FogVariation").setFloat(FurWatchShaderState.getFogVariation());
         shader.getUniformSafe("LightVariation").setFloat(FurWatchShaderState.getLightVariation());
@@ -81,5 +86,22 @@ public final class FurWatchPostEffectRender {
         if (postProcessingManager.isActive(PIPELINE_ID)) {
             postProcessingManager.remove(PIPELINE_ID);
         }
+    }
+
+    private static float resolveNightSkyStrength(Minecraft client, float partialTick) {
+        if (client.level == null || client.level.dimension() != Level.OVERWORLD || SkyColorState.getBoxColor() != -1) {
+            return 0.0F;
+        }
+
+        float skyAngle = client.level.getTimeOfDay(partialTick) * ((float) Math.PI * 2.0F);
+        float sunHeight = Mth.cos(skyAngle);
+        float nightBlend = 1.0F - smoothStep(-0.18F, 0.08F, sunHeight);
+        float weatherDimming = 1.0F - Mth.clamp((client.level.getRainLevel(partialTick) * 0.45F) + (client.level.getThunderLevel(partialTick) * 0.55F), 0.0F, 0.75F);
+        return Mth.clamp(nightBlend * weatherDimming, 0.0F, 1.0F);
+    }
+
+    private static float smoothStep(float edge0, float edge1, float value) {
+        float scaled = Mth.clamp((value - edge0) / (edge1 - edge0), 0.0F, 1.0F);
+        return scaled * scaled * (3.0F - (2.0F * scaled));
     }
 }

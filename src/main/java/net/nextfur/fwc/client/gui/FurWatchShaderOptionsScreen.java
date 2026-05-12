@@ -21,6 +21,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
     private Button presetButton;
     private Button occlusionButton;
     private Button postEffectsButton;
+    private Button waterEffectsButton;
 
     public FurWatchShaderOptionsScreen(Screen parent) {
         super(Component.translatable("screen.fursmp.shader_options"));
@@ -131,7 +132,13 @@ public class FurWatchShaderOptionsScreen extends Screen {
             value -> FurWatchShaderState.setReflectionSoftness((float) value),
             "%.2f"));
 
-        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 12, halfWidth, 20,
+        this.waterEffectsButton = this.addRenderableWidget(Button.builder(toggleLabel("option.fursmp.shader.water_effects", FurWatchShaderState.isWaterEffectsEnabled()), button -> {
+            FurWatchShaderState.setWaterEffectsEnabled(!FurWatchShaderState.isWaterEffectsEnabled());
+            FurWatchShaderState.persist();
+            refreshLabels();
+        }).pos(left, top + rowHeight * 12).size(fullWidth, 20).build());
+
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 13, halfWidth, 20,
             "option.fursmp.shader.fog_intensity",
             0.0D,
             1.5D,
@@ -139,7 +146,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
             value -> FurWatchShaderState.setFogIntensity((float) value),
             "%.2f"));
 
-        this.addRenderableWidget(new LightingSlider(left + halfWidth + 8, top + rowHeight * 12, halfWidth, 20,
+        this.addRenderableWidget(new LightingSlider(left + halfWidth + 8, top + rowHeight * 13, halfWidth, 20,
             "option.fursmp.shader.fog_variation",
             0.0D,
             1.0D,
@@ -147,7 +154,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
             value -> FurWatchShaderState.setFogVariation((float) value),
             "%.2f"));
 
-        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 13, fullWidth, 20,
+        this.addRenderableWidget(new LightingSlider(left, top + rowHeight * 14, fullWidth, 20,
             "option.fursmp.shader.light_variation",
             0.0D,
             1.0D,
@@ -156,13 +163,13 @@ public class FurWatchShaderOptionsScreen extends Screen {
             "%.2f"));
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
-            .pos(left, top + rowHeight * 15).size(halfWidth, 20).build());
+            .pos(left, top + rowHeight * 16).size(halfWidth, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("controls.reset"), button -> {
             FurWatchShaderState.restoreDefaults();
             FurWatchShaderState.persist();
             this.rebuildWidgets();
-        }).pos(left + halfWidth + 8, top + rowHeight * 15).size(halfWidth, 20).build());
+        }).pos(left + halfWidth + 8, top + rowHeight * 16).size(halfWidth, 20).build());
     }
 
     @Override
@@ -195,6 +202,7 @@ public class FurWatchShaderOptionsScreen extends Screen {
         this.presetButton.setMessage(presetLabel());
         this.occlusionButton.setMessage(toggleLabel("option.fursmp.shader.occlusion", FurWatchShaderState.isOcclusionEnabled()));
         this.postEffectsButton.setMessage(toggleLabel("option.fursmp.shader.post_effects", FurWatchShaderState.isPostEffectsEnabled()));
+        this.waterEffectsButton.setMessage(toggleLabel("option.fursmp.shader.water_effects", FurWatchShaderState.isWaterEffectsEnabled()));
     }
 
     private Component enabledLabel() {

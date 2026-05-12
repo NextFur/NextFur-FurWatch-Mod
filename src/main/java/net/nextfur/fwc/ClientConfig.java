@@ -49,6 +49,9 @@ public class ClientConfig {
     private static final ModConfigSpec.DoubleValue REFLECTION_SOFTNESS = BUILDER
         .comment("Softness of FurWatch reflective highlights.")
         .defineInRange("effects.reflectionSoftness", 0.35D, 0.0D, 1.0D);
+    private static final ModConfigSpec.BooleanValue WATER_EFFECTS_ENABLED = BUILDER
+        .comment("Enables FurWatch water reflections and parallax distortion.")
+        .define("effects.water.enabled", true);
     private static final ModConfigSpec.DoubleValue FOG_INTENSITY = BUILDER
         .comment("Intensity of FurWatch atmospheric fog.")
         .defineInRange("effects.fogIntensity", 0.65D, 0.0D, 1.5D);
@@ -74,6 +77,7 @@ public class ClientConfig {
     private static double blurStrength;
     private static double reflectionStrength;
     private static double reflectionSoftness;
+    private static boolean waterEffectsEnabled;
     private static double fogIntensity;
     private static double fogVariation;
     private static double lightVariation;
@@ -100,6 +104,7 @@ public class ClientConfig {
         blurStrength = BLUR_STRENGTH.get();
         reflectionStrength = REFLECTION_STRENGTH.get();
         reflectionSoftness = REFLECTION_SOFTNESS.get();
+        waterEffectsEnabled = WATER_EFFECTS_ENABLED.get();
         fogIntensity = FOG_INTENSITY.get();
         fogVariation = FOG_VARIATION.get();
         lightVariation = LIGHT_VARIATION.get();
@@ -161,6 +166,10 @@ public class ClientConfig {
 
     public static double getReflectionSoftness() {
         return reflectionSoftness;
+    }
+
+    public static boolean isWaterEffectsEnabled() {
+        return waterEffectsEnabled;
     }
 
     public static double getFogIntensity() {
@@ -238,6 +247,11 @@ public class ClientConfig {
     public static void setReflectionSoftness(double softness) {
         REFLECTION_SOFTNESS.set(softness);
         reflectionSoftness = softness;
+    }
+
+    public static void setWaterEffectsEnabled(boolean enabled) {
+        WATER_EFFECTS_ENABLED.set(enabled);
+        waterEffectsEnabled = enabled;
     }
 
     public static void setFogIntensity(double intensity) {

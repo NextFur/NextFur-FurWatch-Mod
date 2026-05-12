@@ -17,6 +17,7 @@ public final class FurWatchShaderState {
     private static float blurStrength;
     private static float reflectionStrength;
     private static float reflectionSoftness;
+    private static boolean waterEffectsEnabled;
     private static float fogIntensity;
     private static float fogVariation;
     private static float lightVariation;
@@ -38,6 +39,7 @@ public final class FurWatchShaderState {
         blurStrength = (float) ClientConfig.getBlurStrength();
         reflectionStrength = (float) ClientConfig.getReflectionStrength();
         reflectionSoftness = (float) ClientConfig.getReflectionSoftness();
+        waterEffectsEnabled = ClientConfig.isWaterEffectsEnabled();
         fogIntensity = (float) ClientConfig.getFogIntensity();
         fogVariation = (float) ClientConfig.getFogVariation();
         lightVariation = (float) ClientConfig.getLightVariation();
@@ -57,6 +59,7 @@ public final class FurWatchShaderState {
         blurStrength = 0.15F;
         reflectionStrength = 0.45F;
         reflectionSoftness = 0.35F;
+        waterEffectsEnabled = true;
         fogIntensity = 0.65F;
         fogVariation = 0.3F;
         lightVariation = 0.35F;
@@ -170,6 +173,14 @@ public final class FurWatchShaderState {
         FurWatchShaderState.reflectionSoftness = Mth.clamp(reflectionSoftness, 0.0F, 1.0F);
     }
 
+    public static boolean isWaterEffectsEnabled() {
+        return waterEffectsEnabled;
+    }
+
+    public static void setWaterEffectsEnabled(boolean waterEffectsEnabled) {
+        FurWatchShaderState.waterEffectsEnabled = waterEffectsEnabled;
+    }
+
     public static float getFogIntensity() {
         return fogIntensity;
     }
@@ -208,6 +219,7 @@ public final class FurWatchShaderState {
         ClientConfig.setBlurStrength(blurStrength);
         ClientConfig.setReflectionStrength(reflectionStrength);
         ClientConfig.setReflectionSoftness(reflectionSoftness);
+        ClientConfig.setWaterEffectsEnabled(waterEffectsEnabled);
         ClientConfig.setFogIntensity(fogIntensity);
         ClientConfig.setFogVariation(fogVariation);
         ClientConfig.setLightVariation(lightVariation);
@@ -228,6 +240,7 @@ public final class FurWatchShaderState {
         blurStrength = 0.15F;
         reflectionStrength = 0.45F;
         reflectionSoftness = 0.35F;
+        waterEffectsEnabled = true;
         fogIntensity = 0.65F;
         fogVariation = 0.3F;
         lightVariation = 0.35F;

@@ -46,10 +46,10 @@ public final class FurWatchShaderRender {
         Vec3 cameraPos = client.gameRenderer.getMainCamera().getPosition();
         float localRadius = FurWatchShaderState.getLocalLightRadius();
         float globalIntensity = FurWatchShaderState.getGlobalIntensity();
-        LightingColors preset = LightingColors.forPreset(FurWatchShaderState.getPreset());
-        Vector3f sunDirection = getSunDirection(client, partialTick);
+        CelestialLighting celestialLighting = sampleCelestialLighting(client, partialTick, FurWatchShaderState.getPreset());
+        Vector3f lightDirection = celestialLighting.direction();
 
-        VeilRenderSystem.setShaderLights(sunDirection, new Vector3f(sunDirection).negate());
+        VeilRenderSystem.setShaderLights(lightDirection, new Vector3f(lightDirection).negate());
 
         Quaternionf ambientRotation = rotationForDirection(new Vector3f(0.0F, -1.0F, 0.0F));
         Vec3 ambientPos = cameraPos.add(0.0D, localRadius * 0.25D, 0.0D);
@@ -58,7 +58,7 @@ public final class FurWatchShaderRender {
                 ambientHandle,
                 ambientPos,
                 ambientRotation,
-                preset.ambientColor(),
+            celestialLighting.ambientColor(),
                 ambientBrightness,
                 localRadius,
                 (float) Math.toRadians(85.0D),
@@ -66,14 +66,14 @@ public final class FurWatchShaderRender {
                 FurWatchShaderState.isOcclusionEnabled()
         );
 
-        Quaternionf sunRotation = rotationForDirection(new Vector3f(sunDirection));
-        Vec3 directionalPos = cameraPos.subtract(sunDirection.x * localRadius * 0.75F, sunDirection.y * localRadius * 0.75F, sunDirection.z * localRadius * 0.75F);
-        float directionalBrightness = globalIntensity * FurWatchShaderState.getDirectionalIntensity();
+        Quaternionf sunRotation = rotationForDirection(new Vector3f(lightDirection));
+        Vec3 directionalPos = cameraPos.subtract(lightDirection.x * localRadius * 0.75F, lightDirection.y * localRadius * 0.75F, lightDirection.z * localRadius * 0.75F);
+        float directionalBrightness = globalIntensity * FurWatchShaderState.getDirectionalIntensity() * celestialLighting.directionalStrength();
         directionalHandle = ensureLight(
                 directionalHandle,
                 directionalPos,
                 sunRotation,
-                preset.directionalColor(),
+            celestialLighting.directionalColor(),
                 directionalBrightness,
                 localRadius * 1.2F,
                 (float) Math.toRadians(55.0D),
@@ -135,9 +135,27 @@ public final class FurWatchShaderRender {
         return handle;
     }
 
-    private static Vector3f getSunDirection(Minecraft client, float partialTick) {
+    private static CelestialLighting sampleCelestialLighting(Minecraft client, float partialTick, String preset) {
+        LightingColors presetColors = LightingColors.forPreset(preset);
         float skyAngle = client.level.getTimeOfDay(partialTick) * ((float) Math.PI * 2.0F);
-        return new Vector3f(Mth.cos(skyAngle), Math.max(0.15F, Mth.sin(skyAngle)), 0.35F).normalize();
+        Vector3f sunDirection = new Vector3f(
+                Mth.sin(skyAngle),
+                Mth.cos(skyAngle),
+                Mth.sin(skyAngle * 0.5F) * 0.45F
+        ).normalize();
+        Vector3f moonDirection = new Vector3f(sunDirection).negate();
+
+        float daylight = smoothStep(-0.14F, 0.1F, sunDirection.y);
+        Vector3f direction = new Vector3f(moonDirection).lerp(sunDirection, daylight).normalize();
+        Vector3f ambientColor = new Vector3f(presetColors.nightAmbientColor()).lerp(presetColors.dayAmbientColor(), daylight);
+        Vector3f directionalColor = new Vector3f(presetColors.nightDirectionalColor()).lerp(presetColors.dayDirectionalColor(), daylight);
+        float directionalStrength = Mth.lerp(daylight, 0.42F, 1.0F);
+        return new CelestialLighting(direction, ambientColor, directionalColor, directionalStrength);
+    }
+
+    private static float smoothStep(float edge0, float edge1, float value) {
+        float scaled = Mth.clamp((value - edge0) / (edge1 - edge0), 0.0F, 1.0F);
+        return scaled * scaled * (3.0F - (2.0F * scaled));
     }
 
     private static Quaternionf rotationForDirection(Vector3f direction) {
@@ -146,12 +164,30 @@ public final class FurWatchShaderRender {
         return new Quaternionf().lookAlong(normalized.negate(), up);
     }
 
-    private record LightingColors(Vector3f ambientColor, Vector3f directionalColor) {
+    private record CelestialLighting(Vector3f direction, Vector3f ambientColor, Vector3f directionalColor, float directionalStrength) {
+    }
+
+    private record LightingColors(Vector3f dayAmbientColor, Vector3f dayDirectionalColor, Vector3f nightAmbientColor, Vector3f nightDirectionalColor) {
         private static LightingColors forPreset(String preset) {
             return switch (preset) {
-                case "warm" -> new LightingColors(new Vector3f(0.95F, 0.82F, 0.72F), new Vector3f(1.0F, 0.9F, 0.72F));
-                case "moonlit" -> new LightingColors(new Vector3f(0.58F, 0.66F, 0.9F), new Vector3f(0.75F, 0.84F, 1.0F));
-                default -> new LightingColors(new Vector3f(0.82F, 0.84F, 0.88F), new Vector3f(1.0F, 0.98F, 0.92F));
+                case "warm" -> new LightingColors(
+                        new Vector3f(0.95F, 0.82F, 0.72F),
+                        new Vector3f(1.0F, 0.9F, 0.72F),
+                        new Vector3f(0.38F, 0.42F, 0.58F),
+                        new Vector3f(0.58F, 0.7F, 0.88F)
+                );
+                case "moonlit" -> new LightingColors(
+                        new Vector3f(0.7F, 0.74F, 0.9F),
+                        new Vector3f(0.82F, 0.9F, 1.0F),
+                        new Vector3f(0.42F, 0.5F, 0.74F),
+                        new Vector3f(0.68F, 0.8F, 1.0F)
+                );
+                default -> new LightingColors(
+                        new Vector3f(0.82F, 0.84F, 0.88F),
+                        new Vector3f(1.0F, 0.98F, 0.92F),
+                        new Vector3f(0.4F, 0.46F, 0.62F),
+                        new Vector3f(0.62F, 0.74F, 0.98F)
+                );
             };
         }
     }
