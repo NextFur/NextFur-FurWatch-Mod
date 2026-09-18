@@ -12,7 +12,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.util.client.FurWatchShaderState;
-import net.nextfur.fwc.util.client.SkyColorState;
 
 public final class FurWatchPostEffectRender {
     private static final ResourceLocation PIPELINE_ID = ResourceLocation.fromNamespaceAndPath(FwMain.MODID, "furwatch");
@@ -105,19 +104,11 @@ public final class FurWatchPostEffectRender {
     }
 
     private static float resolveNightSkyStrength(Minecraft client, float partialTick) {
-        if (!FurWatchShaderState.isStarsEnabled() || client.level == null || client.level.dimension() != Level.OVERWORLD || SkyColorState.getBoxColor() != -1) {
+        if (!FurWatchShaderState.isStarsEnabled() || client.level == null || client.level.dimension() != Level.OVERWORLD) {
             return 0.0F;
         }
 
-        float skyAngle = client.level.getTimeOfDay(partialTick) * ((float) Math.PI * 2.0F);
-        float sunHeight = Mth.cos(skyAngle);
-        float nightBlend = 1.0F - smoothStep(-0.18F, 0.08F, sunHeight);
-        float weatherDimming = 1.0F - Mth.clamp((client.level.getRainLevel(partialTick) * 0.75F) + (client.level.getThunderLevel(partialTick) * 0.25F), 0.0F, 1.0F);
-        return Mth.clamp(nightBlend * weatherDimming, 0.0F, 1.0F);
-    }
-
-    private static float smoothStep(float edge0, float edge1, float value) {
-        float scaled = Mth.clamp((value - edge0) / (edge1 - edge0), 0.0F, 1.0F);
-        return scaled * scaled * (3.0F - (2.0F * scaled));
+        float starBrightness = client.level.getStarBrightness(partialTick) * 2.0F;
+        return Mth.clamp(starBrightness, 0.0F, 1.0F);
     }
 }

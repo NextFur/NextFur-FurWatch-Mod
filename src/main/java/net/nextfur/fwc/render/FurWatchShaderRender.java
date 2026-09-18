@@ -23,10 +23,6 @@ public final class FurWatchShaderRender {
     }
 
     public static void onRenderWorld(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            return;
-        }
-
         Minecraft client = Minecraft.getInstance();
         if (client.level == null || client.player == null) {
             clearLighting();
@@ -37,6 +33,15 @@ public final class FurWatchShaderRender {
             return;
         }
         if (VeilRenderSystem.renderer() == null || VeilRenderSystem.renderer().getLightRenderer() == null) {
+            return;
+        }
+
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            VeilRenderSystem.renderer().enableBuffers(BUFFER_ID, DynamicBufferType.ALBEDO, DynamicBufferType.NORMAL);
+            return;
+        }
+
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             return;
         }
 

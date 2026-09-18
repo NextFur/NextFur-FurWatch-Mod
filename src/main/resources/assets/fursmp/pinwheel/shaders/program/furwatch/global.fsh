@@ -1,4 +1,5 @@
 #include veil:common
+#include veil:space_helper
 
 uniform sampler2D DiffuseSampler0;
 uniform sampler2D DiffuseDepthSampler;
@@ -116,137 +117,142 @@ void main() {
     float presetBoost = 1.0 + (float(PresetIndex) * 0.15);
     float strength = Intensity * presetBoost;
     vec2 centeredUv = texCoord - vec2(0.5);
-    vec2 offset = vec2(0.0);
     vec4 baseColor = texture(DiffuseSampler0, texCoord);
-    vec3 blurredColor = sampleBlur(texCoord, BlurAmount);
-    vec3 sourceColor = mix(baseColor.rgb, blurredColor, clamp(BlurAmount, 0.0, 1.0));
 
-    if (ChromaticAberrationEnabled != 0) {
-        offset = centeredUv * 0.004 * strength;
-    }
-
-    float red = texture(DiffuseSampler0, texCoord + offset).r;
-    vec2 blueOffset = PresetIndex == 2 ? offset * 1.8 : offset * 0.9;
-    float blue = texture(DiffuseSampler0, texCoord - blueOffset).b;
-    vec3 color = vec3(red, sourceColor.g, blue);
-
-    vec3 normalVS = texture(NormalSampler, texCoord).xyz;
-    vec3 light = texture(LightSampler, texCoord).rgb;
+    // Sample depth from Minecraft framebuffer
     float depth = texture(DiffuseDepthSampler, texCoord).r;
-    vec4 surface = classifySurface(sourceColor, normalVS);
-    float reflectivity = (surface.x * 0.62) + (surface.y * 0.24) + (surface.z * 0.14) + (surface.w * 0.06);
-    float roughness = clamp((surface.y * 0.65) + (surface.z * 0.55) + (surface.w * 0.82), 0.06, 0.95);
-    float lightLuma = dot(light, vec3(0.299, 0.587, 0.114));
-    float variationNoise = hash(texCoord * vec2(941.0, 733.0) + GameTime * 2.7) - 0.5;
-    vec3 adjustedLight = light * (1.0 + (variationNoise * LightVariation * 0.18));
-    float waterMask = WaterEffectsEnabled != 0 ? waterSurfaceMask(sourceColor, normalVS, depth) : 0.0;
-    vec3 waterNormal = normalVS;
-    if (waterMask > 0.001) {
-        vec3 animatedWaterNormal = sampleWaterNormal(texCoord, GameTime);
-        waterNormal = normalize(mix(normalVS, vec3(animatedWaterNormal.xy, abs(animatedWaterNormal.z)), waterMask * 0.85));
-        reflectivity = mix(reflectivity, max(reflectivity, 0.86), waterMask);
-        roughness = mix(roughness, clamp(0.08 + ReflectionSoftness * 0.12, 0.05, 0.22), waterMask);
+    bool isSky = depth >= 0.99999;
+
+    // 1. Chromatic aberration & blur (only when Post Effects is enabled)
+    vec3 sourceColor;
+    if (Intensity > 0.001) {
+        vec2 offset = vec2(0.0);
+        if (ChromaticAberrationEnabled != 0) {
+            offset = centeredUv * 0.0035 * strength;
+        }
+        float red = texture(DiffuseSampler0, texCoord + offset).r;
+        vec2 blueOffset = PresetIndex == 2 ? offset * 1.6 : offset * 0.8;
+        float blue = texture(DiffuseSampler0, texCoord - blueOffset).b;
+        vec3 blurredColor = sampleBlur(texCoord, BlurAmount * strength);
+        vec3 chromaticColor = vec3(red, mix(baseColor.g, blurredColor.g, clamp(BlurAmount, 0.0, 1.0)), blue);
+        sourceColor = mix(baseColor.rgb, chromaticColor, clamp(strength, 0.0, 1.0));
+    } else {
+        sourceColor = baseColor.rgb;
     }
 
-    vec3 keyLightDir = normalize(vec3(-0.35, 0.42, 0.84));
-    float highlightPower = mix(8.0, 48.0, clamp(1.0 - roughness - ReflectionSoftness * 0.35, 0.0, 1.0));
-    float specular = pow(max(dot(normalize(waterNormal), keyLightDir), 0.0), highlightPower);
-    vec3 highlightColor = adjustedLight * specular * ReflectionStrength * reflectivity * (0.65 + surface.x * 0.45 + surface.y * 0.2);
+    vec3 color = sourceColor;
 
-    vec2 reflectionOffset = (waterNormal.xy * (0.03 + ReflectionSoftness * 0.08)) + (centeredUv * -0.035);
-    if (waterMask > 0.001) {
-        reflectionOffset += waterNormal.xy * (0.035 + ReflectionStrength * 0.025) * waterMask;
-    }
-    vec2 reflectionUv = clamp(texCoord + reflectionOffset, vec2(0.001), vec2(0.999));
-    vec3 reflectionSample = sampleBlur(reflectionUv, ReflectionSoftness + (roughness * 0.45));
-    vec3 reflectedColor = reflectionSample * (0.3 + adjustedLight * 0.7);
-    float reflectionMask = ReflectionStrength * reflectivity * smoothstep(0.04, 0.85, lightLuma + 0.08);
-    if (waterMask > 0.001) {
-        vec2 waterUv = clamp(texCoord + (waterNormal.xy * 0.06 * waterMask), vec2(0.001), vec2(0.999));
-        vec3 waterReflection = sampleBlur(waterUv, ReflectionSoftness * 0.45 + 0.06);
-        reflectedColor = mix(reflectedColor, waterReflection * vec3(0.72, 0.86, 1.0), waterMask * 0.7);
-        reflectionMask = max(reflectionMask, waterMask * (0.32 + ReflectionStrength * 0.38));
-        highlightColor += adjustedLight * waterMask * 0.12 * vec3(0.42, 0.58, 0.74);
+    // 2. Lighting compositing from Veil deferred light buffer
+    if (!isSky) {
+        vec3 light = texture(LightSampler, texCoord).rgb;
+        float lightFlicker = 1.0 + sin(GameTime * 2.5) * 0.04 * LightVariation;
+        vec3 adjustedLight = light * lightFlicker;
+        color += adjustedLight * 0.75;
     }
 
-    color += adjustedLight * (0.9 + surface.x * 0.35 + surface.z * 0.1 - surface.w * 0.08);
-    color = mix(color, reflectedColor, clamp(reflectionMask, 0.0, 0.85));
-    color += highlightColor;
-    if (waterMask > 0.001) {
-        color = mix(color, color * vec3(0.84, 0.94, 1.05), waterMask * 0.12);
+    // 3. Water effects (specular shimmer on water surfaces)
+    if (WaterEffectsEnabled != 0 && !isSky) {
+        vec3 normalVS = texture(NormalSampler, texCoord).xyz;
+        float flatness = smoothstep(0.4, 0.95, abs(normalVS.z));
+        float blueRatio = sourceColor.b - max(sourceColor.r, sourceColor.g * 0.9);
+        float waterHint = clamp(flatness * smoothstep(0.02, 0.15, blueRatio), 0.0, 1.0);
+        if (waterHint > 0.01) {
+            vec2 waveUv = (texCoord * vec2(8.0, 6.0)) + vec2(GameTime * 0.02, -GameTime * 0.015);
+            vec3 waveNormal = decodeNormal(texture(WaterNormalSampler, waveUv).xyz);
+            vec3 sunDir = normalize(vec3(-0.35, 0.45, 0.82));
+            float spec = pow(max(dot(waveNormal, sunDir), 0.0), 32.0);
+            color += spec * 0.35 * ReflectionStrength * waterHint;
+        }
     }
 
-    if (FilmGrainEnabled != 0) {
-        float grain = hash(texCoord * vec2(1920.0, 1080.0) + GameTime * 12.0) - 0.5;
-        color += grain * 0.06 * strength;
+    // 4. Smooth atmospheric distance fog (ONLY on terrain, NEVER on the sky!)
+    if (!isSky && FogIntensity > 0.001) {
+        vec3 viewPos = screenToLocalSpace(texCoord, depth).xyz;
+        float dist = length(viewPos);
+        float fogFactor = smoothstep(24.0, 180.0, dist) * FogIntensity;
+        if (fogFactor > 0.001) {
+            vec3 fogCol = presetFogColor(PresetIndex);
+            color = mix(color, fogCol, clamp(fogFactor, 0.0, 0.8));
+        }
     }
 
-    if (ScanlinesEnabled != 0) {
-        float scanlines = sin((texCoord.y * 960.0) + GameTime * 22.0) * 0.04 * strength;
-        color -= scanlines;
+    // 5. Preset color grading (only when Post Effects is enabled)
+    if (Intensity > 0.001) {
+        if (PresetIndex == 1) { // Warm
+            color = mix(color, vec3(dot(color, vec3(0.299, 0.587, 0.114))), 0.08 * strength);
+            color *= vec3(1.04, 0.98, 0.92);
+        } else if (PresetIndex == 2) { // Moonlit
+            color *= vec3(0.92, 1.01, 1.07);
+        }
     }
 
-    if (VignetteEnabled != 0) {
-        float distanceToCenter = dot(centeredUv, centeredUv) * 3.2;
-        float vignette = smoothstep(0.35, 1.1, distanceToCenter);
-        color *= 1.0 - vignette * 0.55 * strength;
-    }
-
-    if (PresetIndex == 1) {
-        color = mix(color, vec3(dot(color, vec3(0.299, 0.587, 0.114))), 0.18 * strength);
-    } else if (PresetIndex == 2) {
-        color *= vec3(0.92, 1.03, 1.08);
-    }
-
-    float fogNoise = hash((texCoord * vec2(640.0, 360.0)) + vec2(GameTime * 0.85, GameTime * 0.31));
-    float fogVariation = mix(1.0 - FogVariation * 0.35, 1.0 + FogVariation * 0.65, fogNoise);
-    float fogFactor = smoothstep(0.18, 0.985, depth) * FogIntensity * fogVariation;
-    vec3 fogColor = presetFogColor(PresetIndex) + (adjustedLight * 0.16);
-    color = mix(color, fogColor, clamp(fogFactor, 0.0, 0.92));
-    color += adjustedLight * clamp(fogFactor * 0.18, 0.0, 0.24);
-
-    if (StarsEnabled != 0 && NightSkyStrength > 0.001) {
-        float skyMask = smoothstep(0.992, 0.9997, depth);
-        vec2 starsUv;
+    // 6. Stars rendering (in the sky during night)
+    if (isSky && StarsEnabled != 0 && NightSkyStrength > 0.001) {
+        vec3 worldDir;
         if (CelestialSphere != 0) {
-            float fovRad = radians(max(10.0, CameraFov));
-            float tanHalfFov = tan(fovRad * 0.5);
-            float asp = max(0.1, AspectRatio);
-            vec2 ndc = (texCoord - vec2(0.5)) * 2.0;
-            vec3 viewRay = normalize(vec3(ndc.x * tanHalfFov * asp, ndc.y * tanHalfFov, 1.0));
-
-            float pitchRad = radians(CameraPitch);
-            float yawRad = radians(CameraYaw);
-
-            float cp = cos(pitchRad);
-            float sp = sin(pitchRad);
-            vec3 pitchedRay = vec3(
-                viewRay.x,
-                viewRay.y * cp - viewRay.z * sp,
-                viewRay.y * sp + viewRay.z * cp
-            );
-
-            float cy = cos(yawRad);
-            float sy = sin(yawRad);
-            vec3 worldRay = vec3(
-                pitchedRay.x * cy + pitchedRay.z * sy,
-                pitchedRay.y,
-                -pitchedRay.x * sy + pitchedRay.z * cy
-            );
-
-            float azimuth = atan(worldRay.x, worldRay.z) / 6.2831853 + 0.5;
-            float elevation = asin(clamp(worldRay.y, -1.0, 1.0)) / 3.14159265 + 0.5;
-            starsUv = fract(vec2(azimuth * 2.5 + SkyAngle * 0.5, elevation * 2.5));
+            worldDir = viewDirFromUv(texCoord);
         } else {
-            starsUv = fract((texCoord * vec2(1.45, 1.0)) + vec2(GameTime * 0.0007, 0.0));
+            worldDir = vec3((texCoord - 0.5) * 2.0, 1.0);
         }
 
-        vec3 stars = texture(StarsSampler, starsUv).rgb;
-        float starField = dot(stars, vec3(0.299, 0.587, 0.114));
-        float twinkle = (1.0 - StarTwinkle * 0.4) + (hash(starsUv * vec2(1820.0, 960.0) + GameTime * 0.35) * StarTwinkle * 0.6);
-        vec3 starLight = stars * (0.8 + starField * 0.8) * twinkle * StarBrightness;
+        // Fade stars near the horizon
+        float horizonFade = smoothstep(-0.02, 0.12, worldDir.y);
+        if (horizonFade > 0.001) {
+            float azimuth = atan(worldDir.x, worldDir.z) / 6.2831853 + 0.5;
+            float elevation = asin(clamp(worldDir.y, 0.0, 1.0)) / 1.5707963;
 
-        color = mix(color, max(color, starLight), skyMask * NightSkyStrength);
+            // Rotate stars across the celestial sphere with world time
+            vec2 starsUv = fract(vec2(azimuth * 4.0 + SkyAngle * 0.5, elevation * 3.0));
+
+            // Sample custom stars texture
+            vec3 starTex = texture(StarsSampler, starsUv).rgb;
+            float starLuma = max(max(starTex.r, starTex.g), starTex.b);
+
+            // Twinkle calculation
+            float twinkle = 1.0;
+            if (StarTwinkle > 0.01) {
+                float tHash = hash(floor(starsUv * 256.0) + floor(GameTime * 5.0));
+                twinkle = (1.0 - StarTwinkle * 0.45) + tHash * StarTwinkle * 0.5;
+            }
+
+            // Amplify texture star points
+            vec3 starLight = starTex * (1.0 + smoothstep(0.04, 0.20, starLuma) * 3.5) * twinkle * StarBrightness * 2.0;
+
+            // Procedural crisp star field overlay to guarantee sparkling starry sky
+            vec2 pGrid = starsUv * 140.0;
+            vec2 pCell = floor(pGrid);
+            vec2 pUv = fract(pGrid) - 0.5;
+            float pSeed = hash(pCell * 19.17 + 7.31);
+            if (pSeed > 0.965) {
+                float pDist = length(pUv);
+                float pIntensity = smoothstep(0.14, 0.0, pDist);
+                float pTwink = (1.0 - StarTwinkle * 0.4) + sin(GameTime * 4.0 + pSeed * 45.0) * StarTwinkle * 0.4;
+                starLight += vec3(pIntensity * (pSeed - 0.965) * 28.0 * pTwink * StarBrightness);
+            }
+
+            // ADDITIVE sky blending: stars emit light onto the night sky
+            color += starLight * horizonFade * NightSkyStrength;
+        }
+    }
+
+    // 7. Intentional Cinematic Post Effects (Film Grain, Scanlines, Vignette)
+    // ONLY applied when Post Effects is enabled in configuration!
+    if (Intensity > 0.001) {
+        if (FilmGrainEnabled != 0) {
+            float grain = hash(texCoord * vec2(1920.0, 1080.0) + fract(GameTime * 17.0)) - 0.5;
+            color += grain * 0.05 * strength;
+        }
+
+        if (ScanlinesEnabled != 0) {
+            float scanline = sin(texCoord.y * 540.0 * 3.14159) * 0.5 + 0.5;
+            color *= 1.0 - (scanline * 0.08 * strength);
+        }
+
+        if (VignetteEnabled != 0) {
+            float dist = length(centeredUv * vec2(1.0, 1.0 / max(0.1, AspectRatio)));
+            float vignette = smoothstep(0.38, 0.95, dist);
+            color *= 1.0 - (vignette * 0.5 * strength);
+        }
     }
 
     fragColor = vec4(clamp(color, 0.0, 1.0), baseColor.a);
