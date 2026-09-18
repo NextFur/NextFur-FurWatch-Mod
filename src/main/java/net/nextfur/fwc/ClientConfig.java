@@ -10,6 +10,13 @@ import net.nextfur.fwc.util.client.FurWatchShaderState;
 public class ClientConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
+    private static final ModConfigSpec.BooleanValue SHADERS_ENABLED = BUILDER
+        .comment("Master switch to enable or disable FurWatch shaders.")
+        .define("shaders.enabled", false);
+    private static final ModConfigSpec.BooleanValue DISABLE_ON_IRIS = BUILDER
+        .comment("Automatically disable FurWatch shaders when Iris/Oculus shaderpacks are active.")
+        .define("compatibility.disableOnIris", true);
+
     private static final ModConfigSpec.BooleanValue LIGHTING_ENABLED = BUILDER
         .comment("Enables the FurWatch raster lighting pipeline.")
         .define("lighting.enabled", false);
@@ -34,6 +41,20 @@ public class ClientConfig {
     private static final ModConfigSpec.BooleanValue OCCLUSION_ENABLED = BUILDER
         .comment("Enables occlusion for FurWatch scene lights.")
         .define("lighting.occlusion", false);
+
+    private static final ModConfigSpec.BooleanValue STARS_ENABLED = BUILDER
+        .comment("Enables custom star rendering at night.")
+        .define("sky.stars.enabled", true);
+    private static final ModConfigSpec.DoubleValue STAR_BRIGHTNESS = BUILDER
+        .comment("Brightness multiplier for starry night sky.")
+        .defineInRange("sky.stars.brightness", 1.0D, 0.0D, 3.0D);
+    private static final ModConfigSpec.DoubleValue STAR_TWINKLE = BUILDER
+        .comment("Twinkle effect strength for stars.")
+        .defineInRange("sky.stars.twinkle", 0.5D, 0.0D, 1.0D);
+    private static final ModConfigSpec.BooleanValue CELESTIAL_SPHERE = BUILDER
+        .comment("Whether stars map to the rotating celestial sky dome instead of screen coordinates.")
+        .define("sky.stars.celestialSphere", true);
+
     private static final ModConfigSpec.BooleanValue POST_EFFECTS_ENABLED = BUILDER
         .comment("Enables FurWatch post effects after lighting has been composited.")
         .define("effects.enabled", false);
@@ -62,8 +83,23 @@ public class ClientConfig {
         .comment("Variation amount applied to FurWatch local light sources and composite lighting.")
         .defineInRange("effects.lightVariation", 0.35D, 0.0D, 1.0D);
 
+    private static final ModConfigSpec.BooleanValue FILM_GRAIN = BUILDER
+        .comment("Enables cinematic film grain effect.")
+        .define("effects.filmGrain", true);
+    private static final ModConfigSpec.BooleanValue VIGNETTE = BUILDER
+        .comment("Enables screen edge vignette effect.")
+        .define("effects.vignette", true);
+    private static final ModConfigSpec.BooleanValue SCANLINES = BUILDER
+        .comment("Enables retro scanlines effect.")
+        .define("effects.scanlines", false);
+    private static final ModConfigSpec.BooleanValue CHROMATIC_ABERRATION = BUILDER
+        .comment("Enables chromatic aberration color fringe.")
+        .define("effects.chromaticAberration", true);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
+    private static boolean shadersEnabled;
+    private static boolean disableOnIris;
     private static boolean lightingEnabled;
     private static double globalIntensity;
     private static double ambientIntensity;
@@ -72,6 +108,10 @@ public class ClientConfig {
     private static double localLightBrightness;
     private static String lightingPreset = "balanced";
     private static boolean occlusionEnabled;
+    private static boolean starsEnabled;
+    private static double starBrightness;
+    private static double starTwinkle;
+    private static boolean celestialSphere;
     private static boolean postEffectsEnabled;
     private static double postEffectsStrength;
     private static double blurStrength;
@@ -81,6 +121,10 @@ public class ClientConfig {
     private static double fogIntensity;
     private static double fogVariation;
     private static double lightVariation;
+    private static boolean filmGrain;
+    private static boolean vignette;
+    private static boolean scanlines;
+    private static boolean chromaticAberration;
 
     private ClientConfig() {
     }
@@ -91,7 +135,9 @@ public class ClientConfig {
             return;
         }
 
-        lightingEnabled = LIGHTING_ENABLED.get();
+        shadersEnabled = SHADERS_ENABLED.get();
+        disableOnIris = DISABLE_ON_IRIS.get();
+        lightingEnabled = LIGHTING_ENABLED.get() || shadersEnabled;
         globalIntensity = GLOBAL_INTENSITY.get();
         ambientIntensity = AMBIENT_INTENSITY.get();
         directionalIntensity = DIRECTIONAL_INTENSITY.get();
@@ -99,6 +145,10 @@ public class ClientConfig {
         localLightBrightness = LOCAL_LIGHT_BRIGHTNESS.get();
         lightingPreset = LIGHTING_PRESET.get();
         occlusionEnabled = OCCLUSION_ENABLED.get();
+        starsEnabled = STARS_ENABLED.get();
+        starBrightness = STAR_BRIGHTNESS.get();
+        starTwinkle = STAR_TWINKLE.get();
+        celestialSphere = CELESTIAL_SPHERE.get();
         postEffectsEnabled = POST_EFFECTS_ENABLED.get();
         postEffectsStrength = POST_EFFECTS_STRENGTH.get();
         blurStrength = BLUR_STRENGTH.get();
@@ -108,12 +158,24 @@ public class ClientConfig {
         fogIntensity = FOG_INTENSITY.get();
         fogVariation = FOG_VARIATION.get();
         lightVariation = LIGHT_VARIATION.get();
+        filmGrain = FILM_GRAIN.get();
+        vignette = VIGNETTE.get();
+        scanlines = SCANLINES.get();
+        chromaticAberration = CHROMATIC_ABERRATION.get();
         FurWatchShaderState.reloadFromConfig();
     }
 
     @SubscribeEvent
     static void onReload(final ModConfigEvent.Reloading event) {
         onLoad(new ModConfigEvent.Loading(event.getConfig()));
+    }
+
+    public static boolean isShadersEnabled() {
+        return shadersEnabled;
+    }
+
+    public static boolean isDisableOnIris() {
+        return disableOnIris;
     }
 
     public static boolean isLightingEnabled() {
@@ -146,6 +208,22 @@ public class ClientConfig {
 
     public static boolean isOcclusionEnabled() {
         return occlusionEnabled;
+    }
+
+    public static boolean isStarsEnabled() {
+        return starsEnabled;
+    }
+
+    public static double getStarBrightness() {
+        return starBrightness;
+    }
+
+    public static double getStarTwinkle() {
+        return starTwinkle;
+    }
+
+    public static boolean isCelestialSphere() {
+        return celestialSphere;
     }
 
     public static boolean isPostEffectsEnabled() {
@@ -184,9 +262,37 @@ public class ClientConfig {
         return lightVariation;
     }
 
+    public static boolean isFilmGrain() {
+        return filmGrain;
+    }
+
+    public static boolean isVignette() {
+        return vignette;
+    }
+
+    public static boolean isScanlines() {
+        return scanlines;
+    }
+
+    public static boolean isChromaticAberration() {
+        return chromaticAberration;
+    }
+
+    public static void setShadersEnabled(boolean enabled) {
+        SHADERS_ENABLED.set(enabled);
+        shadersEnabled = enabled;
+        setLightingEnabled(enabled);
+    }
+
+    public static void setDisableOnIris(boolean disable) {
+        DISABLE_ON_IRIS.set(disable);
+        disableOnIris = disable;
+    }
+
     public static void setLightingEnabled(boolean enabled) {
         LIGHTING_ENABLED.set(enabled);
         lightingEnabled = enabled;
+        shadersEnabled = enabled;
     }
 
     public static void setGlobalIntensity(double intensity) {
@@ -267,6 +373,46 @@ public class ClientConfig {
     public static void setLightVariation(double variation) {
         LIGHT_VARIATION.set(variation);
         lightVariation = variation;
+    }
+
+    public static void setStarsEnabled(boolean enabled) {
+        STARS_ENABLED.set(enabled);
+        starsEnabled = enabled;
+    }
+
+    public static void setStarBrightness(double brightness) {
+        STAR_BRIGHTNESS.set(brightness);
+        starBrightness = brightness;
+    }
+
+    public static void setStarTwinkle(double twinkle) {
+        STAR_TWINKLE.set(twinkle);
+        starTwinkle = twinkle;
+    }
+
+    public static void setCelestialSphere(boolean enabled) {
+        CELESTIAL_SPHERE.set(enabled);
+        celestialSphere = enabled;
+    }
+
+    public static void setFilmGrain(boolean enabled) {
+        FILM_GRAIN.set(enabled);
+        filmGrain = enabled;
+    }
+
+    public static void setVignette(boolean enabled) {
+        VIGNETTE.set(enabled);
+        vignette = enabled;
+    }
+
+    public static void setScanlines(boolean enabled) {
+        SCANLINES.set(enabled);
+        scanlines = enabled;
+    }
+
+    public static void setChromaticAberration(boolean enabled) {
+        CHROMATIC_ABERRATION.set(enabled);
+        chromaticAberration = enabled;
     }
 
     public static void save() {

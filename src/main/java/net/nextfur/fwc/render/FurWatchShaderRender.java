@@ -32,7 +32,7 @@ public final class FurWatchShaderRender {
             clearLighting();
             return;
         }
-        if (!FurWatchShaderState.isEnabled()) {
+        if (!FurWatchShaderState.isEffectiveShaderEnabled()) {
             clearLighting();
             return;
         }

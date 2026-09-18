@@ -23,6 +23,16 @@ uniform int VignetteEnabled;
 uniform int ScanlinesEnabled;
 uniform int ChromaticAberrationEnabled;
 
+uniform int StarsEnabled;
+uniform float StarBrightness;
+uniform float StarTwinkle;
+uniform int CelestialSphere;
+uniform float CameraYaw;
+uniform float CameraPitch;
+uniform float CameraFov;
+uniform float AspectRatio;
+uniform float SkyAngle;
+
 in vec2 texCoord;
 
 out vec4 fragColor;
@@ -195,14 +205,48 @@ void main() {
     color = mix(color, fogColor, clamp(fogFactor, 0.0, 0.92));
     color += adjustedLight * clamp(fogFactor * 0.18, 0.0, 0.24);
 
-    if (NightSkyStrength > 0.001) {
+    if (StarsEnabled != 0 && NightSkyStrength > 0.001) {
         float skyMask = smoothstep(0.992, 0.9997, depth);
-        vec2 starsUv = (texCoord * vec2(1.45, 1.0)) + vec2(GameTime * 0.0007, 0.0);
+        vec2 starsUv;
+        if (CelestialSphere != 0) {
+            float fovRad = radians(max(10.0, CameraFov));
+            float tanHalfFov = tan(fovRad * 0.5);
+            float asp = max(0.1, AspectRatio);
+            vec2 ndc = (texCoord - vec2(0.5)) * 2.0;
+            vec3 viewRay = normalize(vec3(ndc.x * tanHalfFov * asp, ndc.y * tanHalfFov, 1.0));
+
+            float pitchRad = radians(CameraPitch);
+            float yawRad = radians(CameraYaw);
+
+            float cp = cos(pitchRad);
+            float sp = sin(pitchRad);
+            vec3 pitchedRay = vec3(
+                viewRay.x,
+                viewRay.y * cp - viewRay.z * sp,
+                viewRay.y * sp + viewRay.z * cp
+            );
+
+            float cy = cos(yawRad);
+            float sy = sin(yawRad);
+            vec3 worldRay = vec3(
+                pitchedRay.x * cy + pitchedRay.z * sy,
+                pitchedRay.y,
+                -pitchedRay.x * sy + pitchedRay.z * cy
+            );
+
+            float azimuth = atan(worldRay.x, worldRay.z) / 6.2831853 + 0.5;
+            float elevation = asin(clamp(worldRay.y, -1.0, 1.0)) / 3.14159265 + 0.5;
+            starsUv = fract(vec2(azimuth * 2.5 + SkyAngle * 0.5, elevation * 2.5));
+        } else {
+            starsUv = fract((texCoord * vec2(1.45, 1.0)) + vec2(GameTime * 0.0007, 0.0));
+        }
+
         vec3 stars = texture(StarsSampler, starsUv).rgb;
         float starField = dot(stars, vec3(0.299, 0.587, 0.114));
-        float twinkle = 0.82 + (hash((texCoord * vec2(1820.0, 960.0)) + GameTime * 0.35) * 0.36);
-        vec3 nightSky = max(color * vec3(0.24, 0.3, 0.42), stars * (0.6 + starField * 0.85) * twinkle);
-        color = mix(color, nightSky, skyMask * NightSkyStrength);
+        float twinkle = (1.0 - StarTwinkle * 0.4) + (hash(starsUv * vec2(1820.0, 960.0) + GameTime * 0.35) * StarTwinkle * 0.6);
+        vec3 starLight = stars * (0.8 + starField * 0.8) * twinkle * StarBrightness;
+
+        color = mix(color, max(color, starLight), skyMask * NightSkyStrength);
     }
 
     fragColor = vec4(clamp(color, 0.0, 1.0), baseColor.a);

@@ -31,7 +31,7 @@ public final class FurWatchPostEffectRender {
             clearEffects();
             return;
         }
-        if (!FurWatchShaderState.isEnabled()) {
+        if (!FurWatchShaderState.isEffectiveShaderEnabled()) {
             clearEffects();
             return;
         }
@@ -60,6 +60,12 @@ public final class FurWatchPostEffectRender {
         boolean effectEnabled = FurWatchShaderState.isPostEffectsEnabled();
         float legacyStrength = effectEnabled ? FurWatchShaderState.getPostEffectsStrength() : 0.0F;
 
+        float yaw = client.gameRenderer.getMainCamera().getYRot();
+        float pitch = client.gameRenderer.getMainCamera().getXRot();
+        float fov = (float) client.options.fov().get().intValue();
+        float aspect = (float) Math.max(1, client.getWindow().getWidth()) / (float) Math.max(1, client.getWindow().getHeight());
+        float skyAngle = client.level.getTimeOfDay(partialTick);
+
         shader.getUniformSafe("Intensity").setFloat(legacyStrength);
         shader.getUniformSafe("BlurAmount").setFloat(effectEnabled ? FurWatchShaderState.getBlurStrength() : 0.0F);
         shader.getUniformSafe("ReflectionStrength").setFloat(FurWatchShaderState.getReflectionStrength());
@@ -71,10 +77,20 @@ public final class FurWatchPostEffectRender {
         shader.getUniformSafe("LightVariation").setFloat(FurWatchShaderState.getLightVariation());
         shader.getUniformSafe("GameTime").setFloat(time);
         shader.getUniformSafe("PresetIndex").setInt(FurWatchShaderState.getPresetIndex());
-        shader.getUniformSafe("FilmGrainEnabled").setInt(effectEnabled ? 1 : 0);
-        shader.getUniformSafe("VignetteEnabled").setInt(effectEnabled ? 1 : 0);
-        shader.getUniformSafe("ScanlinesEnabled").setInt(effectEnabled ? 1 : 0);
-        shader.getUniformSafe("ChromaticAberrationEnabled").setInt(effectEnabled ? 1 : 0);
+        shader.getUniformSafe("FilmGrainEnabled").setInt((effectEnabled && FurWatchShaderState.isFilmGrainEnabled()) ? 1 : 0);
+        shader.getUniformSafe("VignetteEnabled").setInt((effectEnabled && FurWatchShaderState.isVignetteEnabled()) ? 1 : 0);
+        shader.getUniformSafe("ScanlinesEnabled").setInt((effectEnabled && FurWatchShaderState.isScanlinesEnabled()) ? 1 : 0);
+        shader.getUniformSafe("ChromaticAberrationEnabled").setInt((effectEnabled && FurWatchShaderState.isChromaticAberrationEnabled()) ? 1 : 0);
+
+        shader.getUniformSafe("StarsEnabled").setInt(FurWatchShaderState.isStarsEnabled() ? 1 : 0);
+        shader.getUniformSafe("StarBrightness").setFloat(FurWatchShaderState.getStarBrightness());
+        shader.getUniformSafe("StarTwinkle").setFloat(FurWatchShaderState.getStarTwinkle());
+        shader.getUniformSafe("CelestialSphere").setInt(FurWatchShaderState.isCelestialSphere() ? 1 : 0);
+        shader.getUniformSafe("CameraYaw").setFloat(yaw);
+        shader.getUniformSafe("CameraPitch").setFloat(pitch);
+        shader.getUniformSafe("CameraFov").setFloat(fov);
+        shader.getUniformSafe("AspectRatio").setFloat(aspect);
+        shader.getUniformSafe("SkyAngle").setFloat(skyAngle);
     }
 
     public static void clearEffects() {
@@ -89,14 +105,14 @@ public final class FurWatchPostEffectRender {
     }
 
     private static float resolveNightSkyStrength(Minecraft client, float partialTick) {
-        if (client.level == null || client.level.dimension() != Level.OVERWORLD || SkyColorState.getBoxColor() != -1) {
+        if (!FurWatchShaderState.isStarsEnabled() || client.level == null || client.level.dimension() != Level.OVERWORLD || SkyColorState.getBoxColor() != -1) {
             return 0.0F;
         }
 
         float skyAngle = client.level.getTimeOfDay(partialTick) * ((float) Math.PI * 2.0F);
         float sunHeight = Mth.cos(skyAngle);
         float nightBlend = 1.0F - smoothStep(-0.18F, 0.08F, sunHeight);
-        float weatherDimming = 1.0F - Mth.clamp((client.level.getRainLevel(partialTick) * 0.45F) + (client.level.getThunderLevel(partialTick) * 0.55F), 0.0F, 0.75F);
+        float weatherDimming = 1.0F - Mth.clamp((client.level.getRainLevel(partialTick) * 0.75F) + (client.level.getThunderLevel(partialTick) * 0.25F), 0.0F, 1.0F);
         return Mth.clamp(nightBlend * weatherDimming, 0.0F, 1.0F);
     }
 

@@ -55,7 +55,7 @@ public final class FurWatchTaggedEmitterRender {
             clearAllLights();
             return;
         }
-        if (!FurWatchShaderState.isEnabled()) {
+        if (!FurWatchShaderState.isEffectiveShaderEnabled()) {
             clearAllLights();
             return;
         }

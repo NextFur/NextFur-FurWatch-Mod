@@ -5,6 +5,7 @@ import net.minecraft.util.Mth;
 
 public final class FurWatchShaderState {
     private static boolean enabled;
+    private static boolean disableOnIris = true;
     private static float globalIntensity;
     private static float ambientIntensity;
     private static float directionalIntensity;
@@ -12,6 +13,10 @@ public final class FurWatchShaderState {
     private static float localLightBrightness;
     private static String preset = "balanced";
     private static boolean occlusionEnabled;
+    private static boolean starsEnabled = true;
+    private static float starBrightness = 1.0F;
+    private static float starTwinkle = 0.5F;
+    private static boolean celestialSphere = true;
     private static boolean postEffectsEnabled;
     private static float postEffectsStrength;
     private static float blurStrength;
@@ -21,12 +26,17 @@ public final class FurWatchShaderState {
     private static float fogIntensity;
     private static float fogVariation;
     private static float lightVariation;
+    private static boolean filmGrain = true;
+    private static boolean vignette = true;
+    private static boolean scanlines = false;
+    private static boolean chromaticAberration = true;
 
     private FurWatchShaderState() {
     }
 
     public static void reloadFromConfig() {
-        enabled = ClientConfig.isLightingEnabled();
+        enabled = ClientConfig.isShadersEnabled() || ClientConfig.isLightingEnabled();
+        disableOnIris = ClientConfig.isDisableOnIris();
         globalIntensity = (float) ClientConfig.getGlobalIntensity();
         ambientIntensity = (float) ClientConfig.getAmbientIntensity();
         directionalIntensity = (float) ClientConfig.getDirectionalIntensity();
@@ -34,6 +44,10 @@ public final class FurWatchShaderState {
         localLightBrightness = (float) ClientConfig.getLocalLightBrightness();
         preset = ClientConfig.getLightingPreset();
         occlusionEnabled = ClientConfig.isOcclusionEnabled();
+        starsEnabled = ClientConfig.isStarsEnabled();
+        starBrightness = (float) ClientConfig.getStarBrightness();
+        starTwinkle = (float) ClientConfig.getStarTwinkle();
+        celestialSphere = ClientConfig.isCelestialSphere();
         postEffectsEnabled = ClientConfig.isPostEffectsEnabled();
         postEffectsStrength = (float) ClientConfig.getPostEffectsStrength();
         blurStrength = (float) ClientConfig.getBlurStrength();
@@ -43,26 +57,39 @@ public final class FurWatchShaderState {
         fogIntensity = (float) ClientConfig.getFogIntensity();
         fogVariation = (float) ClientConfig.getFogVariation();
         lightVariation = (float) ClientConfig.getLightVariation();
+        filmGrain = ClientConfig.isFilmGrain();
+        vignette = ClientConfig.isVignette();
+        scanlines = ClientConfig.isScanlines();
+        chromaticAberration = ClientConfig.isChromaticAberration();
     }
 
     public static void reset() {
-        enabled = false;
-        globalIntensity = 1.0F;
-        ambientIntensity = 0.35F;
-        directionalIntensity = 0.75F;
-        localLightRadius = 24.0F;
-        localLightBrightness = 1.0F;
-        preset = "balanced";
-        occlusionEnabled = false;
-        postEffectsEnabled = false;
-        postEffectsStrength = 0.65F;
-        blurStrength = 0.15F;
-        reflectionStrength = 0.45F;
-        reflectionSoftness = 0.35F;
-        waterEffectsEnabled = true;
-        fogIntensity = 0.65F;
-        fogVariation = 0.3F;
-        lightVariation = 0.35F;
+        restoreDefaults();
+    }
+
+    public static boolean isIrisShaderPackInUse() {
+        try {
+            Class<?> irisApiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+            Object instance = irisApiClass.getMethod("getInstance").invoke(null);
+            if (instance != null) {
+                Object inUse = irisApiClass.getMethod("isShaderPackInUse").invoke(instance);
+                if (inUse instanceof Boolean b) {
+                    return b;
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
+    }
+
+    public static boolean isEffectiveShaderEnabled() {
+        if (!enabled) {
+            return false;
+        }
+        if (disableOnIris && isIrisShaderPackInUse()) {
+            return false;
+        }
+        return true;
     }
 
     public static boolean isEnabled() {
@@ -75,6 +102,46 @@ public final class FurWatchShaderState {
 
     public static void toggleEnabled() {
         enabled = !enabled;
+    }
+
+    public static boolean isDisableOnIris() {
+        return disableOnIris;
+    }
+
+    public static void setDisableOnIris(boolean disableOnIris) {
+        FurWatchShaderState.disableOnIris = disableOnIris;
+    }
+
+    public static boolean isStarsEnabled() {
+        return starsEnabled;
+    }
+
+    public static void setStarsEnabled(boolean starsEnabled) {
+        FurWatchShaderState.starsEnabled = starsEnabled;
+    }
+
+    public static float getStarBrightness() {
+        return starBrightness;
+    }
+
+    public static void setStarBrightness(float starBrightness) {
+        FurWatchShaderState.starBrightness = Mth.clamp(starBrightness, 0.0F, 3.0F);
+    }
+
+    public static float getStarTwinkle() {
+        return starTwinkle;
+    }
+
+    public static void setStarTwinkle(float starTwinkle) {
+        FurWatchShaderState.starTwinkle = Mth.clamp(starTwinkle, 0.0F, 1.0F);
+    }
+
+    public static boolean isCelestialSphere() {
+        return celestialSphere;
+    }
+
+    public static void setCelestialSphere(boolean celestialSphere) {
+        FurWatchShaderState.celestialSphere = celestialSphere;
     }
 
     public static float getGlobalIntensity() {
@@ -205,7 +272,41 @@ public final class FurWatchShaderState {
         FurWatchShaderState.lightVariation = Mth.clamp(lightVariation, 0.0F, 1.0F);
     }
 
+    public static boolean isFilmGrainEnabled() {
+        return filmGrain;
+    }
+
+    public static void setFilmGrainEnabled(boolean filmGrain) {
+        FurWatchShaderState.filmGrain = filmGrain;
+    }
+
+    public static boolean isVignetteEnabled() {
+        return vignette;
+    }
+
+    public static void setVignetteEnabled(boolean vignette) {
+        FurWatchShaderState.vignette = vignette;
+    }
+
+    public static boolean isScanlinesEnabled() {
+        return scanlines;
+    }
+
+    public static void setScanlinesEnabled(boolean scanlines) {
+        FurWatchShaderState.scanlines = scanlines;
+    }
+
+    public static boolean isChromaticAberrationEnabled() {
+        return chromaticAberration;
+    }
+
+    public static void setChromaticAberrationEnabled(boolean chromaticAberration) {
+        FurWatchShaderState.chromaticAberration = chromaticAberration;
+    }
+
     public static void persist() {
+        ClientConfig.setShadersEnabled(enabled);
+        ClientConfig.setDisableOnIris(disableOnIris);
         ClientConfig.setLightingEnabled(enabled);
         ClientConfig.setGlobalIntensity(globalIntensity);
         ClientConfig.setAmbientIntensity(ambientIntensity);
@@ -214,6 +315,10 @@ public final class FurWatchShaderState {
         ClientConfig.setLocalLightBrightness(localLightBrightness);
         ClientConfig.setLightingPreset(preset);
         ClientConfig.setOcclusionEnabled(occlusionEnabled);
+        ClientConfig.setStarsEnabled(starsEnabled);
+        ClientConfig.setStarBrightness(starBrightness);
+        ClientConfig.setStarTwinkle(starTwinkle);
+        ClientConfig.setCelestialSphere(celestialSphere);
         ClientConfig.setPostEffectsEnabled(postEffectsEnabled);
         ClientConfig.setPostEffectsStrength(postEffectsStrength);
         ClientConfig.setBlurStrength(blurStrength);
@@ -223,11 +328,16 @@ public final class FurWatchShaderState {
         ClientConfig.setFogIntensity(fogIntensity);
         ClientConfig.setFogVariation(fogVariation);
         ClientConfig.setLightVariation(lightVariation);
+        ClientConfig.setFilmGrain(filmGrain);
+        ClientConfig.setVignette(vignette);
+        ClientConfig.setScanlines(scanlines);
+        ClientConfig.setChromaticAberration(chromaticAberration);
         ClientConfig.save();
     }
 
     public static void restoreDefaults() {
         enabled = false;
+        disableOnIris = true;
         globalIntensity = 1.0F;
         ambientIntensity = 0.35F;
         directionalIntensity = 0.75F;
@@ -235,6 +345,10 @@ public final class FurWatchShaderState {
         localLightBrightness = 1.0F;
         preset = "balanced";
         occlusionEnabled = false;
+        starsEnabled = true;
+        starBrightness = 1.0F;
+        starTwinkle = 0.5F;
+        celestialSphere = true;
         postEffectsEnabled = false;
         postEffectsStrength = 0.65F;
         blurStrength = 0.15F;
@@ -244,6 +358,10 @@ public final class FurWatchShaderState {
         fogIntensity = 0.65F;
         fogVariation = 0.3F;
         lightVariation = 0.35F;
+        filmGrain = true;
+        vignette = true;
+        scanlines = false;
+        chromaticAberration = true;
     }
 
     public static int getPresetIndex() {
