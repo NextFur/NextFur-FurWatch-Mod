@@ -13,14 +13,14 @@ public class EconomyClientScreenEvents {
     @SubscribeEvent
     public static void onScreenInit(ScreenEvent.Init.Post event) {
         if (event.getScreen() instanceof InventoryScreen screen) {
-            int guiLeft = (screen.width - 176) / 2;
-            int guiTop = (screen.height - 166) / 2;
+            int guiLeft = screen.getGuiLeft();
+            int guiTop = screen.getGuiTop();
 
-            // Place dedicated wallet slot at (x=77, y=43), directly above the offhand/shield slot
-            int slotX = guiLeft + 77;
-            int slotY = guiTop + 43;
+            // 1. Dedicated wallet equipment slot above the offhand/shield slot
+            event.addListener(new WalletSlotWidget(screen, guiLeft + 77, guiTop + 43));
 
-            event.addListener(new WalletSlotWidget(screen, slotX, slotY));
+            // 2. Side tab on the left of the UI (only shown when a wallet is equipped)
+            event.addListener(new WalletSideTabWidget(screen, guiLeft - 28, guiTop + 24));
         }
     }
 }

@@ -19,7 +19,6 @@ import net.nextfur.fwc.economy.data.WalletData;
 import net.nextfur.fwc.economy.items.WalletItem;
 import net.nextfur.fwc.init.FwDataComponents;
 import net.nextfur.fwc.network.economy.EquipWalletSlotC2SPacket;
-import net.nextfur.fwc.network.economy.OpenWalletMenuC2SPacket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,11 @@ public class WalletSlotWidget extends AbstractWidget {
         this.screen = screen;
     }
 
+    public void updatePosition(int x, int y) {
+        setX(x);
+        setY(y);
+    }
+
     @Override
     public void onClick(double mouseX, double mouseY) {
         Minecraft mc = Minecraft.getInstance();
@@ -40,33 +44,20 @@ public class WalletSlotWidget extends AbstractWidget {
 
         ItemStack cursor = screen.getMenu().getCarried();
 
-        if (cursor.getItem() instanceof WalletItem) {
-            // Player clicks slot while holding a wallet -> Equip/Swap
-            PacketDistributor.sendToServer(new EquipWalletSlotC2SPacket(0));
-        } else if (Screen.hasShiftDown()) {
+        if (Screen.hasShiftDown()) {
             // Shift-click slot -> Unequip to inventory
             if (ClientWalletHolder.hasWallet()) {
                 PacketDistributor.sendToServer(new EquipWalletSlotC2SPacket(1));
             }
-        } else if (cursor.isEmpty()) {
-            if (ClientWalletHolder.hasWallet()) {
-                // Empty hand click on equipped wallet -> Open Wallet UI
-                PacketDistributor.sendToServer(new OpenWalletMenuC2SPacket());
-            } else {
-                mc.player.sendSystemMessage(Component.literal("Slot de Carteira: Segure uma carteira e clique aqui para equipar.")
-                        .withStyle(ChatFormatting.YELLOW));
-            }
-        } else {
-            // Holding something else -> Open wallet UI if equipped
-            if (ClientWalletHolder.hasWallet()) {
-                PacketDistributor.sendToServer(new OpenWalletMenuC2SPacket());
-            }
+        } else if (cursor.getItem() instanceof WalletItem || cursor.isEmpty()) {
+            // Standard slot behavior: pick up wallet or place/swap wallet
+            PacketDistributor.sendToServer(new EquipWalletSlotC2SPacket(0));
         }
     }
 
     @Override
     protected void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
-        // Draw slot border / frame
+        // Draw standard Minecraft-style slot background
         gui.fill(getX(), getY(), getX() + 18, getY() + 18, 0xFF373737);
         gui.fill(getX() + 1, getY() + 1, getX() + 17, getY() + 17, 0xFF8B8B8B);
         gui.fill(getX() + 1, getY() + 1, getX() + 16, getY() + 16, 0xFF373737);
@@ -80,14 +71,16 @@ public class WalletSlotWidget extends AbstractWidget {
         } else {
             // Render ghost wallet icon
             RenderSystem.enableBlend();
-            gui.setColor(1.0F, 1.0F, 1.0F, 0.45F);
+            gui.setColor(1.0F, 1.0F, 1.0F, 0.40F);
             gui.blit(WALLET_ICON, getX() + 1, getY() + 1, 0, 0, 16, 16, 16, 16);
             gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
         }
 
-        // Hover tooltip
+        // Slot hover highlight
         if (isHovered()) {
+            gui.fill(getX() + 1, getY() + 1, getX() + 17, getY() + 17, 0x80FFFFFF);
+
             List<Component> tooltip = new ArrayList<>();
             if (!wallet.isEmpty()) {
                 WalletData data = wallet.get(FwDataComponents.WALLET_DATA.get());
@@ -98,8 +91,8 @@ public class WalletSlotWidget extends AbstractWidget {
                     tooltip.add(Component.literal("Saldo: ").withStyle(ChatFormatting.GRAY)
                             .append(Component.literal(EconomyFormatHelper.formatStandard(data.balanceCents())).withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)));
                 }
-                tooltip.add(Component.literal("[Clique Esquerdo] Abrir Carteira").withStyle(ChatFormatting.YELLOW));
-                tooltip.add(Component.literal("[Shift + Clique] Desequipar").withStyle(ChatFormatting.GRAY));
+                tooltip.add(Component.literal("[Clique] Pegar / Trocar carteira").withStyle(ChatFormatting.YELLOW));
+                tooltip.add(Component.literal("[Shift + Clique] Mover para o inventário").withStyle(ChatFormatting.GRAY));
             } else {
                 tooltip.add(Component.literal("Slot de Carteira").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
                 tooltip.add(Component.literal("Nenhuma carteira equipada.").withStyle(ChatFormatting.GRAY));

@@ -26,9 +26,9 @@ public class WalletScreen extends AbstractContainerScreen<WalletMenu> {
     public WalletScreen(WalletMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.imageWidth = 176;
-        this.imageHeight = 222;
-        this.inventoryLabelY = 132;
-        this.titleLabelY = 6;
+        this.imageHeight = 236;
+        this.inventoryLabelY = 142;
+        this.titleLabelY = 7;
         this.walletData = menu.getWalletData();
     }
 
@@ -43,39 +43,37 @@ public class WalletScreen extends AbstractContainerScreen<WalletMenu> {
         int x = this.leftPos;
         int y = this.topPos;
 
-        // Button: Depositar item do slot
+        // Button: Depositar (Deposits item in slot 0)
         this.addRenderableWidget(Button.builder(Component.literal("Depositar"), b -> {
             PacketDistributor.sendToServer(new WalletActionC2SPacket(WalletActionC2SPacket.ACTION_DEPOSIT_SLOT, 0L, ""));
-        }).pos(x + 44, y + 41).size(60, 18).build());
+        }).pos(x + 42, y + 34).size(56, 18).build());
 
-        // Button: Depositar Tudo
+        // Button: Dep. Tudo (Scans inventory and deposits all cash)
         this.addRenderableWidget(Button.builder(Component.literal("Dep. Tudo"), b -> {
             PacketDistributor.sendToServer(new WalletActionC2SPacket(WalletActionC2SPacket.ACTION_DEPOSIT_ALL, 0L, ""));
-        }).pos(x + 106, y + 41).size(64, 18).build());
+        }).pos(x + 102, y + 34).size(58, 18).build());
 
-        // Quick Withdraw buttons row 1
-        CurrencyUnit[] row1 = {CurrencyUnit.COIN_1C, CurrencyUnit.COIN_5C, CurrencyUnit.COIN_20C, CurrencyUnit.COIN_50C, CurrencyUnit.COIN_1M, CurrencyUnit.COIN_2M};
-        int btnW = 26;
-        int btnH = 15;
-        for (int i = 0; i < row1.length; i++) {
-            CurrencyUnit u = row1[i];
-            this.addRenderableWidget(Button.builder(Component.literal(u.getLabel()), b -> {
-                PacketDistributor.sendToServer(new WalletActionC2SPacket(WalletActionC2SPacket.ACTION_WITHDRAW_CENTS, u.getValueInCents(), ""));
-            }).pos(x + 7 + i * (btnW + 2), y + 68).size(btnW, btnH).build());
+        // Quick Withdraw: Coins row (7 coins) - Each rendered as an interactive item icon slot!
+        CurrencyUnit[] coins = {
+                CurrencyUnit.COIN_1C, CurrencyUnit.COIN_5C, CurrencyUnit.COIN_20C,
+                CurrencyUnit.COIN_25C, CurrencyUnit.COIN_50C, CurrencyUnit.COIN_1M, CurrencyUnit.COIN_2M
+        };
+        for (int i = 0; i < coins.length; i++) {
+            this.addRenderableWidget(new CurrencyIconWidget(x + 15 + i * 21, y + 66, coins[i]));
         }
 
-        // Quick Withdraw buttons row 2
-        CurrencyUnit[] row2 = {CurrencyUnit.BILL_5M, CurrencyUnit.BILL_10M, CurrencyUnit.BILL_20M, CurrencyUnit.BILL_50M, CurrencyUnit.BILL_100M, CurrencyUnit.BILL_200M};
-        for (int i = 0; i < row2.length; i++) {
-            CurrencyUnit u = row2[i];
-            this.addRenderableWidget(Button.builder(Component.literal(u.getLabel()), b -> {
-                PacketDistributor.sendToServer(new WalletActionC2SPacket(WalletActionC2SPacket.ACTION_WITHDRAW_CENTS, u.getValueInCents(), ""));
-            }).pos(x + 7 + i * (btnW + 2), y + 85).size(btnW, btnH).build());
+        // Quick Withdraw: Bills row (6 bills) - Each rendered as an interactive item icon slot!
+        CurrencyUnit[] bills = {
+                CurrencyUnit.BILL_5M, CurrencyUnit.BILL_10M, CurrencyUnit.BILL_20M,
+                CurrencyUnit.BILL_50M, CurrencyUnit.BILL_100M, CurrencyUnit.BILL_200M
+        };
+        for (int i = 0; i < bills.length; i++) {
+            this.addRenderableWidget(new CurrencyIconWidget(x + 25 + i * 21, y + 87, bills[i]));
         }
 
-        // Custom withdraw box & button
-        this.customWithdrawBox = new EditBox(this.font, x + 7, y + 104, 48, 14, Component.literal("Valor Saque"));
-        this.customWithdrawBox.setHint(Component.literal("Ex: 15.50"));
+        // Custom Withdraw Section (Left)
+        this.customWithdrawBox = new EditBox(this.font, x + 8, y + 116, 44, 14, Component.literal("Valor Saque"));
+        this.customWithdrawBox.setHint(Component.literal("$M"));
         this.addRenderableWidget(this.customWithdrawBox);
 
         this.addRenderableWidget(Button.builder(Component.literal("Sacar"), b -> {
@@ -84,16 +82,12 @@ public class WalletScreen extends AbstractContainerScreen<WalletMenu> {
                 PacketDistributor.sendToServer(new WalletActionC2SPacket(WalletActionC2SPacket.ACTION_WITHDRAW_CENTS, parsed.getAsLong(), ""));
                 this.customWithdrawBox.setValue("");
             }
-        }).pos(x + 58, y + 103).size(40, 16).build());
+        }).pos(x + 54, y + 115).size(36, 16).build());
 
-        // Write Check: Amount Box, Payee Box, Emit Button
-        this.checkAmountBox = new EditBox(this.font, x + 102, y + 104, 34, 14, Component.literal("Valor Cheque"));
+        // Check Section (Right)
+        this.checkAmountBox = new EditBox(this.font, x + 98, y + 116, 36, 14, Component.literal("Valor Cheque"));
         this.checkAmountBox.setHint(Component.literal("$M"));
         this.addRenderableWidget(this.checkAmountBox);
-
-        this.checkPayeeBox = new EditBox(this.font, x + 7, y + 121, 91, 14, Component.literal("Favorecido"));
-        this.checkPayeeBox.setValue("Portador");
-        this.addRenderableWidget(this.checkPayeeBox);
 
         this.addRenderableWidget(Button.builder(Component.literal("Emitir"), b -> {
             OptionalLong parsed = EconomyFormatHelper.parseToCents(this.checkAmountBox.getValue());
@@ -103,7 +97,11 @@ public class WalletScreen extends AbstractContainerScreen<WalletMenu> {
                 this.checkAmountBox.setValue("");
                 this.checkPayeeBox.setValue("Portador");
             }
-        }).pos(x + 138, y + 103).size(32, 16).build());
+        }).pos(x + 136, y + 115).size(32, 16).build());
+
+        this.checkPayeeBox = new EditBox(this.font, x + 98, y + 132, 70, 12, Component.literal("Favorecido"));
+        this.checkPayeeBox.setValue("Portador");
+        this.addRenderableWidget(this.checkPayeeBox);
     }
 
     @Override
@@ -111,26 +109,46 @@ public class WalletScreen extends AbstractContainerScreen<WalletMenu> {
         int x = this.leftPos;
         int y = this.topPos;
 
-        // Background panel
+        // Container frame (standard Minecraft beige/gray panel)
         gui.fill(x, y, x + this.imageWidth, y + this.imageHeight, 0xFFC6C6C6);
-        gui.fill(x, y, x + this.imageWidth, y + 2, 0xFFFFFFFF);
-        gui.fill(x, y, x + 2, y + this.imageHeight, 0xFFFFFFFF);
-        gui.fill(x + this.imageWidth - 2, y, x + this.imageWidth, y + this.imageHeight, 0xFF555555);
-        gui.fill(x, y + this.imageHeight - 2, x + this.imageWidth, y + this.imageHeight, 0xFF555555);
+        // Bevel highlight (top & left)
+        gui.fill(x, y, x + this.imageWidth - 1, y + 1, 0xFFFFFFFF);
+        gui.fill(x, y, x + 1, y + this.imageHeight - 1, 0xFFFFFFFF);
+        gui.fill(x + 1, y + 1, x + this.imageWidth - 2, y + 2, 0xFFFFFFFF);
+        gui.fill(x + 1, y + 1, x + 2, y + this.imageHeight - 2, 0xFFFFFFFF);
+        // Bevel shadow (bottom & right)
+        gui.fill(x + 1, y + this.imageHeight - 2, x + this.imageWidth, y + this.imageHeight - 1, 0xFF555555);
+        gui.fill(x + this.imageWidth - 2, y + 1, x + this.imageWidth - 1, y + this.imageHeight, 0xFF555555);
+        gui.fill(x, y + this.imageHeight - 1, x + this.imageWidth, y + this.imageHeight, 0xFF373737);
+        gui.fill(x + this.imageWidth - 1, y, x + this.imageWidth, y + this.imageHeight, 0xFF373737);
 
-        // Header banner (dark panel)
-        gui.fill(x + 5, y + 5, x + this.imageWidth - 5, y + 36, 0xFF222222);
+        // Header dark plate (for crisp title and balance display)
+        gui.fill(x + 6, y + 6, x + this.imageWidth - 6, y + 29, 0xFF222222);
+        gui.fill(x + 6, y + 6, x + this.imageWidth - 6, y + 7, 0xFF141414);
+        gui.fill(x + 6, y + 6, x + 7, y + 29, 0xFF141414);
+        gui.fill(x + 6, y + 28, x + this.imageWidth - 6, y + 29, 0xFF3A3A3A);
+        gui.fill(x + this.imageWidth - 7, y + 6, x + this.imageWidth - 6, y + 29, 0xFF3A3A3A);
 
-        // Deposit slot background
-        gui.fill(x + 23, y + 41, x + 41, y + 59, 0xFF373737);
-        gui.fill(x + 24, y + 42, x + 40, y + 58, 0xFF8B8B8B);
+        // Deposit slot background (vanilla 3D sunken bevel)
+        gui.fill(x + 17, y + 34, x + 35, y + 35, 0xFF373737);
+        gui.fill(x + 17, y + 34, x + 18, y + 52, 0xFF373737);
+        gui.fill(x + 18, y + 51, x + 35, y + 52, 0xFFFFFFFF);
+        gui.fill(x + 34, y + 35, x + 35, y + 52, 0xFFFFFFFF);
+        gui.fill(x + 18, y + 35, x + 34, y + 51, 0xFF8B8B8B);
 
-        // Inventory slots background
+        // Section divider
+        gui.fill(x + 8, y + 107, x + this.imageWidth - 8, y + 108, 0xFF8B8B8B);
+        gui.fill(x + 8, y + 108, x + this.imageWidth - 8, y + 109, 0xFFFFFFFF);
+
+        // Player Inventory slots background (vanilla 3D sunken bevels)
         for (Slot slot : this.menu.slots) {
             if (slot.index > 0) {
                 int sx = x + slot.x - 1;
                 int sy = y + slot.y - 1;
-                gui.fill(sx, sy, sx + 18, sy + 18, 0xFF373737);
+                gui.fill(sx, sy, sx + 18, sy + 1, 0xFF373737);
+                gui.fill(sx, sy, sx + 1, sy + 18, 0xFF373737);
+                gui.fill(sx + 1, sy + 17, sx + 18, sy + 18, 0xFFFFFFFF);
+                gui.fill(sx + 17, sy + 1, sx + 18, sy + 18, 0xFFFFFFFF);
                 gui.fill(sx + 1, sy + 1, sx + 17, sy + 17, 0xFF8B8B8B);
             }
         }
@@ -138,23 +156,23 @@ public class WalletScreen extends AbstractContainerScreen<WalletMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics gui, int mouseX, int mouseY) {
-        // Draw Header text
         String owner = (walletData != null) ? walletData.ownerName() : "Desconhecido";
         long balance = (walletData != null) ? walletData.balanceCents() : 0L;
 
-        gui.drawString(this.font, ChatFormatting.GOLD + "Carteira FurSMP" + ChatFormatting.GRAY + " (" + owner + ")", 10, 8, 0xFFFFFF, false);
+        // Header Title
+        gui.drawString(this.font, ChatFormatting.GOLD + "Shield Wallet" + ChatFormatting.GRAY + " (" + owner + ")", 10, 8, 0xFFFFFF, false);
         gui.drawString(this.font, ChatFormatting.WHITE + "Saldo: " + ChatFormatting.GREEN + ChatFormatting.BOLD + EconomyFormatHelper.formatStandard(balance) +
-                ChatFormatting.DARK_GRAY + " (" + EconomyFormatHelper.formatDenomination(balance) + ")", 10, 20, 0xFFFFFF, false);
+                ChatFormatting.DARK_GRAY + " (" + EconomyFormatHelper.formatDenomination(balance) + ")", 10, 18, 0xFFFFFF, false);
 
         // Quick withdraw label
-        gui.drawString(this.font, ChatFormatting.DARK_GRAY + "Saque Rápido:", 8, 59, 0x404040, false);
+        gui.drawString(this.font, ChatFormatting.DARK_GRAY + "Saque Rápido:", 8, 55, 0x404040, false);
 
-        // Custom withdraw / Cheque label
-        gui.drawString(this.font, ChatFormatting.DARK_GRAY + "Personalizado:", 8, 95, 0x404040, false);
-        gui.drawString(this.font, ChatFormatting.DARK_GRAY + "Cheque:", 102, 95, 0x404040, false);
+        // Custom withdraw & Check labels
+        gui.drawString(this.font, ChatFormatting.DARK_GRAY + "Sacar:", 8, 107, 0x404040, false);
+        gui.drawString(this.font, ChatFormatting.DARK_GRAY + "Cheque:", 98, 107, 0x404040, false);
 
         // Inventory label
-        gui.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
+        gui.drawString(this.font, this.playerInventoryTitle, 8, this.inventoryLabelY, 0x404040, false);
     }
 
     @Override

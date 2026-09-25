@@ -43,8 +43,8 @@ public class WalletMenu extends AbstractContainerMenu {
     }
 
     private void initSlots(Inventory playerInventory) {
-        // Deposit slot at index 0 (x=24, y=42)
-        this.addSlot(new Slot(depositContainer, 0, 24, 42) {
+        // Deposit slot at index 0 (x=18, y=35)
+        this.addSlot(new Slot(depositContainer, 0, 18, 35) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.getItem() instanceof CurrencyItem || stack.getItem() instanceof SignedCheckItem;
@@ -52,7 +52,7 @@ public class WalletMenu extends AbstractContainerMenu {
         });
 
         // Player main inventory (3 rows x 9 columns)
-        int startY = 142;
+        int startY = 152;
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, startY + row * 18));
@@ -60,7 +60,7 @@ public class WalletMenu extends AbstractContainerMenu {
         }
 
         // Player hotbar (1 row x 9 columns)
-        int hotbarY = startY + 58;
+        int hotbarY = 210;
         for (int col = 0; col < 9; ++col) {
             this.addSlot(new Slot(playerInventory, col, 8 + col * 18, hotbarY));
         }

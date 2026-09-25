@@ -8,6 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -15,6 +16,7 @@ import net.nextfur.fwc.economy.data.EconomyFormatHelper;
 import net.nextfur.fwc.economy.data.WalletData;
 import net.nextfur.fwc.economy.db.EconomyDatabaseManager;
 import net.nextfur.fwc.economy.db.records.CheckRecord;
+import net.nextfur.fwc.economy.db.records.GlobalEconomyStats;
 import net.nextfur.fwc.economy.db.records.TransactionRecord;
 import net.nextfur.fwc.economy.db.records.WalletSnapshotRecord;
 import net.nextfur.fwc.economy.items.WalletItem;
@@ -23,9 +25,11 @@ import net.nextfur.fwc.init.FwDataComponents;
 import net.nextfur.fwc.init.FwPermissions;
 import net.nextfur.fwc.network.economy.SyncWalletSlotS2CPacket;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalLong;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class EconomyCommand {
 
@@ -36,6 +40,15 @@ public class EconomyCommand {
                 )
                 .then(Commands.literal("admin")
                         .requires(FwPermissions::hasAdminPermission)
+                        .then(Commands.literal("total")
+                                .executes(ctx -> showGlobalEconomyTotal(ctx.getSource()))
+                        )
+                        .then(Commands.literal("supply")
+                                .executes(ctx -> showGlobalEconomyTotal(ctx.getSource()))
+                        )
+                        .then(Commands.literal("overview")
+                                .executes(ctx -> showGlobalEconomyTotal(ctx.getSource()))
+                        )
                         .then(Commands.literal("check")
                                 .then(Commands.argument("player", EntityArgument.player())
                                         .executes(ctx -> inspectOnlinePlayer(ctx.getSource(), EntityArgument.getPlayer(ctx, "player")))
@@ -110,20 +123,60 @@ public class EconomyCommand {
     }
 
     private static int inspectOnlinePlayer(CommandSourceStack source, ServerPlayer target) {
-        ItemStack wallet = target.getData(FwAttachments.WALLET_SLOT.get());
-        if (wallet.isEmpty() && target.getMainHandItem().getItem() instanceof WalletItem) {
-            wallet = target.getMainHandItem();
+        ItemStack equippedWallet = target.getData(FwAttachments.WALLET_SLOT.get());
+        long equippedBalance = 0L;
+        if (!equippedWallet.isEmpty() && equippedWallet.getItem() instanceof WalletItem) {
+            WalletData data = WalletItem.getOrCreateWalletData(equippedWallet, target);
+            equippedBalance = data.balanceCents();
+            EconomyDatabaseManager.getInstance().upsertWallet(data.walletId(), target.getUUID(), target.getName().getString(), equippedBalance);
         }
 
-        long walletBalance = 0L;
-        if (!wallet.isEmpty()) {
-            WalletData data = wallet.get(FwDataComponents.WALLET_DATA.get());
-            if (data != null) {
-                walletBalance = data.balanceCents();
+        long otherWalletsBalance = 0L;
+        int otherWalletsCount = 0;
+
+        // Check main inventory items (slots 0-35)
+        for (ItemStack stack : target.getInventory().items) {
+            if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
+                WalletData d = WalletItem.getOrCreateWalletData(stack, target);
+                otherWalletsBalance += d.balanceCents();
+                otherWalletsCount++;
+                EconomyDatabaseManager.getInstance().upsertWallet(d.walletId(), target.getUUID(), target.getName().getString(), d.balanceCents());
             }
         }
 
-        renderInspection(source, target.getUUID(), target.getName().getString(), true, walletBalance);
+        // Check armor
+        for (ItemStack stack : target.getInventory().armor) {
+            if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
+                WalletData d = WalletItem.getOrCreateWalletData(stack, target);
+                otherWalletsBalance += d.balanceCents();
+                otherWalletsCount++;
+                EconomyDatabaseManager.getInstance().upsertWallet(d.walletId(), target.getUUID(), target.getName().getString(), d.balanceCents());
+            }
+        }
+
+        // Check offhand
+        for (ItemStack stack : target.getInventory().offhand) {
+            if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
+                WalletData d = WalletItem.getOrCreateWalletData(stack, target);
+                otherWalletsBalance += d.balanceCents();
+                otherWalletsCount++;
+                EconomyDatabaseManager.getInstance().upsertWallet(d.walletId(), target.getUUID(), target.getName().getString(), d.balanceCents());
+            }
+        }
+
+        // Check ender chest
+        var enderChest = target.getEnderChestInventory();
+        for (int i = 0; i < enderChest.getContainerSize(); i++) {
+            ItemStack stack = enderChest.getItem(i);
+            if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
+                WalletData d = WalletItem.getOrCreateWalletData(stack, target);
+                otherWalletsBalance += d.balanceCents();
+                otherWalletsCount++;
+                EconomyDatabaseManager.getInstance().upsertWallet(d.walletId(), target.getUUID(), target.getName().getString(), d.balanceCents());
+            }
+        }
+
+        renderInspection(source, target.getUUID(), target.getName().getString(), true, equippedBalance, otherWalletsCount, otherWalletsBalance);
         return 1;
     }
 
@@ -138,38 +191,51 @@ public class EconomyCommand {
                 source.sendFailure(Component.literal("Jogador '" + name + "' não encontrado nos registros do banco de dados."));
                 return;
             }
-            renderInspection(source, snapshot.playerUuid(), snapshot.playerName(), false, snapshot.lastBalanceCents());
+            EconomyDatabaseManager.getInstance().getTotalWalletsBalanceByOwner(snapshot.playerUuid()).thenAccept(totalWalletsBalance -> {
+                long equippedBalance = snapshot.lastBalanceCents();
+                long otherBalance = Math.max(0L, totalWalletsBalance - equippedBalance);
+                int otherCount = otherBalance > 0 ? 1 : 0;
+                renderInspection(source, snapshot.playerUuid(), snapshot.playerName(), false, equippedBalance, otherCount, otherBalance);
+            });
         });
 
         return 1;
     }
 
-    private static void renderInspection(CommandSourceStack source, UUID targetUuid, String targetName, boolean isOnline, long walletBalance) {
+    private static void renderInspection(CommandSourceStack source, UUID targetUuid, String targetName, boolean isOnline,
+                                         long equippedBalance, int otherWalletsCount, long otherWalletsBalance) {
         EconomyDatabaseManager.getInstance().getActiveChecksByIssuer(targetUuid).thenAccept(checks -> {
+            long totalWalletsBalance = equippedBalance + otherWalletsBalance;
             long checksTotal = checks.stream().mapToLong(CheckRecord::amountCents).sum();
-            long totalCirculation = walletBalance + checksTotal;
+            long totalCirculation = totalWalletsBalance + checksTotal;
 
-            source.sendSuccess(() -> Component.literal("§8================= §6§lFurWatch Economia §8================="), false);
-            source.sendSuccess(() -> Component.literal("§7Jogador: §e" + targetName + " §8(UUID: " + targetUuid + ")"), false);
-            source.sendSuccess(() -> Component.literal("§7Status: " + (isOnline ? "§a● Online" : "§7○ Offline (Snapshot)")), false);
-            source.sendSuccess(() -> Component.literal("§7Saldo na Carteira: §a" + EconomyFormatHelper.formatFull(walletBalance)), false);
-            source.sendSuccess(() -> Component.literal("§7Cheques Emitidos Pendentes: §6" + checks.size() + " cheque(s) §7(Total: §c" + EconomyFormatHelper.formatStandard(checksTotal) + "§7)"), false);
-
-            int shown = 0;
-            for (CheckRecord c : checks) {
-                if (shown >= 5) {
-                    source.sendSuccess(() -> Component.literal("  §8... e mais " + (checks.size() - 5) + " cheque(s) pendentes."), false);
-                    break;
+            source.getServer().execute(() -> {
+                source.sendSuccess(() -> Component.literal("§8================= §6§lFurWatch Economia §8================="), false);
+                source.sendSuccess(() -> Component.literal("§7Jogador: §e" + targetName + " §8(UUID: " + targetUuid + ")"), false);
+                source.sendSuccess(() -> Component.literal("§7Status: " + (isOnline ? "§a● Online" : "§7○ Offline (Snapshot)")), false);
+                source.sendSuccess(() -> Component.literal("§7Saldo Carteira Equipada: §a" + EconomyFormatHelper.formatFull(equippedBalance)), false);
+                if (otherWalletsCount > 0 || otherWalletsBalance > 0) {
+                    source.sendSuccess(() -> Component.literal("§7Outras Carteiras (Inventário/Baú): §e" + otherWalletsCount + " carteira(s) §7(Total: §a" + EconomyFormatHelper.formatStandard(otherWalletsBalance) + "§7)"), false);
                 }
-                String shortId = c.checkId().toString().substring(0, 8);
-                source.sendSuccess(() -> Component.literal("  §8- §7#" + shortId + ": §f" + EconomyFormatHelper.formatStandard(c.amountCents()) +
-                        " §7(Para: §e" + c.payee() + "§7 em " + c.issuedAt() + ")"), false);
-                shown++;
-            }
+                source.sendSuccess(() -> Component.literal("§7Total em Carteiras: §a" + EconomyFormatHelper.formatFull(totalWalletsBalance)), false);
+                source.sendSuccess(() -> Component.literal("§7Cheques Emitidos Pendentes: §6" + checks.size() + " cheque(s) §7(Total: §c" + EconomyFormatHelper.formatStandard(checksTotal) + "§7)"), false);
 
-            source.sendSuccess(() -> Component.literal("§7Total em Cheques Não Compensados: §c" + EconomyFormatHelper.formatStandard(checksTotal)), false);
-            source.sendSuccess(() -> Component.literal("§ePatrimônio Total em Circulação: §6§l" + EconomyFormatHelper.formatFull(totalCirculation)), false);
-            source.sendSuccess(() -> Component.literal("§8========================================================="), false);
+                int shown = 0;
+                for (CheckRecord c : checks) {
+                    if (shown >= 5) {
+                        source.sendSuccess(() -> Component.literal("  §8... e mais " + (checks.size() - 5) + " cheque(s) pendentes."), false);
+                        break;
+                    }
+                    String shortId = c.checkId().toString().substring(0, 8);
+                    source.sendSuccess(() -> Component.literal("  §8- §7#" + shortId + ": §f" + EconomyFormatHelper.formatStandard(c.amountCents()) +
+                            " §7(Para: §e" + c.payee() + "§7 em " + c.issuedAt() + ")"), false);
+                    shown++;
+                }
+
+                source.sendSuccess(() -> Component.literal("§7Total em Cheques Não Compensados: §c" + EconomyFormatHelper.formatStandard(checksTotal)), false);
+                source.sendSuccess(() -> Component.literal("§ePatrimônio Total em Circulação: §6§l" + EconomyFormatHelper.formatFull(totalCirculation)), false);
+                source.sendSuccess(() -> Component.literal("§8========================================================="), false);
+            });
         });
     }
 
@@ -287,5 +353,86 @@ public class EconomyCommand {
                 EconomyFormatHelper.formatFull(newBalance)));
 
         return 1;
+    }
+
+    private static int showGlobalEconomyTotal(CommandSourceStack source) {
+        source.sendSuccess(() -> Component.literal("§6[FurWatch] §7Calculando censo econômico global..."), false);
+        scanOnlinePlayersWallets(source.getServer())
+                .thenCompose(v -> EconomyDatabaseManager.getInstance().getGlobalEconomyStats())
+                .thenAccept(stats -> {
+                    source.getServer().execute(() -> {
+                        source.sendSuccess(() -> Component.literal("§8================ §6§lFurWatch - Censo Econômico Global §8================"), false);
+                        source.sendSuccess(() -> Component.literal("§7Carteiras Registradas: §e" + stats.totalWallets() + " §7(equipadas e guardadas)"), false);
+                        source.sendSuccess(() -> Component.literal("§7Total em Carteiras: §a" + EconomyFormatHelper.formatFull(stats.totalWalletCents())), false);
+                        source.sendSuccess(() -> Component.literal("§7Cheques Ativos Pendentes: §6" + stats.activeChecksCount() + " cheque(s) §7(Total: §c" + EconomyFormatHelper.formatStandard(stats.totalActiveChecksCents()) + "§7)"), false);
+                        source.sendSuccess(() -> Component.literal("§eMassa Monetária Total em Circulação: §6§l" + EconomyFormatHelper.formatFull(stats.totalCirculatingCents())), false);
+                        source.sendSuccess(() -> Component.literal("§8-----------------------------------------------------------------"), false);
+                        source.sendSuccess(() -> Component.literal("§7Saldo Médio por Carteira: §f" + EconomyFormatHelper.formatStandard(stats.averageWalletCents())), false);
+                        source.sendSuccess(() -> Component.literal("§7Maior Carteira Cadastrada: §e" + stats.topWalletOwner() + " §7(§a" + EconomyFormatHelper.formatStandard(stats.topWalletBalanceCents()) + "§7)"), false);
+                        source.sendSuccess(() -> Component.literal("§8================================================================="), false);
+                    });
+                })
+                .exceptionally(ex -> {
+                    source.getServer().execute(() -> {
+                        source.sendFailure(Component.literal("§cErro ao calcular total da economia: " + ex.getMessage()));
+                    });
+                    return null;
+                });
+        return 1;
+    }
+
+    private static CompletableFuture<Void> scanOnlinePlayersWallets(MinecraftServer server) {
+        if (server == null) return CompletableFuture.completedFuture(null);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            // 1. Dedicated wallet slot
+            ItemStack equipped = player.getData(FwAttachments.WALLET_SLOT.get());
+            if (!equipped.isEmpty() && equipped.getItem() instanceof WalletItem) {
+                futures.add(recordWallet(equipped, player));
+            }
+
+            // 2. Main inventory & hotbar
+            for (ItemStack stack : player.getInventory().items) {
+                if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
+                    futures.add(recordWallet(stack, player));
+                }
+            }
+
+            // 3. Armor slots
+            for (ItemStack stack : player.getInventory().armor) {
+                if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
+                    futures.add(recordWallet(stack, player));
+                }
+            }
+
+            // 4. Offhand slot
+            for (ItemStack stack : player.getInventory().offhand) {
+                if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
+                    futures.add(recordWallet(stack, player));
+                }
+            }
+
+            // 5. Ender Chest
+            var enderChest = player.getEnderChestInventory();
+            for (int i = 0; i < enderChest.getContainerSize(); i++) {
+                ItemStack stack = enderChest.getItem(i);
+                if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
+                    futures.add(recordWallet(stack, player));
+                }
+            }
+        }
+
+        if (futures.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+    }
+
+    private static CompletableFuture<Void> recordWallet(ItemStack stack, ServerPlayer player) {
+        WalletData data = WalletItem.getOrCreateWalletData(stack, player);
+        UUID ownerUuid = data.ownerUuid() != null ? data.ownerUuid() : player.getUUID();
+        String ownerName = data.ownerName() != null && !data.ownerName().isEmpty() ? data.ownerName() : player.getName().getString();
+        return EconomyDatabaseManager.getInstance().upsertWallet(data.walletId(), ownerUuid, ownerName, data.balanceCents());
     }
 }

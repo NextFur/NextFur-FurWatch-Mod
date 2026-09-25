@@ -6,8 +6,12 @@ import net.minecraft.world.item.*;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nextfur.fwc.FwMain;
+import net.nextfur.fwc.economy.currency.CurrencyUnit;
+import net.nextfur.fwc.economy.items.CurrencyLayerBlockItem;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 public class FwModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FwMain.MODID);
@@ -105,9 +109,22 @@ public class FwModItems {
             () -> new net.nextfur.fwc.economy.items.CurrencyItem(net.nextfur.fwc.economy.currency.CurrencyUnit.BILL_200M, new Item.Properties())
     );
 
+    public static final Map<CurrencyUnit, DeferredItem<CurrencyLayerBlockItem>> CURRENCY_LAYER_ITEMS = new EnumMap<>(CurrencyUnit.class);
+
     static {
+        for (CurrencyUnit unit : CurrencyUnit.values()) {
+            var blockHolder = FwModBlocks.CURRENCY_LAYER_BLOCKS.get(unit);
+            CURRENCY_LAYER_ITEMS.put(unit, ITEMS.register(
+                    unit.getId() + "_layer",
+                    () -> new CurrencyLayerBlockItem(blockHolder.get(), new Item.Properties())
+            ));
+        }
+
         FwModBlocks.BLOCKS.getEntries().forEach(block -> {
             String blockName = block.getId().getPath();
+            if (blockName.endsWith("_layer")) {
+                return;
+            }
             if (blockName.contains("plushie")) {
                 ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()) {
                     @Override

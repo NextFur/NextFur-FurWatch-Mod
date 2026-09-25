@@ -1,0 +1,13 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "fursmp:coin_2m_layer"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "fursmp:coin_2m"
+  }
+}

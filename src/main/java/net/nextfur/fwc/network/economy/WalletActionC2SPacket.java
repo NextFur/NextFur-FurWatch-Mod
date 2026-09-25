@@ -20,6 +20,7 @@ import net.nextfur.fwc.economy.data.WalletData;
 import net.nextfur.fwc.economy.db.DepositResult;
 import net.nextfur.fwc.economy.db.EconomyDatabaseManager;
 import net.nextfur.fwc.economy.items.CurrencyItem;
+import net.nextfur.fwc.economy.items.CurrencyLayerBlockItem;
 import net.nextfur.fwc.economy.items.SignedCheckItem;
 import net.nextfur.fwc.economy.menu.WalletMenu;
 import net.nextfur.fwc.init.FwDataComponents;
@@ -81,11 +82,18 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
         for (int i = 1; i <= 36; i++) {
             Slot slot = menu.getSlot(i);
             ItemStack stack = slot.getItem();
-            if (!stack.isEmpty() && stack.getItem() instanceof CurrencyItem currencyItem) {
-                long itemVal = currencyItem.getValueInCents() * stack.getCount();
-                totalCents += itemVal;
-                itemsDeposited += stack.getCount();
-                slot.set(ItemStack.EMPTY);
+            if (!stack.isEmpty()) {
+                if (stack.getItem() instanceof CurrencyItem currencyItem) {
+                    long itemVal = currencyItem.getValueInCents() * stack.getCount();
+                    totalCents += itemVal;
+                    itemsDeposited += stack.getCount();
+                    slot.set(ItemStack.EMPTY);
+                } else if (stack.getItem() instanceof CurrencyLayerBlockItem layerItem) {
+                    long itemVal = layerItem.getValueInCents() * stack.getCount();
+                    totalCents += itemVal;
+                    itemsDeposited += stack.getCount();
+                    slot.set(ItemStack.EMPTY);
+                }
             }
         }
 
@@ -99,7 +107,7 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
             EconomyDatabaseManager.getInstance().logTransaction(
                     "DEPOSIT_CASH", player.getUUID(), player.getName().getString(),
                     null, null, totalCents, newBalance,
-                    "Deposit All: " + itemsDeposited + " currency items"
+                    "Deposit All: " + itemsDeposited + " currency items/layers"
             );
             EconomyDatabaseManager.getInstance().updateWalletSnapshot(
                     player.getUUID(), player.getName().getString(), updated.walletId(), newBalance
@@ -130,6 +138,26 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
                     "DEPOSIT_CASH", player.getUUID(), player.getName().getString(),
                     null, null, totalCents, newBalance,
                     "Deposit Slot: " + currencyItem.getUnit().getLabel() + " x" + stack.getCount()
+            );
+            EconomyDatabaseManager.getInstance().updateWalletSnapshot(
+                    player.getUUID(), player.getName().getString(), updated.walletId(), newBalance
+            );
+
+            PacketDistributor.sendToPlayer(player, new WalletSyncS2CPacket(updated));
+            player.sendSystemMessage(Component.literal("§aDepositado com sucesso: §f" + EconomyFormatHelper.formatFull(totalCents)));
+        } else if (stack.getItem() instanceof CurrencyLayerBlockItem layerItem) {
+            long totalCents = layerItem.getValueInCents() * stack.getCount();
+            long newBalance = data.balanceCents() + totalCents;
+            WalletData updated = data.withBalance(newBalance);
+            wallet.set(FwDataComponents.WALLET_DATA.get(), updated);
+            menu.setWalletStack(wallet);
+            depositSlot.set(ItemStack.EMPTY);
+            menu.broadcastChanges();
+
+            EconomyDatabaseManager.getInstance().logTransaction(
+                    "DEPOSIT_CASH", player.getUUID(), player.getName().getString(),
+                    null, null, totalCents, newBalance,
+                    "Deposit Slot Layer: " + layerItem.getUnit().getLabel() + " layer x" + stack.getCount()
             );
             EconomyDatabaseManager.getInstance().updateWalletSnapshot(
                     player.getUUID(), player.getName().getString(), updated.walletId(), newBalance
