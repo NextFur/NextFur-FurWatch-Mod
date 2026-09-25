@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "fursmp:bill_5m" },
+    { "item": "fursmp:bill_5m" }
+  ],
+  "result": {
+    "count": 1,
+    "id": "fursmp:bill_10m"
+  }
+}

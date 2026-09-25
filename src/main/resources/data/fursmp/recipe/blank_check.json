@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "minecraft:paper" },
+    { "item": "minecraft:paper" },
+    { "item": "minecraft:paper" },
+    { "item": "minecraft:gold_nugget" }
+  ],
+  "result": {
+    "count": 3,
+    "id": "fursmp:blank_check"
+  }
+}
