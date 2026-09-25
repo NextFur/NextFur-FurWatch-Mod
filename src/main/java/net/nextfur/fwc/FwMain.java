@@ -30,6 +30,7 @@ public class FwMain {
         FwModParticles.PARTICLES.register(modEventBus);
         FwModBlocks.BLOCKS.register(modEventBus);
         FwModItems.ITEMS.register(modEventBus);
+        FwDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
         FwModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         FwModEffects.EFFECTS.register(modEventBus);
 

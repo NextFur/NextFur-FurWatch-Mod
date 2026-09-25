@@ -66,6 +66,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.xerial:sqlite-jdbc:3.46.1.0'
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
