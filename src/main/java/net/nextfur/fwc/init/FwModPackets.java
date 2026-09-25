@@ -38,6 +38,36 @@ public class FwModPackets {
         );
 
         registrar.playToClient(
+                net.nextfur.fwc.network.economy.SyncWalletSlotS2CPacket.TYPE,
+                net.nextfur.fwc.network.economy.SyncWalletSlotS2CPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.economy.SyncWalletSlotS2CPacket::handle
+        );
+
+        registrar.playToServer(
+                net.nextfur.fwc.network.economy.EquipWalletSlotC2SPacket.TYPE,
+                net.nextfur.fwc.network.economy.EquipWalletSlotC2SPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.economy.EquipWalletSlotC2SPacket::handle
+        );
+
+        registrar.playToServer(
+                net.nextfur.fwc.network.economy.OpenWalletMenuC2SPacket.TYPE,
+                net.nextfur.fwc.network.economy.OpenWalletMenuC2SPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.economy.OpenWalletMenuC2SPacket::handle
+        );
+
+        registrar.playToServer(
+                net.nextfur.fwc.network.economy.WalletActionC2SPacket.TYPE,
+                net.nextfur.fwc.network.economy.WalletActionC2SPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.economy.WalletActionC2SPacket::handle
+        );
+
+        registrar.playToClient(
+                net.nextfur.fwc.network.economy.WalletSyncS2CPacket.TYPE,
+                net.nextfur.fwc.network.economy.WalletSyncS2CPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.economy.WalletSyncS2CPacket::handle
+        );
+
+        registrar.playToClient(
                 RollDiceS2CPacket.TYPE,
                 RollDiceS2CPacket.STREAM_CODEC,
                 RollDiceS2CPacket::handle

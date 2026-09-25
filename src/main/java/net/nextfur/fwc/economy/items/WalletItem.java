@@ -30,13 +30,22 @@ public class WalletItem extends Item {
         return data;
     }
 
+    public static void openWalletMenu(ServerPlayer player, ItemStack stack, boolean isEquippedSlot) {
+        getOrCreateWalletData(stack, player);
+        player.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                (id, inv, p) -> new net.nextfur.fwc.economy.menu.WalletMenu(id, inv, stack, isEquippedSlot),
+                Component.literal("Carteira FurSMP")
+        ), buf -> {
+            buf.writeBoolean(isEquippedSlot);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, stack);
+        });
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            getOrCreateWalletData(stack, player);
-            // Will open the wallet container menu in Phase 5
-            player.sendSystemMessage(Component.literal("Abrindo carteira...").withStyle(ChatFormatting.GOLD));
+            openWalletMenu(serverPlayer, stack, false);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
