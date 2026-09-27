@@ -1,0 +1,9 @@
+﻿{
+  "parent": "fursmp:block/layer_height2",
+  "textures": {
+    "top": "fursmp:block/coin_50c_layer_top",
+    "side": "fursmp:block/coin_50c_layer_side",
+    "bottom": "fursmp:block/coin_50c_layer_top",
+    "particle": "fursmp:block/coin_50c_layer_top"
+  }
+}

@@ -1,0 +1,9 @@
+﻿{
+  "parent": "fursmp:block/layer_height2",
+  "textures": {
+    "top": "fursmp:block/bill_200m_layer_top",
+    "side": "fursmp:block/bill_200m_layer_side",
+    "bottom": "fursmp:block/bill_200m_layer_top",
+    "particle": "fursmp:block/bill_200m_layer_top"
+  }
+}

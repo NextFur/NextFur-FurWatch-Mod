@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "fursmp:coin_25c" },
+    { "item": "fursmp:coin_25c" }
+  ],
+  "result": {
+    "count": 1,
+    "id": "fursmp:coin_50c"
+  }
+}

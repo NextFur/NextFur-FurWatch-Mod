@@ -32,16 +32,30 @@ public class FwMain {
         FwModSounds.SOUND_EVENTS.register(modEventBus);
         FwModBlocks.BLOCKS.register(modEventBus);
         FwModItems.ITEMS.register(modEventBus);
+        FwDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
+        FwAttachments.ATTACHMENT_TYPES.register(modEventBus);
+        FwModMenus.MENUS.register(modEventBus);
+        FwModRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         FwModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         FwModEffects.EFFECTS.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
+
+        if (net.neoforged.fml.loading.FMLLoader.getDist() == net.neoforged.api.distmarker.Dist.CLIENT) {
+            net.nextfur.fwc.client.gui.EconomyClientMenuEvents.register(modEventBus);
+        }
 
         FwModEvents.register();
     }
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
+        net.nextfur.fwc.economy.db.EconomyDatabaseManager.getInstance().initialize(event.getServer());
         FwModCommands.register(event); // Comandos uwu
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(net.neoforged.neoforge.event.server.ServerStoppingEvent event) {
+        net.nextfur.fwc.economy.db.EconomyDatabaseManager.getInstance().close();
     }
 }

@@ -2,6 +2,7 @@ package net.nextfur.fwc.init;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -9,9 +10,31 @@ import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.blocks.PlushieBlock;
 import net.nextfur.fwc.blocks.SimpleBlock;
 import net.nextfur.fwc.blocks.SimpleDirectionalBlock;
+import net.nextfur.fwc.economy.blocks.CurrencyLayerBlock;
+import net.nextfur.fwc.economy.currency.CurrencyUnit;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public class FwModBlocks {
         public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(FwMain.MODID);
+
+        // Economy Currency Layer Blocks (Stackable 1-8 layers like snow)
+        public static final Map<CurrencyUnit, DeferredBlock<CurrencyLayerBlock>> CURRENCY_LAYER_BLOCKS = new EnumMap<>(CurrencyUnit.class);
+
+        static {
+            for (CurrencyUnit unit : CurrencyUnit.values()) {
+                boolean isCoin = unit.getType() == CurrencyUnit.CurrencyType.COIN;
+                CURRENCY_LAYER_BLOCKS.put(unit, BLOCKS.register(
+                        unit.getId() + "_layer",
+                        () -> new CurrencyLayerBlock(unit, BlockBehaviour.Properties.of()
+                                .mapColor(isCoin ? MapColor.COLOR_YELLOW : MapColor.COLOR_GREEN)
+                                .sound(isCoin ? SoundType.METAL : SoundType.SNOW)
+                                .strength(isCoin ? 0.5f : 0.2f, isCoin ? 1.0f : 0.5f)
+                                .noOcclusion())
+                ));
+            }
+        }
 
         // Plushies
         public static final DeferredBlock<Block> NIIX_PLUSHIE = BLOCKS.register("niix_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
