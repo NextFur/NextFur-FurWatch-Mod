@@ -127,7 +127,7 @@ public class SettingsApp extends PdaApp {
 
         PdaTheme.drawPanel(gui, contentX, contentY, contentWidth, contentHeight, 0xFFFFAA00);
 
-        gui.drawString(font, ChatFormatting.BOLD + "SISTEMA // CONFIGURAÇÕES DO PDA", contentX + 8, contentY + 5, 0xFFFFAA00, false);
+        gui.drawString(font, ChatFormatting.BOLD + "CONFIGS.", contentX + 8, contentY + 5, 0xFFFFAA00, false);
 
         int infoY = contentY + 16;
         int cardW = contentWidth - 12;
@@ -145,13 +145,12 @@ public class SettingsApp extends PdaApp {
         gui.drawString(font, "Modelo: " + ChatFormatting.AQUA + "FurWatch Tab [" + colorVariantStr + "]" + ChatFormatting.DARK_GRAY + " " + pdaIdStr, contentX + 12, infoY + 6, 0xFFFFFFFF, false);
         gui.drawString(font, "Proprietário: " + ownerFormat + ownerStr, contentX + 12, infoY + 18, 0xFFFFFFFF, false);
         gui.drawString(font, "Armazenamento: " + ChatFormatting.GREEN + contactsCount + " Contatos" + ChatFormatting.GRAY + " | " + ChatFormatting.GREEN + notesCount + " Notas", contentX + 12, infoY + 30, 0xFFFFFFFF, false);
-        gui.drawString(font, "Segurança: " + ChatFormatting.LIGHT_PURPLE + "Armazenado em NBT Seguro do Item", contentX + 12, infoY + 42, 0xFFAAAAAA, false);
 
         int footerY = contentY + 114;
         if (confirmingReset) {
-            gui.drawString(font, ChatFormatting.RED + "⚠ Redefinir desvinculará o proprietário atual deste PDA!", contentX + 8, footerY, 0xFFFF5555, false);
+            gui.drawString(font, ChatFormatting.RED + "⚠ Redefinir desvinculará o proprietário deste PDA!", contentX + 8, footerY, 0xFFFF5555, false);
         } else {
-            gui.drawString(font, ChatFormatting.GRAY + "Clique com o PDA em outro jogador para adicionar contato.", contentX + 8, footerY, 0xFF7A8DAB, false);
+            gui.drawString(font, ChatFormatting.GRAY + "Troque contatos para preencher seu PDA!", contentX + 8, footerY, 0xFF7A8DAB, false);
         }
     }
 

@@ -157,11 +157,11 @@ public class PdaScreen extends Screen {
         PdaApp video = PdaAppRegistry.get(VideoPlayerApp.ID);
         PdaApp settings = PdaAppRegistry.get(SettingsApp.ID);
 
-        if (msg != null) tabs.add(new PdaTab(Component.literal("MENSAGENS"), msg, false));
-        if (notes != null) tabs.add(new PdaTab(Component.literal("ANOTAÇÕES"), notes, false));
-        if (bank != null) tabs.add(new PdaTab(Component.literal("SHIELD BANK"), bank, false));
-        if (video != null) tabs.add(new PdaTab(Component.literal("VIDEOPLAYER"), video, false));
-        if (settings != null) tabs.add(new PdaTab(Component.literal("CONFIGURAÇÕES"), settings, false));
+        if (msg != null) tabs.add(new PdaTab(Component.literal("CHAT"), msg, false));
+        if (notes != null) tabs.add(new PdaTab(Component.literal("NOTEPAD"), notes, false));
+        if (bank != null) tabs.add(new PdaTab(Component.literal("SHIELD"), bank, false));
+        if (video != null) tabs.add(new PdaTab(Component.literal("MAPS"), video, false));
+        if (settings != null) tabs.add(new PdaTab(Component.literal("CONFIG."), settings, false));
 
         // Dynamically registered apps
         for (PdaApp app : PdaAppRegistry.getApps()) {

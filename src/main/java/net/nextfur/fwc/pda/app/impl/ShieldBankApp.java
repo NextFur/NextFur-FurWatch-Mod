@@ -49,8 +49,7 @@ public class ShieldBankApp extends PdaApp {
 
         PdaTheme.drawPanel(gui, contentX, contentY, contentWidth, contentHeight, 0xFF00FFB2);
 
-        gui.drawCenteredString(font, ChatFormatting.BOLD + "SHIELD BANK // TERMINAL FINANCEIRO", contentX + contentWidth / 2, contentY + 8, 0xFF00FFB2);
-        gui.drawCenteredString(font, "Rede Bancária Descentralizada FurWatch", contentX + contentWidth / 2, contentY + 20, PdaTheme.TEXT_SUB);
+        gui.drawCenteredString(font, ChatFormatting.BOLD + "SHIELD BANK", contentX + contentWidth / 2, contentY + 8, 0xFF00FFB2);
 
         int cardW = contentWidth - 20;
         int cardH = 88;
@@ -60,10 +59,6 @@ public class ShieldBankApp extends PdaApp {
         gui.fill(cardX, cardY, cardX + cardW, cardY + cardH, PdaTheme.BG_CARD);
         gui.renderOutline(cardX, cardY, cardW, cardH, 0x5500FFB2);
 
-        gui.drawString(font, "Status do Módulo: " + ChatFormatting.GOLD + "[EM DESENVOLVIMENTO]", cardX + 8, cardY + 8, 0xFFFFFFFF, false);
-        gui.drawString(font, "Servidor de Transações: " + ChatFormatting.GRAY + "FurWatch Net (Offline)", cardX + 8, cardY + 22, PdaTheme.TEXT_SUB, false);
-        gui.drawString(font, "Protocolo de Criptografia: " + ChatFormatting.AQUA + "AES-256 GCM (Ativo)", cardX + 8, cardY + 36, PdaTheme.TEXT_SUB, false);
-        gui.drawString(font, "Saldo Vinculado à Carteira: " + ChatFormatting.GREEN + "F$ 0,00", cardX + 8, cardY + 50, 0xFFFFFFFF, false);
-        gui.drawString(font, "Aviso: " + ChatFormatting.YELLOW + "Operações de saque e transferências em breve.", cardX + 8, cardY + 66, PdaTheme.TEXT_SUB, false);
+        gui.drawString(font, ChatFormatting.GOLD + "[EM DESENVOLVIMENTO]", cardX + 8, cardY + 8, 0xFFFFFFFF, false);
     }
 }

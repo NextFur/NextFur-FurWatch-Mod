@@ -49,8 +49,7 @@ public class VideoPlayerApp extends PdaApp {
 
         PdaTheme.drawPanel(gui, contentX, contentY, contentWidth, contentHeight, 0xFFFF006E);
 
-        gui.drawCenteredString(font, ChatFormatting.BOLD + "FURWATCH MEDIA CENTER // VIDEOPLAYER", contentX + contentWidth / 2, contentY + 8, 0xFFFF006E);
-        gui.drawCenteredString(font, "Reprodutor Holográfico de Vídeos e Streams", contentX + contentWidth / 2, contentY + 20, PdaTheme.TEXT_SUB);
+        gui.drawCenteredString(font, ChatFormatting.BOLD + "MAPS APP", contentX + contentWidth / 2, contentY + 8, 0xFFFF006E);
 
         int cardW = contentWidth - 20;
         int cardH = 88;
@@ -60,10 +59,6 @@ public class VideoPlayerApp extends PdaApp {
         gui.fill(cardX, cardY, cardX + cardW, cardY + cardH, PdaTheme.BG_CARD);
         gui.renderOutline(cardX, cardY, cardW, cardH, 0x55FF006E);
 
-        gui.drawString(font, "Driver de Vídeo: " + ChatFormatting.GOLD + "[EM DESENVOLVIMENTO]", cardX + 8, cardY + 8, 0xFFFFFFFF, false);
-        gui.drawString(font, "Formatos Suportados: " + ChatFormatting.GRAY + "MP4, WebM, FurCinema", cardX + 8, cardY + 22, PdaTheme.TEXT_SUB, false);
-        gui.drawString(font, "Aceleração Holográfica: " + ChatFormatting.LIGHT_PURPLE + "Habilitada", cardX + 8, cardY + 36, PdaTheme.TEXT_SUB, false);
-        gui.drawString(font, "Buffer de Streaming: " + ChatFormatting.AQUA + "0 MB / Pronto", cardX + 8, cardY + 50, PdaTheme.TEXT_SUB, false);
-        gui.drawString(font, "Aviso: " + ChatFormatting.YELLOW + "Codec de vídeo para telas remotas em desenvolvimento.", cardX + 8, cardY + 66, PdaTheme.TEXT_SUB, false);
+        gui.drawString(font, ChatFormatting.GOLD + "[EM DESENVOLVIMENTO]", cardX + 8, cardY + 8, 0xFFFFFFFF, false);
     }
 }
