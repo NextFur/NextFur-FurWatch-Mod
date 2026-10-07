@@ -100,6 +100,7 @@
   "block.fursmp.deeppedra_plushie": "§dDeep§6slat3 Plushie",
   "block.fursmp.deeppedra_plushie.description": "§d§lNão é femboy!",
 
+<<<<<<< HEAD
   "key.categories.fursmp": "FurSMP Controls",
   "key.fursmp.flashlight": "Liga e desliga a lanterna",
   "key.fursmp.shader_toggle": "Toggle FurWatch shaders",
@@ -126,4 +127,9 @@
   "option.fursmp.shader.fog_intensity": "Fog Intensity: %s",
   "option.fursmp.shader.fog_variation": "Fog Variation: %s",
   "option.fursmp.shader.light_variation": "Light Variation: %s"
+=======
+  "item.fursmp.pda_blue": "PDA (Blue)",
+  "item.fursmp.pda_orange": "PDA (Orange)",
+  "item.fursmp.pda_red": "PDA (Red)"
+>>>>>>> 3aa69d2f2ab34ac49ba62952d1039e025a194921
 }

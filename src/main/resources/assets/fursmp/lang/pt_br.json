@@ -94,5 +94,9 @@
   "block.fursmp.kivix_plushie.description": "§d§lpoposa peta :3",
 
   "block.fursmp.deeppedra_plushie": "§dPelúcia do §6Deep§6slat3",
-  "block.fursmp.deeppedra_plushie.description": "§d§lNão é femboy!"
+  "block.fursmp.deeppedra_plushie.description": "§d§lNão é femboy!",
+
+  "item.fursmp.pda_blue": "PDA (Azul)",
+  "item.fursmp.pda_orange": "PDA  (Laranja)",
+  "item.fursmp.pda_red": "PDA (Vermelho)"
 }

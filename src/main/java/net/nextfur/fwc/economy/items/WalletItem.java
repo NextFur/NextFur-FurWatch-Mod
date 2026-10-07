@@ -53,7 +53,6 @@ public class WalletItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         WalletData data = stack.get(FwDataComponents.WALLET_DATA.get());
-        tooltipComponents.add(Component.literal("Carteira FurSMP").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 
         if (data != null) {
             tooltipComponents.add(Component.literal("Titular: ").withStyle(ChatFormatting.GRAY)
@@ -68,9 +67,6 @@ public class WalletItem extends Item {
             tooltipComponents.add(Component.literal("Saldo: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(EconomyFormatHelper.formatFull(0L)).withStyle(ChatFormatting.DARK_GRAY)));
         }
-
-        tooltipComponents.add(Component.literal("Clique com o Botão Direito ou equipe no slot dedicado.")
-                .withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC));
 
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }

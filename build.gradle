@@ -67,12 +67,9 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
-<<<<<<< HEAD
     implementation "foundry.veil:veil-neoforge-1.21.1:3.3.1"
     jarJar "foundry.veil:veil-neoforge-1.21.1:3.3.1"
-=======
     implementation 'org.xerial:sqlite-jdbc:3.46.1.0'
->>>>>>> 24a76acd6274062a2bf219cb417d93e7dbad23ef
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
@@ -115,3 +112,18 @@ idea {
         downloadJavadoc = true
     }
 }
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+var syncToBinMain = tasks.register('syncToBinMain', Sync) {
+    from sourceSets.main.output
+    into 'bin/main'
+}
+
+classes.finalizedBy syncToBinMain
+neoForge.ideSyncTask syncToBinMain
+
+
+

@@ -46,6 +46,7 @@ public class FwMain {
         }
 
         FwModEvents.register();
+        net.nextfur.fwc.pda.PdaEvents.register();
     }
 
     @SubscribeEvent
