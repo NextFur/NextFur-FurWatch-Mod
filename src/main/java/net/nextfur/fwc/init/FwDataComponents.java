@@ -23,4 +23,10 @@ public class FwDataComponents {
                     .persistent(CheckData.CODEC)
                     .networkSynchronized(CheckData.STREAM_CODEC)
                     .build());
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.nextfur.fwc.pda.data.PdaData>> PDA_DATA =
+            DATA_COMPONENT_TYPES.register("pda_data", () -> DataComponentType.<net.nextfur.fwc.pda.data.PdaData>builder()
+                    .persistent(net.nextfur.fwc.pda.data.PdaData.CODEC)
+                    .networkSynchronized(net.nextfur.fwc.pda.data.PdaData.STREAM_CODEC)
+                    .build());
 }

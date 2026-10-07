@@ -42,6 +42,22 @@ public class FwModItems {
             () -> new net.nextfur.fwc.economy.items.SignedCheckItem(new Item.Properties())
     );
 
+    // CyberTab PDAs
+    public static final DeferredItem<net.nextfur.fwc.pda.items.PdaItem> PDA_BLUE = ITEMS.register(
+            "pda_blue",
+            () -> new net.nextfur.fwc.pda.items.PdaItem(net.nextfur.fwc.pda.data.PdaColor.BLUE, new Item.Properties())
+    );
+
+    public static final DeferredItem<net.nextfur.fwc.pda.items.PdaItem> PDA_ORANGE = ITEMS.register(
+            "pda_orange",
+            () -> new net.nextfur.fwc.pda.items.PdaItem(net.nextfur.fwc.pda.data.PdaColor.ORANGE, new Item.Properties())
+    );
+
+    public static final DeferredItem<net.nextfur.fwc.pda.items.PdaItem> PDA_RED = ITEMS.register(
+            "pda_red",
+            () -> new net.nextfur.fwc.pda.items.PdaItem(net.nextfur.fwc.pda.data.PdaColor.RED, new Item.Properties())
+    );
+
     // Economy - Coins
     public static final DeferredItem<net.nextfur.fwc.economy.items.CurrencyItem> COIN_1C = ITEMS.register(
             "coin_1c",

@@ -165,5 +165,24 @@ public class FwModPackets {
                     }
                 }
         );
+
+        // PDA Packets
+        registrar.playToClient(
+                net.nextfur.fwc.pda.network.OpenPdaS2CPacket.TYPE,
+                net.nextfur.fwc.pda.network.OpenPdaS2CPacket.STREAM_CODEC,
+                net.nextfur.fwc.pda.network.OpenPdaS2CPacket::handle
+        );
+
+        registrar.playToServer(
+                net.nextfur.fwc.pda.network.PdaActionC2SPacket.TYPE,
+                net.nextfur.fwc.pda.network.PdaActionC2SPacket.STREAM_CODEC,
+                net.nextfur.fwc.pda.network.PdaActionC2SPacket::handle
+        );
+
+        registrar.playToClient(
+                net.nextfur.fwc.pda.network.SyncPdaDataS2CPacket.TYPE,
+                net.nextfur.fwc.pda.network.SyncPdaDataS2CPacket.STREAM_CODEC,
+                net.nextfur.fwc.pda.network.SyncPdaDataS2CPacket::handle
+        );
     }
 }
