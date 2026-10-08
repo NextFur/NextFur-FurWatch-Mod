@@ -54,10 +54,6 @@ public class CurrencyLayerBlockItem extends BlockItem {
                 .append(Component.literal("9x " + unit.getLabel()).withStyle(ChatFormatting.WHITE)));
         tooltipComponents.add(Component.literal("Valor Total: ").withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(EconomyFormatHelper.formatFull(getValueInCents())).withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)));
-        tooltipComponents.add(Component.literal("Empilhável no chão em até 8 camadas (como neve).").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC));
-        tooltipComponents.add(Component.literal("Pode ser convertida em 9 " + (unit.getType() == CurrencyUnit.CurrencyType.COIN ? "moedas" : "cédulas") + " na bancada.")
-                .withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
-        tooltipComponents.add(Component.literal("Shift + Botão Direito (mão vazia) remove 1 camada.").withStyle(ChatFormatting.DARK_GRAY));
 
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }

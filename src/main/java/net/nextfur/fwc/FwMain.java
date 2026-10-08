@@ -31,6 +31,7 @@ public class FwMain {
         FwModParticles.PARTICLES.register(modEventBus);
         FwModSounds.SOUND_EVENTS.register(modEventBus);
         FwModBlocks.BLOCKS.register(modEventBus);
+        FwModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         FwModItems.ITEMS.register(modEventBus);
         FwDataComponents.DATA_COMPONENT_TYPES.register(modEventBus);
         FwAttachments.ATTACHMENT_TYPES.register(modEventBus);

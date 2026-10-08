@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "fursmp:block/decorative_computer"
+    },
+    "facing=east": {
+      "model": "fursmp:block/decorative_computer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "fursmp:block/decorative_computer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "fursmp:block/decorative_computer",
+      "y": 270
+    }
+  }
+}

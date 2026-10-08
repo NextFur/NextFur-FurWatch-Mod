@@ -98,5 +98,14 @@
 
   "item.fursmp.pda_blue": "PDA (Azul)",
   "item.fursmp.pda_orange": "PDA  (Laranja)",
-  "item.fursmp.pda_red": "PDA (Vermelho)"
+  "item.fursmp.pda_red": "PDA (Vermelho)",
+  "block.fursmp.computer": "Computador",
+  "block.fursmp.decorative_computer": "Computador Decorativo",
+  "gui.fursmp.computer.title": "Computador FurWatch",
+  "gui.fursmp.computer.save": "Salvar",
+  "gui.fursmp.computer.saved": "URL Atualizada!",
+  "gui.fursmp.computer.admin_url": "URL (Criativo):",
+  "gui.fursmp.computer.open_external": "Abrir no Navegador Externo",
+  "gui.fursmp.computer.mcef_loading": "Inicializando motor Chromium... Aguarde.",
+  "gui.fursmp.computer.mcef_missing": "Motor Chromium (MCEF) não detectado."
 }

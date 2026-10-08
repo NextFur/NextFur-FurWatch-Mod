@@ -33,7 +33,7 @@ public class CurrencyItem extends Item {
                 .append(Component.literal(" (" + unit.getFormattedValue() + ")").withStyle(ChatFormatting.DARK_GRAY)));
 
         String typeDesc = unit.getType() == CurrencyUnit.CurrencyType.COIN ? "Moeda Oficial" : "Cédula Oficial";
-        tooltipComponents.add(Component.literal(typeDesc + " do FurSMP").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+        tooltipComponents.add(Component.literal(typeDesc + " do Banco Shield").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
 
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }

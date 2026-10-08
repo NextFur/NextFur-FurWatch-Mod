@@ -45,6 +45,10 @@ public class FwModBlocks {
         // Directional Blocks
         public static final DeferredBlock<Block> ANIMATED_SERVER_RACK = BLOCKS.register("animated_server_rack", () -> SimpleDirectionalBlock.of(MapColor.METAL, SoundType.METAL, 1.0f, 4.0f));
 
+        // Computers
+        public static final DeferredBlock<Block> COMPUTER = BLOCKS.register("computer", net.nextfur.fwc.blocks.ComputerBlock::create);
+        public static final DeferredBlock<Block> DECORATIVE_COMPUTER = BLOCKS.register("decorative_computer", net.nextfur.fwc.blocks.DecorativeComputerBlock::create);
+
         // Steel Plating (Normal)
         public static final DeferredBlock<Block> BLACK_STEEL_PLATING = BLOCKS.register("black_steel_plating", () -> SimpleBlock.of(MapColor.METAL, SoundType.STONE, 3.0f, 6.0f));
         public static final DeferredBlock<Block> GRAY_STEEL_PLATING = BLOCKS.register("gray_steel_plating", () -> SimpleBlock.of(MapColor.METAL, SoundType.STONE, 3.0f, 6.0f));

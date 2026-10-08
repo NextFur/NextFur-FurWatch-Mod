@@ -209,5 +209,18 @@ public class FwModPackets {
                 net.nextfur.fwc.pda.network.SyncPdaDataS2CPacket.STREAM_CODEC,
                 net.nextfur.fwc.pda.network.SyncPdaDataS2CPacket::handle
         );
+
+        // Computer Packets
+        registrar.playToClient(
+                net.nextfur.fwc.network.computer.OpenComputerScreenS2CPacket.TYPE,
+                net.nextfur.fwc.network.computer.OpenComputerScreenS2CPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.computer.OpenComputerScreenS2CPacket::handle
+        );
+
+        registrar.playToServer(
+                net.nextfur.fwc.network.computer.UpdateComputerUrlC2SPacket.TYPE,
+                net.nextfur.fwc.network.computer.UpdateComputerUrlC2SPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.computer.UpdateComputerUrlC2SPacket::handle
+        );
     }
 }

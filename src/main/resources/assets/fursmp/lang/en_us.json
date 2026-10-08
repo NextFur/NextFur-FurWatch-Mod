@@ -102,5 +102,14 @@
 
   "item.fursmp.pda_blue": "PDA (Blue)",
   "item.fursmp.pda_orange": "PDA (Orange)",
-  "item.fursmp.pda_red": "PDA (Red)"
+  "item.fursmp.pda_red": "PDA (Red)",
+  "block.fursmp.computer": "Computer",
+  "block.fursmp.decorative_computer": "Decorative Computer",
+  "gui.fursmp.computer.title": "FurWatch Computer",
+  "gui.fursmp.computer.save": "Save",
+  "gui.fursmp.computer.saved": "URL Updated!",
+  "gui.fursmp.computer.admin_url": "URL (Creative):",
+  "gui.fursmp.computer.open_external": "Open in External Browser",
+  "gui.fursmp.computer.mcef_loading": "Initializing Chromium engine... Please wait.",
+  "gui.fursmp.computer.mcef_missing": "Chromium engine (MCEF) not detected."
 }

@@ -38,9 +38,9 @@
   * Bloco de notas ✅
   * Fragmentos do mapa ⭕
   * Shield Bank APP ⭕
-* Computador e model de PC ⭕
-  * Para rodar algum site que configurado (precisa estar no criativo para abrir o menu de admin) ⭕
-  * Quando acessado, abrir o site na GUI; ⭕
+* Computador e model de PC ✅
+  * Para rodar algum site que configurado (precisa estar no criativo para abrir o menu de admin) ✅
+  * Quando acessado, abrir o site na GUI; ✅
 
 ------
 Correções e updates a serem feitas:

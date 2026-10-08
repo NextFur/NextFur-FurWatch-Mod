@@ -29,8 +29,7 @@ public class BlankCheckItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.literal("Folha de Cheque do FurSMP").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
-        tooltipComponents.add(Component.literal("Insira na Carteira para emitir um cheque nominal ou ao portador.")
+        tooltipComponents.add(Component.literal("Insira na Carteira para emitir este cheque.")
                 .withStyle(ChatFormatting.GRAY));
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }

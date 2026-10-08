@@ -24,12 +24,12 @@ public class SignedCheckItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         CheckData data = stack.get(FwDataComponents.CHECK_DATA.get());
         if (data != null) {
-            tooltipComponents.add(Component.literal("Cheque Bancário Oficial").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+            tooltipComponents.add(Component.literal("Cheque").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
             tooltipComponents.add(Component.literal("Valor: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(EconomyFormatHelper.formatFull(data.amountCents())).withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)));
             tooltipComponents.add(Component.literal("Emitente: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(data.issuerName()).withStyle(ChatFormatting.WHITE)));
-            tooltipComponents.add(Component.literal("Favorecido: ").withStyle(ChatFormatting.GRAY)
+            tooltipComponents.add(Component.literal("Beneficiário: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(data.payee().isBlank() ? "Portador" : data.payee()).withStyle(ChatFormatting.WHITE)));
 
             String dateStr = DATE_FORMAT.format(new Date(data.timestamp()));
