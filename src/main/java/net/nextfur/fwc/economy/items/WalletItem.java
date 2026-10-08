@@ -34,7 +34,7 @@ public class WalletItem extends Item {
         getOrCreateWalletData(stack, player);
         player.openMenu(new net.minecraft.world.SimpleMenuProvider(
                 (id, inv, p) -> new net.nextfur.fwc.economy.menu.WalletMenu(id, inv, stack, isEquippedSlot),
-                Component.literal("Carteira FurSMP")
+                Component.literal("Shield Wallet")
         ), buf -> {
             buf.writeBoolean(isEquippedSlot);
             ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, stack);

@@ -41,7 +41,7 @@ public class SignedCheckItem extends Item {
                     .append(Component.literal("#" + shortSerial).withStyle(ChatFormatting.DARK_GRAY)));
 
             if (data.deposited()) {
-                tooltipComponents.add(Component.literal("● COMPENSADO / JÁ DEPOSITADO").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                tooltipComponents.add(Component.literal("● JÁ DEPOSITADO").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
             } else {
                 tooltipComponents.add(Component.literal("● VÁLIDO PARA DEPÓSITO").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD));
             }
