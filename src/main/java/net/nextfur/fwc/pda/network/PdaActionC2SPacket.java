@@ -85,24 +85,20 @@ public record PdaActionC2SPacket(
                     UUID targetUuid = packet.targetUuid.get();
                     String messageText = packet.payload1.trim();
 
-                    // If another player grabs one PDA, it can send messages as another player (the PDA owner)
                     String senderName = data.hasOwner() ? data.ownerName() : player.getName().getString();
                     UUID senderUuid = data.hasOwner() ? data.ownerUuid().orElse(player.getUUID()) : player.getUUID();
 
                     ServerPlayer recipient = player.server.getPlayerList().getPlayer(targetUuid);
                     if (recipient != null) {
-                        // Custom styled message in recipient chat
                         Component recipientMsg = Component.empty()
                                 .append(Component.literal("§3[§b📱 FurWatch PDA §8// §eDe: §b" + senderName + "§3] §f" + messageText));
                         recipient.sendSystemMessage(recipientMsg);
                         recipient.playNotifySound(SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1.0f, 1.8f);
 
-                        // Sender confirmation
                         Component senderMsg = Component.empty()
                                 .append(Component.literal("§3[§b📱 FurWatch PDA §8// §7Para: §b" + recipient.getName().getString() + "§3] §f" + messageText));
                         player.sendSystemMessage(senderMsg);
 
-                        // Save message record in PDA
                         PdaMessage msgRecord = new PdaMessage(
                                 UUID.randomUUID(),
                                 senderUuid,
@@ -116,7 +112,6 @@ public record PdaActionC2SPacket(
                         stack.set(FwDataComponents.PDA_DATA.get(), updated);
                         PacketDistributor.sendToPlayer(player, new SyncPdaDataS2CPacket(updated));
 
-                        // Also append message to recipient's PDA if they carry one
                         for (ItemStack rStack : recipient.getInventory().items) {
                             if (rStack.getItem() instanceof PdaItem) {
                                 PdaData rData = rStack.get(FwDataComponents.PDA_DATA.get());
@@ -147,7 +142,6 @@ public record PdaActionC2SPacket(
                     }
                 }
                 case ACTION_RESET_PDA -> {
-                    // Reset owner of the PDA via settings app
                     PdaData updated = data.resetOwner();
                     stack.set(FwDataComponents.PDA_DATA.get(), updated);
                     player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §eDispositivo redefinido com sucesso! O proprietário foi desvinculado."));

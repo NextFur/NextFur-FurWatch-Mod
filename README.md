@@ -30,8 +30,8 @@
   * Carteira com armazém de dinheiro ✅
   * Comandos de economia ✅
   * Dinheiro estacável ✅
-  * Dinheiro virtual no PDA ⭕
-  * ATM de dinheiro do banco shield para depositar no PDA ⭕
+  * Dinheiro virtual no PDA ✅
+  * ATM de dinheiro do banco shield para depositar no PDA ✅
 * PDA:
   * Mensagens ✅
   * Menu do tablet ✅
