@@ -49,6 +49,10 @@ public class FwModBlocks {
         public static final DeferredBlock<Block> COMPUTER = BLOCKS.register("computer", net.nextfur.fwc.blocks.ComputerBlock::create);
         public static final DeferredBlock<Block> DECORATIVE_COMPUTER = BLOCKS.register("decorative_computer", net.nextfur.fwc.blocks.DecorativeComputerBlock::create);
 
+        // ATMs
+        public static final DeferredBlock<Block> ATM = BLOCKS.register("atm", net.nextfur.fwc.economy.blocks.AtmBlock::create);
+        public static final DeferredBlock<Block> DECORATIVE_ATM = BLOCKS.register("decorative_atm", net.nextfur.fwc.economy.blocks.DecorativeAtmBlock::create);
+
         // Steel Plating (Normal)
         public static final DeferredBlock<Block> BLACK_STEEL_PLATING = BLOCKS.register("black_steel_plating", () -> SimpleBlock.of(MapColor.METAL, SoundType.STONE, 3.0f, 6.0f));
         public static final DeferredBlock<Block> GRAY_STEEL_PLATING = BLOCKS.register("gray_steel_plating", () -> SimpleBlock.of(MapColor.METAL, SoundType.STONE, 3.0f, 6.0f));

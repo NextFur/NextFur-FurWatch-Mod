@@ -70,6 +70,18 @@ public class FwModPackets {
                 net.nextfur.fwc.network.economy.WalletSyncS2CPacket::handle
         );
 
+        registrar.playToServer(
+                net.nextfur.fwc.network.economy.AtmActionC2SPacket.TYPE,
+                net.nextfur.fwc.network.economy.AtmActionC2SPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.economy.AtmActionC2SPacket::handle
+        );
+
+        registrar.playToClient(
+                net.nextfur.fwc.network.economy.AtmSyncS2CPacket.TYPE,
+                net.nextfur.fwc.network.economy.AtmSyncS2CPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.economy.AtmSyncS2CPacket::handle
+        );
+
         registrar.playToClient(
                 RollDiceS2CPacket.TYPE,
                 RollDiceS2CPacket.STREAM_CODEC,

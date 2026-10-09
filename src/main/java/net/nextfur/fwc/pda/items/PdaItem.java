@@ -64,9 +64,13 @@ public class PdaItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
+        Level level = context.getLevel();
+        if (level.getBlockState(context.getClickedPos()).getBlock() instanceof net.nextfur.fwc.economy.blocks.AbstractAtmBlock) {
+            return InteractionResult.PASS;
+        }
+
         Player player = context.getPlayer();
         if (player != null && !player.isShiftKeyDown()) {
-            Level level = context.getLevel();
             ItemStack stack = context.getItemInHand();
             if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
                 getOrCreatePdaData(stack, serverPlayer);
@@ -116,6 +120,8 @@ public class PdaItem extends Item {
         if (data != null && data.hasOwner()) {
             tooltipComponents.add(Component.literal("Proprietário: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(data.ownerName()).withStyle(ChatFormatting.WHITE)));
+            tooltipComponents.add(Component.literal("Shield Bank: ").withStyle(ChatFormatting.GRAY)
+                    .append(Component.literal(net.nextfur.fwc.economy.data.EconomyFormatHelper.formatStandard(data.bankBalanceCents())).withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)));
             tooltipComponents.add(Component.literal("Contatos: ").withStyle(ChatFormatting.GRAY)
                     .append(Component.literal(String.valueOf(data.contacts().size())).withStyle(ChatFormatting.DARK_AQUA)));
             tooltipComponents.add(Component.literal("Notas: ").withStyle(ChatFormatting.GRAY)

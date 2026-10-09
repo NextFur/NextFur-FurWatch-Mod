@@ -111,5 +111,11 @@
   "gui.fursmp.computer.admin_url": "URL (Creative):",
   "gui.fursmp.computer.open_external": "Open in External Browser",
   "gui.fursmp.computer.mcef_loading": "Initializing Chromium engine... Please wait.",
-  "gui.fursmp.computer.mcef_missing": "Chromium engine (MCEF) not detected."
+  "gui.fursmp.computer.mcef_missing": "Chromium engine (MCEF) not detected.",
+  "block.fursmp.atm": "ATM Terminal",
+  "block.fursmp.decorative_atm": "Decorative ATM",
+  "container.fursmp.atm": "Shield Bank ATM",
+  "gui.fursmp.atm.deposit": "Deposit",
+  "gui.fursmp.atm.deposit_all": "Deposit All",
+  "gui.fursmp.atm.withdraw": "Withdraw"
 }

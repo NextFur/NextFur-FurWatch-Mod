@@ -12,6 +12,7 @@ public class EconomyClientMenuEvents {
     public static void register(net.neoforged.bus.api.IEventBus modBus) {
         modBus.addListener(RegisterMenuScreensEvent.class, event -> {
             event.register(FwModMenus.WALLET_MENU.get(), WalletScreen::new);
+            event.register(FwModMenus.ATM_MENU.get(), AtmScreen::new);
         });
     }
 }

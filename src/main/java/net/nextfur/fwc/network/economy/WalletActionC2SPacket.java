@@ -319,7 +319,7 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
         player.sendSystemMessage(Component.literal("§aCheque emitido com sucesso! Valor: §f" + EconomyFormatHelper.formatFull(amountCents) + " §7(Para: " + validPayee + ")"));
     }
 
-    private static List<ItemStack> calculateDenominations(long cents) {
+    public static List<ItemStack> calculateDenominations(long cents) {
         List<ItemStack> list = new ArrayList<>();
         long remaining = cents;
 
@@ -349,7 +349,7 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
         return list;
     }
 
-    private static ItemStack getItemForUnit(CurrencyUnit u) {
+    public static ItemStack getItemForUnit(CurrencyUnit u) {
         return switch (u) {
             case COIN_1C -> new ItemStack(FwModItems.COIN_1C.get());
             case COIN_5C -> new ItemStack(FwModItems.COIN_5C.get());

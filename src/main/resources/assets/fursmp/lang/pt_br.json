@@ -107,5 +107,11 @@
   "gui.fursmp.computer.admin_url": "URL (Criativo):",
   "gui.fursmp.computer.open_external": "Abrir no Navegador Externo",
   "gui.fursmp.computer.mcef_loading": "Inicializando motor Chromium... Aguarde.",
-  "gui.fursmp.computer.mcef_missing": "Motor Chromium (MCEF) não detectado."
+  "gui.fursmp.computer.mcef_missing": "Motor Chromium (MCEF) não detectado.",
+  "block.fursmp.atm": "Terminal ATM",
+  "block.fursmp.decorative_atm": "ATM Decorativo",
+  "container.fursmp.atm": "ATM Shield Bank",
+  "gui.fursmp.atm.deposit": "Depositar",
+  "gui.fursmp.atm.deposit_all": "Dep. Tudo",
+  "gui.fursmp.atm.withdraw": "Sacar"
 }

@@ -19,7 +19,8 @@ public record PdaData(
         PdaColor colorVariant,
         List<PdaContact> contacts,
         List<PdaNote> notes,
-        List<PdaMessage> messages
+        List<PdaMessage> messages,
+        long bankBalanceCents
 ) {
     public static final Codec<PdaData> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -29,7 +30,8 @@ public record PdaData(
                     PdaColor.CODEC.optionalFieldOf("color", PdaColor.BLUE).forGetter(PdaData::colorVariant),
                     PdaContact.CODEC.listOf().optionalFieldOf("contacts", List.of()).forGetter(PdaData::contacts),
                     PdaNote.CODEC.listOf().optionalFieldOf("notes", List.of()).forGetter(PdaData::notes),
-                    PdaMessage.CODEC.listOf().optionalFieldOf("messages", List.of()).forGetter(PdaData::messages)
+                    PdaMessage.CODEC.listOf().optionalFieldOf("messages", List.of()).forGetter(PdaData::messages),
+                    Codec.LONG.optionalFieldOf("bank_balance_cents", 0L).forGetter(PdaData::bankBalanceCents)
             ).apply(instance, PdaData::new)
     );
 
@@ -42,6 +44,7 @@ public record PdaData(
                 PdaContact.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buf, data.contacts);
                 PdaNote.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buf, data.notes);
                 PdaMessage.STREAM_CODEC.apply(ByteBufCodecs.list()).encode(buf, data.messages);
+                ByteBufCodecs.VAR_LONG.encode(buf, data.bankBalanceCents);
             },
             buf -> new PdaData(
                     UUIDUtil.STREAM_CODEC.decode(buf),
@@ -50,7 +53,8 @@ public record PdaData(
                     PdaColor.STREAM_CODEC.decode(buf),
                     PdaContact.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buf),
                     PdaNote.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buf),
-                    PdaMessage.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buf)
+                    PdaMessage.STREAM_CODEC.apply(ByteBufCodecs.list()).decode(buf),
+                    ByteBufCodecs.VAR_LONG.decode(buf)
             )
     );
 
@@ -62,7 +66,8 @@ public record PdaData(
                 color,
                 List.of(),
                 List.of(),
-                List.of()
+                List.of(),
+                0L
         );
     }
 
@@ -78,7 +83,8 @@ public record PdaData(
                 colorVariant,
                 contacts,
                 notes,
-                messages
+                messages,
+                bankBalanceCents
         );
     }
 
@@ -90,7 +96,21 @@ public record PdaData(
                 colorVariant,
                 contacts,
                 notes,
-                messages
+                messages,
+                bankBalanceCents
+        );
+    }
+
+    public PdaData withBankBalance(long newBalance) {
+        return new PdaData(
+                pdaId,
+                ownerUuid,
+                ownerName,
+                colorVariant,
+                contacts,
+                notes,
+                messages,
+                newBalance
         );
     }
 
@@ -101,23 +121,23 @@ public record PdaData(
     public PdaData withContact(PdaContact contact) {
         List<PdaContact> updated = new ArrayList<>(contacts.stream().filter(c -> !c.uuid().equals(contact.uuid())).toList());
         updated.add(contact);
-        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, List.copyOf(updated), notes, messages);
+        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, List.copyOf(updated), notes, messages, bankBalanceCents);
     }
 
     public PdaData withoutContact(UUID contactUuid) {
         List<PdaContact> updated = contacts.stream().filter(c -> !c.uuid().equals(contactUuid)).toList();
-        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, updated, notes, messages);
+        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, updated, notes, messages, bankBalanceCents);
     }
 
     public PdaData withNote(PdaNote note) {
         List<PdaNote> updated = new ArrayList<>(notes.stream().filter(n -> !n.id().equals(note.id())).toList());
         updated.add(0, note); // newest note first
-        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, contacts, List.copyOf(updated), messages);
+        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, contacts, List.copyOf(updated), messages, bankBalanceCents);
     }
 
     public PdaData withoutNote(UUID noteId) {
         List<PdaNote> updated = notes.stream().filter(n -> !n.id().equals(noteId)).toList();
-        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, contacts, updated, messages);
+        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, contacts, updated, messages, bankBalanceCents);
     }
 
     public PdaData withMessage(PdaMessage message) {
@@ -127,7 +147,7 @@ public record PdaData(
         if (updated.size() > 150) {
             updated = updated.subList(updated.size() - 150, updated.size());
         }
-        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, contacts, notes, List.copyOf(updated));
+        return new PdaData(pdaId, ownerUuid, ownerName, colorVariant, contacts, notes, List.copyOf(updated), bankBalanceCents);
     }
 
     public List<PdaMessage> getConversationWith(UUID contactUuid) {
