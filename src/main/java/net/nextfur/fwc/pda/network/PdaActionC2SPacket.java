@@ -20,6 +20,7 @@ import net.nextfur.fwc.pda.data.PdaData;
 import net.nextfur.fwc.pda.data.PdaMessage;
 import net.nextfur.fwc.pda.data.PdaNote;
 import net.nextfur.fwc.pda.items.PdaItem;
+import net.nextfur.fwc.pda.service.PdaMessagingService;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -85,45 +86,37 @@ public record PdaActionC2SPacket(
                     UUID targetUuid = packet.targetUuid.get();
                     String messageText = packet.payload1.trim();
 
-                    String senderName = data.hasOwner() ? data.ownerName() : player.getName().getString();
-                    UUID senderUuid = data.hasOwner() ? data.ownerUuid().orElse(player.getUUID()) : player.getUUID();
+                    if (!data.hasOwner()) {
+                        player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cEste PDA não possui um usuário registrado. Vincule-o antes de usar."));
+                        return;
+                    }
 
                     ServerPlayer recipient = player.server.getPlayerList().getPlayer(targetUuid);
-                    if (recipient != null) {
-                        Component recipientMsg = Component.empty()
-                                .append(Component.literal("§3[§b📱 FurWatch PDA §8// §eDe: §b" + senderName + "§3] §f" + messageText));
-                        recipient.sendSystemMessage(recipientMsg);
-                        recipient.playNotifySound(SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1.0f, 1.8f);
-
-                        Component senderMsg = Component.empty()
-                                .append(Component.literal("§3[§b📱 FurWatch PDA §8// §7Para: §b" + recipient.getName().getString() + "§3] §f" + messageText));
-                        player.sendSystemMessage(senderMsg);
-
-                        PdaMessage msgRecord = new PdaMessage(
-                                UUID.randomUUID(),
-                                senderUuid,
-                                senderName,
-                                recipient.getUUID(),
-                                recipient.getName().getString(),
-                                messageText,
-                                System.currentTimeMillis()
-                        );
-                        PdaData updated = data.withMessage(msgRecord);
-                        stack.set(FwDataComponents.PDA_DATA.get(), updated);
-                        PacketDistributor.sendToPlayer(player, new SyncPdaDataS2CPacket(updated));
-
-                        for (ItemStack rStack : recipient.getInventory().items) {
-                            if (rStack.getItem() instanceof PdaItem) {
-                                PdaData rData = rStack.get(FwDataComponents.PDA_DATA.get());
-                                if (rData != null) {
-                                    rStack.set(FwDataComponents.PDA_DATA.get(), rData.withMessage(msgRecord));
-                                    break;
-                                }
-                            }
-                        }
-                    } else {
+                    if (recipient == null) {
                         player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cO contato está offline no momento."));
+                        return;
                     }
+
+                    if (recipient.getUUID().equals(player.getUUID())) {
+                        player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cVocê não pode enviar uma mensagem para si mesmo."));
+                        return;
+                    }
+
+                    PdaMessagingService.PdaLookupResult recipientPda = PdaMessagingService.findRecipientPda(recipient);
+                    if (!recipientPda.foundPda() || !recipientPda.hasOwner()) {
+                        player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cO contato não possui um PDA registrado em seu inventário."));
+                        return;
+                    }
+
+                    PdaMessagingService.sendPdaMessage(
+                            player,
+                            stack,
+                            data,
+                            recipient,
+                            recipientPda.stack(),
+                            recipientPda.data(),
+                            messageText
+                    );
                 }
                 case ACTION_SAVE_NOTE -> {
                     UUID noteId = packet.noteId.orElse(UUID.randomUUID());

@@ -51,9 +51,13 @@ public class FwMain {
     }
 
     @SubscribeEvent
+    public void onRegisterCommands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {
+        FwModCommands.registerCommands(event.getDispatcher());
+    }
+
+    @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         net.nextfur.fwc.economy.db.EconomyDatabaseManager.getInstance().initialize(event.getServer());
-        FwModCommands.register(event); // Comandos uwu
     }
 
     @SubscribeEvent

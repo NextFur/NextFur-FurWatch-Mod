@@ -17,7 +17,7 @@
   * /tmenu - Menu de title ✅
   * /skycolor - Menu para trocar a cor do céu ✅
   * /economy - Comandos administrativos do controle de economia ✅
-  * /tell - Comando de mensagem atrelado ao PDA ⭕
+  * /tell - Comando de mensagem atrelado ao PDA ✅
   * /pickpoket - Comando para tentar a sorte em roubar a carteira de algum jogador que esteja proximo ⭕
 * Efeitos customizados: 
   * MoonGravity ✅
