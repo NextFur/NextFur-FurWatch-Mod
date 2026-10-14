@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "particle": "fursmp:block/signal_blocker_front_on",
+    "bottom": "fursmp:block/signal_blocker_bottom",
+    "top": "fursmp:block/signal_blocker_top",
+    "side": "fursmp:block/signal_blocker_side",
+    "front": "fursmp:block/signal_blocker_front_on"
+  }
+}

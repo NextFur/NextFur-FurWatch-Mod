@@ -15,4 +15,9 @@ public class FwModBlockEntities {
             BLOCK_ENTITIES.register("computer", () ->
                     BlockEntityType.Builder.of(ComputerBlockEntity::new, FwModBlocks.COMPUTER.get()).build(null)
             );
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<net.nextfur.fwc.blocks.entity.SignalBlockerBlockEntity>> SIGNAL_BLOCKER =
+            BLOCK_ENTITIES.register("signal_blocker", () ->
+                    BlockEntityType.Builder.of(net.nextfur.fwc.blocks.entity.SignalBlockerBlockEntity::new, FwModBlocks.SIGNAL_BLOCKER.get()).build(null)
+            );
 }

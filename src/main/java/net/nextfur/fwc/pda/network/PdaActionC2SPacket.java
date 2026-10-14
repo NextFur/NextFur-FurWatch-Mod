@@ -86,6 +86,12 @@ public record PdaActionC2SPacket(
                     UUID targetUuid = packet.targetUuid.get();
                     String messageText = packet.payload1.trim();
 
+                    if (player.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED)) {
+                        player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §c[SEM SINAL] O sinal do seu dispositivo está bloqueado por interferência eletromagnética!"));
+                        player.playNotifySound(SoundEvents.NOTE_BLOCK_DIDGERIDOO.value(), SoundSource.PLAYERS, 1.0f, 0.8f);
+                        return;
+                    }
+
                     if (!data.hasOwner()) {
                         player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cEste PDA não possui um usuário registrado. Vincule-o antes de usar."));
                         return;
@@ -99,6 +105,12 @@ public record PdaActionC2SPacket(
 
                     if (recipient.getUUID().equals(player.getUUID())) {
                         player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cVocê não pode enviar uma mensagem para si mesmo."));
+                        return;
+                    }
+
+                    if (recipient.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED)) {
+                        player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §c[FALHA DE ALCANCE] Não foi possível contatar " + recipient.getName().getString() + ". Sinal do destinatário bloqueado!"));
+                        player.playNotifySound(SoundEvents.NOTE_BLOCK_DIDGERIDOO.value(), SoundSource.PLAYERS, 1.0f, 0.8f);
                         return;
                     }
 

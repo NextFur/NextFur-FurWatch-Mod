@@ -83,6 +83,7 @@
   "effect.fursmp.small_size": "Tamanho Pequeno",
   "effect.fursmp.moon_gravity": "Gravidade Lunar",
   "effect.fursmp.emp": "Interferência EMP",
+  "effect.fursmp.signal_blocked": "Sinal Bloqueado",
 
   "block.fursmp.niix_plushie": "§aPelúcia do §eN§di§fi§bx",
   "block.fursmp.niix_plushie.description": "§d§lPor que tá grudento? Eca!",
@@ -113,5 +114,10 @@
   "container.fursmp.atm": "ATM Shield Bank",
   "gui.fursmp.atm.deposit": "Depositar",
   "gui.fursmp.atm.deposit_all": "Dep. Tudo",
-  "gui.fursmp.atm.withdraw": "Sacar"
+  "gui.fursmp.atm.withdraw": "Sacar",
+  "block.fursmp.signal_blocker": "Bloqueador de Sinal",
+  "gui.fursmp.signal_blocker.title": "Bloqueador de Sinal",
+  "gui.fursmp.signal_blocker.radius": "Raio de Bloqueio",
+  "gui.fursmp.signal_blocker.save": "Salvar Config.",
+  "gui.fursmp.signal_blocker.cancel": "Cancelar"
 }

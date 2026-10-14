@@ -239,17 +239,26 @@ public class PdaScreen extends Screen {
         int userBoxW = 86;
         int userBoxH = 13;
 
-        gui.fill(userBoxX, userBoxY, userBoxX + userBoxW, userBoxY + userBoxH, 0x660A141D);
-        gui.renderOutline(userBoxX, userBoxY, userBoxW, userBoxH, 0x5500A896);
+        boolean isSignalBlocked = minecraft != null && minecraft.player != null &&
+                minecraft.player.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED);
 
-        String userPrefix = "USUÁRIO: ";
-        int prefixW = font.width(userPrefix);
-        gui.drawString(font, userPrefix, userBoxX + 3, userBoxY + 3, 0xFF7CA0B5, false);
+        if (isSignalBlocked) {
+            gui.fill(userBoxX, userBoxY, userBoxX + userBoxW, userBoxY + userBoxH, 0xAA660000);
+            gui.renderOutline(userBoxX, userBoxY, userBoxW, userBoxH, 0xFFFF2222);
+            gui.drawString(font, "⚠ SEM SINAL", userBoxX + 4, userBoxY + 3, 0xFFFF5555, false);
+        } else {
+            gui.fill(userBoxX, userBoxY, userBoxX + userBoxW, userBoxY + userBoxH, 0x660A141D);
+            gui.renderOutline(userBoxX, userBoxY, userBoxW, userBoxH, 0x5500A896);
 
-        String ownerName = (pdaData != null && pdaData.hasOwner()) ? pdaData.ownerName() : "NENHUM";
-        int nameColor = (pdaData != null && pdaData.hasOwner()) ? 0xFF00FF88 : 0xFFFFAA00;
-        String truncated = font.plainSubstrByWidth(ownerName, userBoxW - prefixW - 5);
-        gui.drawString(font, truncated, userBoxX + 3 + prefixW, userBoxY + 3, nameColor, false);
+            String userPrefix = "USUÁRIO: ";
+            int prefixW = font.width(userPrefix);
+            gui.drawString(font, userPrefix, userBoxX + 3, userBoxY + 3, 0xFF7CA0B5, false);
+
+            String ownerName = (pdaData != null && pdaData.hasOwner()) ? pdaData.ownerName() : "NENHUM";
+            int nameColor = (pdaData != null && pdaData.hasOwner()) ? 0xFF00FF88 : 0xFFFFAA00;
+            String truncated = font.plainSubstrByWidth(ownerName, userBoxW - prefixW - 5);
+            gui.drawString(font, truncated, userBoxX + 3 + prefixW, userBoxY + 3, nameColor, false);
+        }
 
         // Flashlight box
         int flashX = screenX + 2;

@@ -234,5 +234,18 @@ public class FwModPackets {
                 net.nextfur.fwc.network.computer.UpdateComputerUrlC2SPacket.STREAM_CODEC,
                 net.nextfur.fwc.network.computer.UpdateComputerUrlC2SPacket::handle
         );
+
+        // Signal Blocker Packets
+        registrar.playToClient(
+                net.nextfur.fwc.network.signalblocker.OpenSignalBlockerScreenS2CPacket.TYPE,
+                net.nextfur.fwc.network.signalblocker.OpenSignalBlockerScreenS2CPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.signalblocker.OpenSignalBlockerScreenS2CPacket::handle
+        );
+
+        registrar.playToServer(
+                net.nextfur.fwc.network.signalblocker.UpdateSignalBlockerC2SPacket.TYPE,
+                net.nextfur.fwc.network.signalblocker.UpdateSignalBlockerC2SPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.signalblocker.UpdateSignalBlockerC2SPacket::handle
+        );
     }
 }

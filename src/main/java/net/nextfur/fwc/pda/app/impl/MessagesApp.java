@@ -94,6 +94,14 @@ public class MessagesApp extends PdaApp {
         String text = messageInput.getValue().trim();
         if (text.isEmpty()) return;
 
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED)) {
+            Minecraft.getInstance().player.displayClientMessage(
+                    Component.literal("§8[§bFurWatch§8] §c[SEM SINAL] Transmissão bloqueada!"),
+                    false
+            );
+            return;
+        }
+
         PacketDistributor.sendToServer(new PdaActionC2SPacket(
                 PdaActionC2SPacket.ACTION_SEND_MESSAGE,
                 screen.isMainHand(),
@@ -110,6 +118,13 @@ public class MessagesApp extends PdaApp {
     public void render(GuiGraphics gui, int mouseX, int mouseY, float partialTick, int contentX, int contentY, int contentWidth, int contentHeight) {
         Font font = Minecraft.getInstance().font;
         PdaData data = screen.getPdaData();
+
+        boolean isSignalBlocked = Minecraft.getInstance().player != null &&
+                Minecraft.getInstance().player.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED);
+        if (sendBtn != null) {
+            sendBtn.active = !isSignalBlocked;
+            sendBtn.setMessage(isSignalBlocked ? Component.literal("Bloq.") : Component.literal("Enviar"));
+        }
 
         int leftWidth = 84;
         int rightX = contentX + leftWidth + 4;
@@ -208,6 +223,13 @@ public class MessagesApp extends PdaApp {
                 gui.drawString(font, msg.content(), bubbleX + 3, currentY + 2, 0xFFFFFFFF, false);
                 gui.drawString(font, timeStr, bubbleX + bubbleWidth - font.width(timeStr) - 2, currentY + 7, 0x88FFFFFF, false);
             }
+        }
+
+        if (isSignalBlocked) {
+            int bannerY = contentY + chatAreaHeight - 14;
+            gui.fill(rightX + 2, bannerY, rightX + rightWidth - 2, bannerY + 12, 0xEE441111);
+            gui.renderOutline(rightX + 2, bannerY, rightWidth - 4, 12, 0xFFFF3333);
+            gui.drawCenteredString(font, "⚠ SINAL BLOQUEADO", rightX + rightWidth / 2, bannerY + 2, 0xFFFF7777);
         }
     }
 

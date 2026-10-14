@@ -87,6 +87,7 @@
   "effect.fursmp.small_size": "Small Size",
   "effect.fursmp.moon_gravity": "Moon Gravity",
   "effect.fursmp.emp": "EMP Interference",
+  "effect.fursmp.signal_blocked": "Signal Blocked",
 
   "block.fursmp.niix_plushie": "§aN§ei§di§fx §bPlushie",
   "block.fursmp.niix_plushie.description": "§d§lWhy is it sticky? Ewww",
@@ -117,5 +118,10 @@
   "container.fursmp.atm": "Shield Bank ATM",
   "gui.fursmp.atm.deposit": "Deposit",
   "gui.fursmp.atm.deposit_all": "Deposit All",
-  "gui.fursmp.atm.withdraw": "Withdraw"
+  "gui.fursmp.atm.withdraw": "Withdraw",
+  "block.fursmp.signal_blocker": "Signal Blocker",
+  "gui.fursmp.signal_blocker.title": "Signal Blocker",
+  "gui.fursmp.signal_blocker.radius": "Jamming Radius",
+  "gui.fursmp.signal_blocker.save": "Save Config",
+  "gui.fursmp.signal_blocker.cancel": "Cancel"
 }

@@ -164,6 +164,19 @@ public class PdaMessagingService {
         String recipientName = recipientPlayer.getName().getString();
         UUID recipientUuid = recipientPlayer.getUUID();
 
+        // Verify signal blockers
+        if (senderPlayer.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED)) {
+            senderPlayer.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §c[SEM SINAL] O sinal do seu dispositivo está bloqueado por interferência eletromagnética!"));
+            senderPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_DIDGERIDOO.value(), SoundSource.PLAYERS, 1.0f, 0.8f);
+            return false;
+        }
+
+        if (recipientPlayer.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED)) {
+            senderPlayer.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §c[FALHA DE ALCANCE] Não foi possível entregar a mensagem. O sinal de " + recipientName + " está bloqueado por interferência!"));
+            senderPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_DIDGERIDOO.value(), SoundSource.PLAYERS, 1.0f, 0.8f);
+            return false;
+        }
+
         // 1. Deliver notification to recipient
         Component recipientMsg = Component.empty()
                 .append(Component.literal("§3[§b📱 FurWatch PDA §8// §eDe: §b" + senderName + "§3] §f" + messageText));

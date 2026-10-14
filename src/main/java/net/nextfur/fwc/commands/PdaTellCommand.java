@@ -54,6 +54,16 @@ public class PdaTellCommand {
             return 0;
         }
 
+        if (player.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED)) {
+            player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §c[SEM SINAL] Seu sinal está bloqueado por interferência eletromagnética! Não é possível enviar mensagens."));
+            return 0;
+        }
+
+        if (recipient.hasEffect(net.nextfur.fwc.init.FwModEffects.SIGNAL_BLOCKED)) {
+            player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §c[FALHA] O jogador §e" + recipient.getName().getString() + " §cestá com o sinal bloqueado e não pode receber mensagens."));
+            return 0;
+        }
+
         PdaLookupResult senderPda = PdaMessagingService.findSenderPda(player);
         if (!senderPda.foundPda()) {
             player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §cVocê precisa ter um PDA em seu inventário para usar o /tell."));

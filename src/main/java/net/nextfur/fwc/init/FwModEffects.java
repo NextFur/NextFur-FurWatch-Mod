@@ -15,4 +15,5 @@ public class FwModEffects {
     public static final DeferredHolder<MobEffect, MobEffect> MOON_GRAVITY = EFFECTS.register("moon_gravity", EffectMoonGravity::new);
     public static final DeferredHolder<MobEffect, MobEffect> BIG_SIZE = EFFECTS.register("big_size", EffectBigSize::new);
     public static final DeferredHolder<MobEffect, MobEffect> SMALL_SIZE = EFFECTS.register("small_size", EffectSmallSize::new);
+    public static final DeferredHolder<MobEffect, MobEffect> SIGNAL_BLOCKED = EFFECTS.register("signal_blocked", EffectSignalBlocked::new);
 }
