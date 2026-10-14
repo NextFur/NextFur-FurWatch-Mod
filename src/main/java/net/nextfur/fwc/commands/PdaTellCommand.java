@@ -31,13 +31,13 @@ public class PdaTellCommand {
     }
 
     private static int sendUsage(CommandContext<CommandSourceStack> context) {
-        context.getSource().sendFailure(Component.literal("§8[§b📱 FurWatch PDA§8] §cUso correto: /tell <jogador> <mensagem>"));
+        context.getSource().sendFailure(Component.literal("§8[§bFurWatch§8] §cUso correto: /tell <jogador> <mensagem>"));
         return 0;
     }
 
     private static int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         if (!(context.getSource().getEntity() instanceof ServerPlayer player)) {
-            context.getSource().sendFailure(Component.literal("§8[§b📱 FurWatch PDA§8] §cSomente jogadores podem usar este comando."));
+            context.getSource().sendFailure(Component.literal("§8[§bFurWatch§8] §cSomente jogadores podem usar este comando."));
             return 0;
         }
 
@@ -45,34 +45,34 @@ public class PdaTellCommand {
         String message = StringArgumentType.getString(context, "message").trim();
 
         if (message.isEmpty()) {
-            player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cA mensagem não pode estar vazia."));
+            player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §cA mensagem não pode estar vazia."));
             return 0;
         }
 
         if (recipient.getUUID().equals(player.getUUID())) {
-            player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cVocê não pode enviar uma mensagem para si mesmo."));
+            player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §cVocê não pode enviar uma mensagem para si mesmo."));
             return 0;
         }
 
         PdaLookupResult senderPda = PdaMessagingService.findSenderPda(player);
         if (!senderPda.foundPda()) {
-            player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cVocê precisa ter um PDA em seu inventário para usar o /tell."));
+            player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §cVocê precisa ter um PDA em seu inventário para usar o /tell."));
             return 0;
         }
 
         if (!senderPda.hasOwner()) {
-            player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cO PDA em seu inventário não possui um usuário registrado. Vincule-o antes de usar."));
+            player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §cO PDA em seu inventário não possui um usuário registrado. Vincule-o antes de usar."));
             return 0;
         }
 
         if (senderPda.data().ownerUuid().isPresent() && senderPda.data().ownerUuid().get().equals(recipient.getUUID())) {
-            player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cVocê não pode enviar uma mensagem para o próprio proprietário deste PDA."));
+            player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §cVocê não pode enviar uma mensagem para o próprio proprietário deste PDA."));
             return 0;
         }
 
         PdaLookupResult recipientPda = PdaMessagingService.findRecipientPda(recipient);
         if (!recipientPda.foundPda() || !recipientPda.hasOwner()) {
-            player.sendSystemMessage(Component.literal("§8[§b📱 FurWatch PDA§8] §cO jogador §e" + recipient.getName().getString() + " §cnão possui um PDA registrado em seu inventário."));
+            player.sendSystemMessage(Component.literal("§8[§bFurWatch§8] §cO jogador §e" + recipient.getName().getString() + " §cnão possui um PDA registrado em seu inventário."));
             return 0;
         }
 
