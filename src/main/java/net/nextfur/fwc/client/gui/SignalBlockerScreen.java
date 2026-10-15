@@ -133,7 +133,7 @@ public class SignalBlockerScreen extends Screen {
         }
     }
 
-    private Component getPowerLabel() {
+    private Component getPowerLabel() { 
         return this.manualEnabled
                 ? Component.literal("LIGADO [ON]").withStyle(ChatFormatting.GREEN)
                 : Component.literal("DESLIGADO [OFF]").withStyle(ChatFormatting.RED);

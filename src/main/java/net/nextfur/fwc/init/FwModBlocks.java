@@ -41,6 +41,13 @@ public class FwModBlocks {
         public static final DeferredBlock<Block> POPOSA_PLUSHIE = BLOCKS.register("poposa_plushie", () -> PlushieBlock.of(SoundType.WOOL, 2.0f, 10.0f));
         public static final DeferredBlock<Block> KIVIX_PLUSHIE = BLOCKS.register("kivix_plushie", () -> PlushieBlock.of(SoundType.WOOL, 2.0f, 10.0f));
         public static final DeferredBlock<Block> DEEPPEDRA_PLUSHIE = BLOCKS.register("deeppedra_plushie", () -> PlushieBlock.of(SoundType.DEEPSLATE, 2.0f, 10.0f));
+        public static final DeferredBlock<Block> TYLER_PLUSHIE = BLOCKS.register("tyler_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
+        public static final DeferredBlock<Block> PANDINHO_PLUSHIE = BLOCKS.register("pandinho_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
+        public static final DeferredBlock<Block> SIRMOD_PLUSHIE = BLOCKS.register("sirmod_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
+        public static final DeferredBlock<Block> MARI_PLUSHIE = BLOCKS.register("mari_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
+        public static final DeferredBlock<Block> CHARLES_PLUSHIE = BLOCKS.register("charles_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
+        public static final DeferredBlock<Block> GUI_PLUSHIE = BLOCKS.register("gui_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
+        public static final DeferredBlock<Block> FLAAY_PLUSHIE = BLOCKS.register("flaay_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
 
         // Directional Blocks
         public static final DeferredBlock<Block> ANIMATED_SERVER_RACK = BLOCKS.register("animated_server_rack", () -> SimpleDirectionalBlock.of(MapColor.METAL, SoundType.METAL, 1.0f, 4.0f));
