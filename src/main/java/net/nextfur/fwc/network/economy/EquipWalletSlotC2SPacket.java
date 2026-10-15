@@ -36,18 +36,15 @@ public record EquipWalletSlotC2SPacket(int action) implements CustomPacketPayloa
                 ItemStack slotWallet = player.getData(FwAttachments.WALLET_SLOT.get());
                 ItemStack cursor = player.containerMenu.getCarried();
 
-                if (packet.action() == 0) { // Click on slot
+                if (packet.action() == 0) {
                     if (cursor.isEmpty() && !slotWallet.isEmpty()) {
-                        // Take from slot to cursor
                         player.containerMenu.setCarried(slotWallet.copy());
                         player.setData(FwAttachments.WALLET_SLOT.get(), ItemStack.EMPTY);
                     } else if (cursor.getItem() instanceof WalletItem && slotWallet.isEmpty()) {
-                        // Place into slot
                         ItemStack toEquip = cursor.split(1);
                         WalletItem.getOrCreateWalletData(toEquip, player);
                         player.setData(FwAttachments.WALLET_SLOT.get(), toEquip);
                     } else if (cursor.getItem() instanceof WalletItem && !slotWallet.isEmpty()) {
-                        // Swap wallets
                         ItemStack toEquip = cursor.split(1);
                         WalletItem.getOrCreateWalletData(toEquip, player);
                         player.setData(FwAttachments.WALLET_SLOT.get(), toEquip);
@@ -65,7 +62,6 @@ public record EquipWalletSlotC2SPacket(int action) implements CustomPacketPayloa
                 player.containerMenu.broadcastChanges();
                 PacketDistributor.sendToPlayer(player, new SyncWalletSlotS2CPacket(currentSlot));
 
-                // Update SQLite snapshot
                 if (!currentSlot.isEmpty()) {
                     WalletData data = currentSlot.get(FwDataComponents.WALLET_DATA.get());
                     if (data != null) {

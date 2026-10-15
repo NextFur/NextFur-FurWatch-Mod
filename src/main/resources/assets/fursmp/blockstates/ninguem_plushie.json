@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model":  "fursmp:block/ninguem_plushie", "y": 0 },
+    "facing=east":  { "model":  "fursmp:block/ninguem_plushie", "y": 90 },
+    "facing=south": { "model":  "fursmp:block/ninguem_plushie", "y": 180 },
+    "facing=west":  { "model":  "fursmp:block/ninguem_plushie", "y": 270 }
+  }
+}

@@ -107,14 +107,12 @@ public class PickpocketCommand {
             }
         }
 
-        // Scan target's wallets
         List<WalletRef> targetWallets = findWallets(target);
         if (targetWallets.isEmpty()) {
             source.sendFailure(Component.literal("§6[FurWatch] §c" + target.getName().getString() + " não possui nenhuma carteira no inventário!"));
             return 0;
         }
 
-        // Find the wallet with the highest balance
         WalletRef richestWallet = null;
         for (WalletRef ref : targetWallets) {
             if (richestWallet == null || ref.data().balanceCents() > richestWallet.data().balanceCents()) {
@@ -128,10 +126,8 @@ public class PickpocketCommand {
             return 0;
         }
 
-        // Set cooldown on actual attempt
         COOLDOWNS.put(thief.getUUID(), now);
 
-        // 1/8 chance to succeed
         RandomSource random = thief.getRandom();
         boolean success = random.nextInt(8) == 0;
 
@@ -145,12 +141,10 @@ public class PickpocketCommand {
     }
 
     private static void handleSuccess(ServerPlayer thief, ServerPlayer target, WalletRef richestTargetWallet, long targetBalance, RandomSource random) {
-        // Random percentage between 1% and 20%
         int percent = 1 + random.nextInt(20);
         long stolenCents = Math.round(targetBalance * (percent / 100.0));
         stolenCents = Math.max(1L, Math.min(targetBalance, stolenCents));
 
-        // Deduct from target wallet
         long newTargetBalance = targetBalance - stolenCents;
         WalletData updatedTargetData = richestTargetWallet.data().withBalance(newTargetBalance);
         richestTargetWallet.stack().set(FwDataComponents.WALLET_DATA.get(), updatedTargetData);
@@ -179,10 +173,8 @@ public class PickpocketCommand {
                 "Pickpocketed by " + thief.getName().getString() + " (" + percent + "%)"
         );
 
-        // Add to thief's wallet or inventory
         List<WalletRef> thiefWallets = findWallets(thief);
         if (!thiefWallets.isEmpty()) {
-            // Prefer equipped wallet slot, else richest / first wallet
             WalletRef thiefWallet = thiefWallets.stream()
                     .filter(WalletRef::isEquippedSlot)
                     .findFirst()
@@ -216,7 +208,6 @@ public class PickpocketCommand {
                     "Stolen from " + target.getName().getString() + " (" + percent + "%) into wallet"
             );
         } else {
-            // Thief has no wallet: give physical currency denominations
             List<ItemStack> denominations = WalletActionC2SPacket.calculateDenominations(stolenCents);
             for (ItemStack cash : denominations) {
                 if (!thief.getInventory().add(cash)) {
@@ -233,7 +224,6 @@ public class PickpocketCommand {
             );
         }
 
-        // Thief feedback
         String formatted = EconomyFormatHelper.formatFull(stolenCents);
         thief.sendSystemMessage(Component.literal("§6[FurWatch] §aVocê bateu a carteira de §e" + target.getName().getString()
                 + "§a com sucesso! Furtou: §e" + formatted + " §7(" + percent + "% do saldo)."));
@@ -244,7 +234,6 @@ public class PickpocketCommand {
         int alertRoll = random.nextInt(100); // 0..99
 
         if (alertRoll < 5) {
-            // 5% chance: Alert victim and reveal the thief's identity
             target.sendSystemMessage(Component.literal("§6[FurWatch] §c§lAtenção! §e" + thief.getName().getString()
                     + " §ctentou te roubar!"));
             target.playNotifySound(SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.PLAYERS, 1.0f, 0.8f);
@@ -253,7 +242,6 @@ public class PickpocketCommand {
                     + target.getName().getString() + "§c!"));
             thief.playNotifySound(SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.8f, 0.8f);
         } else if (alertRoll < 50) {
-            // 45% chance: Alert victim anonymously
             target.sendSystemMessage(Component.literal("§6[FurWatch] §cVocê sentiu uma movimentação estranha... §eAlguém tentou te roubar!"));
             target.playNotifySound(SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.8f, 1.2f);
 
@@ -261,7 +249,6 @@ public class PickpocketCommand {
                     + target.getName().getString() + "§c!"));
             thief.playNotifySound(SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.8f, 0.8f);
         } else {
-            // 50% chance: Completely unnoticed by victim
             thief.sendSystemMessage(Component.literal("§6[FurWatch] §cVocê falhou ao roubar a carteira de §e"
                     + target.getName().getString() + "§c, mas não foi notado."));
             thief.playNotifySound(SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.8f, 0.8f);
@@ -279,14 +266,12 @@ public class PickpocketCommand {
     private static List<WalletRef> findWallets(ServerPlayer player) {
         List<WalletRef> list = new ArrayList<>();
 
-        // 1. Equipped wallet slot
         ItemStack equipped = player.getData(FwAttachments.WALLET_SLOT.get());
         if (!equipped.isEmpty() && equipped.getItem() instanceof WalletItem) {
             WalletData data = WalletItem.getOrCreateWalletData(equipped, player);
             list.add(new WalletRef(equipped, data, true));
         }
 
-        // 2. Main inventory
         for (ItemStack stack : player.getInventory().items) {
             if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
                 WalletData data = WalletItem.getOrCreateWalletData(stack, player);
@@ -294,7 +279,6 @@ public class PickpocketCommand {
             }
         }
 
-        // 3. Offhand
         for (ItemStack stack : player.getInventory().offhand) {
             if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
                 WalletData data = WalletItem.getOrCreateWalletData(stack, player);
@@ -302,7 +286,6 @@ public class PickpocketCommand {
             }
         }
 
-        // 4. Armor
         for (ItemStack stack : player.getInventory().armor) {
             if (!stack.isEmpty() && stack.getItem() instanceof WalletItem) {
                 WalletData data = WalletItem.getOrCreateWalletData(stack, player);

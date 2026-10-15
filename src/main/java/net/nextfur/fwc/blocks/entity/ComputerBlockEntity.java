@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.nextfur.fwc.init.FwModBlockEntities;
 
 public class ComputerBlockEntity extends BlockEntity {
-    public static final String DEFAULT_URL = "https://fursmp.com";
+    public static final String DEFAULT_URL = "https://os.fursmp.com";
     private String url = DEFAULT_URL;
 
     public ComputerBlockEntity(BlockPos pos, BlockState blockState) {

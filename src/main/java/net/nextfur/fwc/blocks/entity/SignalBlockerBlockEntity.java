@@ -138,7 +138,6 @@ public class SignalBlockerBlockEntity extends BlockEntity {
 
         for (Player player : players) {
             if (player.distanceToSqr(center) <= rSq) {
-                // Apply beacon effect: 100 ticks (5s) duration, re-applied every 1s (20 ticks)
                 player.addEffect(new MobEffectInstance(
                         FwModEffects.SIGNAL_BLOCKED,
                         100,

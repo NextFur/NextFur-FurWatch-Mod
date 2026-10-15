@@ -115,7 +115,6 @@ public record AtmActionC2SPacket(int actionType, long amountCents) implements Cu
     private static void handleDepositAll(ServerPlayer player, AtmMenu menu, ItemStack pdaStack, PdaData pdaData) {
         long totalCents = 0;
 
-        // Slot 1 (ATM deposit slot)
         Slot depositSlot = menu.getSlot(1);
         ItemStack slotStack = depositSlot.getItem();
         if (!slotStack.isEmpty()) {
@@ -128,7 +127,6 @@ public record AtmActionC2SPacket(int actionType, long amountCents) implements Cu
             }
         }
 
-        // Slots 2 to 37 (Player inventory)
         for (int i = 2; i <= 37; i++) {
             Slot slot = menu.getSlot(i);
             ItemStack stack = slot.getItem();
@@ -181,7 +179,6 @@ public record AtmActionC2SPacket(int actionType, long amountCents) implements Cu
         List<ItemStack> itemsToGive = WalletActionC2SPacket.calculateDenominations(centsToWithdraw);
         if (itemsToGive.isEmpty()) return;
 
-        // Check inventory space (slots 2 to 37)
         int requiredSlots = itemsToGive.size();
         int emptySlots = 0;
         for (int i = 2; i <= 37; i++) {

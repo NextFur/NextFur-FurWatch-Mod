@@ -78,7 +78,6 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
         long totalCents = 0;
         int itemsDeposited = 0;
 
-        // Iterate over player inventory slots in menu (slots 1 to 36)
         for (int i = 1; i <= 36; i++) {
             Slot slot = menu.getSlot(i);
             ItemStack stack = slot.getItem();
@@ -116,7 +115,7 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
             PacketDistributor.sendToPlayer(player, new WalletSyncS2CPacket(updated));
             player.sendSystemMessage(Component.literal("§aDepositado com sucesso: §f" + EconomyFormatHelper.formatFull(totalCents)));
         } else {
-            player.sendSystemMessage(Component.literal("§cNenhuma moeda ou cédula encontrada no inventário para depositar."));
+            player.sendSystemMessage(Component.literal("§cNenhum valor para depositar."));
         }
     }
 
@@ -197,7 +196,7 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
                                 player.sendSystemMessage(Component.literal("§aCheque de §f" + EconomyFormatHelper.formatFull(checkData.amountCents()) + "§a compensado com sucesso!"));
                             });
                         } else if (result == DepositResult.ALREADY_DEPOSITED) {
-                            player.sendSystemMessage(Component.literal("§cEste cheque já consta como depositado no sistema bancário!"));
+                            player.sendSystemMessage(Component.literal("§cEste cheque já foi depositado!"));
                         } else {
                             player.sendSystemMessage(Component.literal("§cErro ao processar cheque: registro não encontrado ou cancelado."));
                         }
@@ -282,7 +281,7 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
         }
 
         if (!foundBlank) {
-            player.sendSystemMessage(Component.literal("§cVocê precisa de uma Folha de Cheque em Branco (blank_check) no inventário para emitir um cheque!"));
+            player.sendSystemMessage(Component.literal("§cVocê precisa de uma Folha de Cheque em Branco no inventário para emitir um cheque!"));
             return;
         }
 
