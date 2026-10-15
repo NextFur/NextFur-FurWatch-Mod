@@ -158,5 +158,7 @@
   "gui.fursmp.signal_blocker.title": "Bloqueador de Sinal",
   "gui.fursmp.signal_blocker.radius": "Raio de Bloqueio",
   "gui.fursmp.signal_blocker.save": "Salvar Config.",
-  "gui.fursmp.signal_blocker.cancel": "Cancelar"
+  "gui.fursmp.signal_blocker.cancel": "Cancelar",
+  "block.fursmp.lucky_block": "Tigrunho",
+  "item.fursmp.lucky_block": "Tigrunho"
 }

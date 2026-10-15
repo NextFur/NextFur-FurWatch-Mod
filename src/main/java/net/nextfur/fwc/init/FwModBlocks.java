@@ -66,6 +66,9 @@ public class FwModBlocks {
         public static final DeferredBlock<Block> ATM = BLOCKS.register("atm", net.nextfur.fwc.economy.blocks.AtmBlock::create);
         public static final DeferredBlock<Block> DECORATIVE_ATM = BLOCKS.register("decorative_atm", net.nextfur.fwc.economy.blocks.DecorativeAtmBlock::create);
 
+        // Lucky Block
+        public static final DeferredBlock<Block> LUCKY_BLOCK = BLOCKS.register("lucky_block", net.nextfur.fwc.economy.blocks.LuckyBlock::create);
+
         // Signal Blocker
         public static final DeferredBlock<Block> SIGNAL_BLOCKER = BLOCKS.register("signal_blocker", net.nextfur.fwc.blocks.SignalBlockerBlock::create);
 

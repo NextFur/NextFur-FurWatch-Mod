@@ -163,5 +163,7 @@
   "gui.fursmp.signal_blocker.title": "Signal Blocker",
   "gui.fursmp.signal_blocker.radius": "Jamming Radius",
   "gui.fursmp.signal_blocker.save": "Save Config",
-  "gui.fursmp.signal_blocker.cancel": "Cancel"
+  "gui.fursmp.signal_blocker.cancel": "Cancel",
+  "block.fursmp.lucky_block": "Tigrunho Block",
+  "item.fursmp.lucky_block": "Tigrunho Block"
 }
