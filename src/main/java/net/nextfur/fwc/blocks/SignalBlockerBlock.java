@@ -107,10 +107,6 @@ public class SignalBlockerBlock extends BaseEntityBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!player.isCreative()) {
             if (!level.isClientSide()) {
-                player.displayClientMessage(
-                        net.minecraft.network.chat.Component.literal("§c[FurWatch] Acesso negado. Apenas operadores no Modo Criativo podem configurar este dispositivo."),
-                        true
-                );
                 player.playNotifySound(SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.BLOCKS, 1.0f, 0.5f);
             }
             return InteractionResult.sidedSuccess(level.isClientSide());

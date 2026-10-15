@@ -23,5 +23,6 @@ public class FwModCommands {
         SkyColorCommand.register(dispatcher);       // skycolor
         DiceRollMenuCommand.register(dispatcher);   // roll
         EconomyCommand.register(dispatcher);        // economy, fweco, carteira
+        PickpocketCommand.register(dispatcher);     // pickpocket, pickpoket, batercarteira
     }
 }
