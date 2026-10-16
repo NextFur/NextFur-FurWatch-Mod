@@ -51,9 +51,9 @@ Correções e updates a serem feitas:
   * Bloco Bloqueador de sinal (configuravel apenas no criativo) - Com menu para editar range de ação - dentro do raio calcular se há um player - se o bloqueador estiver ligado - mensagens no /tell e no chat de mensagens do PDA estão bloqueados; ✅
   * Comando para bloquear sinal global (perm: furwatch.admin) /signal block/activate ✅
 * Wallet:
-  * Corrigir comandos de economia - atualmente com prolemas de listagem
-  * Corrigir posicionamento do slot da carteira no inventário
-  * Refazer o design dos sprites do dinheiro
+  * Corrigir comandos de economia - atualmente com prolemas de listagem ✅
+  * Corrigir posicionamento do slot da carteira no inventário ✅
+  * Refazer o design dos sprites do dinheiro ✅
   * Implementar o comando de pickpoket ✅
 
 ### Feito com 💖 pela [NextFUR](https://nextfur.net) para o 🦊 [FurSMP](https://fursmp.com)

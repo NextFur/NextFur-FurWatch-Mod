@@ -224,17 +224,17 @@ public class ComputerScreen extends Screen {
         int centerX = vx + vw / 2;
         int startY = vy + 30;
 
-        gui.drawCenteredString(font, "§a╔══════════════════════════════════════════════════════════════╗", centerX, startY, 0xFF39FF14);
-        gui.drawCenteredString(font, "§a║                  ABERTURA OS - VERSÃO 3.6.2.1                ║", centerX, startY + 12, 0xFF39FF14);
-        gui.drawCenteredString(font, "§a║                      ORACLE 0TERMINAL                        ║", centerX, startY + 24, 0xFF39FF14);
-        gui.drawCenteredString(font, "§a╚══════════════════════════════════════════════════════════════╝", centerX, startY + 36, 0xFF39FF14);
+        gui.drawCenteredString(font, "§a╔══════════════════════════════╗", centerX, startY, 0xFF39FF14);
+        gui.drawCenteredString(font, "§a║ ABERTURA OS - VERSÃO 3.6.2.1 ║", centerX, startY + 12, 0xFF39FF14);
+        gui.drawCenteredString(font, "§a║       ORACLE  TERMINAL       ║", centerX, startY + 24, 0xFF39FF14);
+        gui.drawCenteredString(font, "§a╚══════════════════════════════╝", centerX, startY + 36, 0xFF39FF14);
 
         if (!BrowserManager.isMcefAvailable()) {
-            gui.drawCenteredString(font, "§6[AVISO] MCEF não instalado.", centerX, startY + 105, 0xFFFFAA00);
+            gui.drawCenteredString(font, "§6MCEF não instalado.", centerX, startY + 105, 0xFFFFAA00);
             gui.drawCenteredString(font, "§7Esta funcionalidade não estará disponível.", centerX, startY + 120, 0xFFAAAAAA);
         } else if (!BrowserManager.isMcefInitialized()) {
             gui.drawCenteredString(font, "§e[MCEF] Inicializando Chromium... Aguarde alguns segundos.", centerX, startY + 105, 0xFFFFFF55);
-            gui.drawCenteredString(font, "§7O motor de navegação está baixando/carregando os binários necessários.", centerX, startY + 120, 0xFFAAAAAA);
+            gui.drawCenteredString(font, "§7O motor de navegação está carregando os binários necessários.", centerX, startY + 120, 0xFFAAAAAA);
         } else {
             gui.drawCenteredString(font, "§e[MCEF] Carregando página web...", centerX, startY + 105, 0xFFFFFF55);
             gui.drawCenteredString(font, "§7Conectando ao servidor e gerando a imagem de renderização.", centerX, startY + 120, 0xFFAAAAAA);
