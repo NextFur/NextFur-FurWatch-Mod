@@ -47,7 +47,7 @@ Correções e updates a serem feitas:
 * PDA:
   * Corrigir problema ao mandar mensagem - utilizando o detentor do PDA ✅
   * Implementar o /tell do furwatch e bloquear outros comandos similares ✅
-  * Implementar obrigações para usar /tell e receber mensagens - sendo mandatório estar com um PDA no inventário para ambas as ações;
+  * Implementar obrigações para usar /tell e receber mensagens - sendo mandatório estar com um PDA no inventário para ambas as ações; ✅
   * Bloco Bloqueador de sinal (configuravel apenas no criativo) - Com menu para editar range de ação - dentro do raio calcular se há um player - se o bloqueador estiver ligado - mensagens no /tell e no chat de mensagens do PDA estão bloqueados; ✅
   * Comando para bloquear sinal global (perm: furwatch.admin) /signal block/activate ✅
 * Wallet:

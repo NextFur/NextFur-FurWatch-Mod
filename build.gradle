@@ -120,10 +120,13 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 var syncToBinMain = tasks.register('syncToBinMain', Sync) {
+    dependsOn classes
     from sourceSets.main.output
     into 'bin/main'
 }
 
+compileJava.finalizedBy syncToBinMain
+processResources.finalizedBy syncToBinMain
 classes.finalizedBy syncToBinMain
 neoForge.ideSyncTask syncToBinMain
 
