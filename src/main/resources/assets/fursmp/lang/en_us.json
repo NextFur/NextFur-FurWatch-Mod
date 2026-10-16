@@ -142,7 +142,9 @@
 
   "block.fursmp.sora_plushie": "§dSora Plushie",
   "block.fursmp.sora_plushie.description": "§d§lFofo demais!",
-  
+
+  "block.fursmp.hirin_plushie": "§dHirin Plushie",
+  "block.fursmp.hirin_plushie.description": "§d§lThe snake strikes!",
 
   "item.fursmp.pda_blue": "PDA (Blue)",
   "item.fursmp.pda_orange": "PDA (Orange)",

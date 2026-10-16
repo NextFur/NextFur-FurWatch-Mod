@@ -43,6 +43,7 @@ public class FwModBlocks {
         public static final DeferredBlock<Block> KITSU_PLUSHIE = BLOCKS.register("kitsu_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
         public static final DeferredBlock<Block> DEEPPEDRA_PLUSHIE = BLOCKS.register("deeppedra_plushie", () -> PlushieBlock.of(SoundType.DEEPSLATE, 2.0f, 10.0f));
         public static final DeferredBlock<Block> SORA_PLUSHIE = BLOCKS.register("sora_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
+        public static final DeferredBlock<Block> HIRIN_PLUSHIE = BLOCKS.register("hirin_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
         public static final DeferredBlock<Block> TYLER_PLUSHIE = BLOCKS.register("tyler_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
         public static final DeferredBlock<Block> PANDINHO_PLUSHIE = BLOCKS.register("pandinho_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
         public static final DeferredBlock<Block> SIRMOD_PLUSHIE = BLOCKS.register("sirmod_plushie", () -> PlushieBlock.of(SoundType.SLIME_BLOCK, 2.0f, 10.0f));
