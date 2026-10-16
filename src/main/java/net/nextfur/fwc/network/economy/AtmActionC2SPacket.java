@@ -84,45 +84,55 @@ public record AtmActionC2SPacket(int actionType, long amountCents) implements Cu
         }
 
         if (slotStack.getItem() instanceof CurrencyItem currencyItem) {
-            long totalCents = currencyItem.getValueInCents() * slotStack.getCount();
+            int count = slotStack.getCount();
+            long totalCents = currencyItem.getValueInCents() * count;
             depositSlot.set(ItemStack.EMPTY);
-            completeDeposit(player, menu, pdaStack, pdaData, totalCents, "cash deposit");
+            completeDeposit(player, menu, pdaStack, pdaData, totalCents,
+                    "ATM Depósito: " + currencyItem.getUnit().getLabel() + " x" + count);
         } else if (slotStack.getItem() instanceof CurrencyLayerBlockItem layerItem) {
-            long totalCents = layerItem.getValueInCents() * slotStack.getCount();
+            int count = slotStack.getCount();
+            long totalCents = layerItem.getValueInCents() * count;
             depositSlot.set(ItemStack.EMPTY);
-            completeDeposit(player, menu, pdaStack, pdaData, totalCents, "cash stack deposit");
+            completeDeposit(player, menu, pdaStack, pdaData, totalCents,
+                    "ATM Depósito Maço: " + layerItem.getUnit().getLabel() + " x" + count);
         } else if (slotStack.getItem() instanceof SignedCheckItem) {
             CheckData checkData = slotStack.get(FwDataComponents.CHECK_DATA.get());
-            if (checkData == null) {
-                player.sendSystemMessage(Component.literal("§c[ATM] Cheque inválido ou danificado!"));
+            if (checkData == null || checkData.deposited()) {
+                player.sendSystemMessage(Component.literal("§c[ATM] Cheque inválido ou já compensado!"));
                 return;
             }
 
-            EconomyDatabaseManager.getInstance().depositCheck(checkData.checkId(), player.getUUID(), player.getName().getString())
-                    .thenAccept(result -> {
+            EconomyDatabaseManager.getInstance()
+                    .registerCheck(checkData.checkId(), checkData.issuerUuid(), checkData.issuerName(), checkData.payee(), checkData.amountCents())
+                    .thenCompose(v -> EconomyDatabaseManager.getInstance().depositCheck(checkData.checkId(), player.getUUID(), player.getName().getString()))
+                    .thenAccept(result -> player.server.execute(() -> {
                         if (result == DepositResult.SUCCESS) {
                             depositSlot.set(ItemStack.EMPTY);
-                            completeDeposit(player, menu, pdaStack, pdaData, checkData.amountCents(), "check #" + checkData.checkId().toString().substring(0, 8));
+                            completeDeposit(player, menu, pdaStack, pdaData, checkData.amountCents(),
+                                    "ATM Cheque #" + checkData.checkId().toString().substring(0, 8) + " (" + checkData.issuerName() + ")");
                         } else if (result == DepositResult.ALREADY_DEPOSITED) {
                             player.sendSystemMessage(Component.literal("§c[ATM] Este cheque já consta como depositado no sistema bancário!"));
                         } else {
                             player.sendSystemMessage(Component.literal("§c[ATM] Erro ao processar cheque: registro não encontrado ou cancelado."));
                         }
-                    });
+                    }));
         }
     }
 
     private static void handleDepositAll(ServerPlayer player, AtmMenu menu, ItemStack pdaStack, PdaData pdaData) {
         long totalCents = 0;
+        int itemsDeposited = 0;
 
         Slot depositSlot = menu.getSlot(1);
         ItemStack slotStack = depositSlot.getItem();
         if (!slotStack.isEmpty()) {
             if (slotStack.getItem() instanceof CurrencyItem currencyItem) {
                 totalCents += currencyItem.getValueInCents() * slotStack.getCount();
+                itemsDeposited += slotStack.getCount();
                 depositSlot.set(ItemStack.EMPTY);
             } else if (slotStack.getItem() instanceof CurrencyLayerBlockItem layerItem) {
                 totalCents += layerItem.getValueInCents() * slotStack.getCount();
+                itemsDeposited += slotStack.getCount();
                 depositSlot.set(ItemStack.EMPTY);
             }
         }
@@ -133,16 +143,19 @@ public record AtmActionC2SPacket(int actionType, long amountCents) implements Cu
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof CurrencyItem currencyItem) {
                     totalCents += currencyItem.getValueInCents() * stack.getCount();
+                    itemsDeposited += stack.getCount();
                     slot.set(ItemStack.EMPTY);
                 } else if (stack.getItem() instanceof CurrencyLayerBlockItem layerItem) {
                     totalCents += layerItem.getValueInCents() * stack.getCount();
+                    itemsDeposited += stack.getCount();
                     slot.set(ItemStack.EMPTY);
                 }
             }
         }
 
         if (totalCents > 0) {
-            completeDeposit(player, menu, pdaStack, pdaData, totalCents, "all inventory cash");
+            completeDeposit(player, menu, pdaStack, pdaData, totalCents,
+                    "ATM Dep. Tudo (" + itemsDeposited + " itens)");
         } else {
             player.sendSystemMessage(Component.literal("§e[ATM] Nenhuma moeda ou cédula encontrada no inventário para depósito."));
         }
@@ -155,10 +168,14 @@ public record AtmActionC2SPacket(int actionType, long amountCents) implements Cu
         menu.getSlot(0).setChanged();
         menu.broadcastChanges();
 
+        java.util.UUID ownerUuid = updated.ownerUuid().orElse(player.getUUID());
+        String ownerName = updated.hasOwner() ? updated.ownerName() : player.getName().getString();
+
+        EconomyDatabaseManager.getInstance().upsertBankAccount(updated.pdaId(), ownerUuid, ownerName, newBalance);
         EconomyDatabaseManager.getInstance().logTransaction(
                 "ATM_DEPOSIT", player.getUUID(), player.getName().getString(),
-                null, "Shield Bank", amountCents, newBalance,
-                "Deposited " + detail + " into PDA virtual account"
+                ownerUuid, "Shield Bank (#" + updated.pdaId().toString().substring(0, 8) + ")",
+                amountCents, newBalance, detail
         );
 
         player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.7f, 1.2f);
@@ -200,10 +217,15 @@ public record AtmActionC2SPacket(int actionType, long amountCents) implements Cu
         }
         menu.broadcastChanges();
 
+        java.util.UUID ownerUuid = updated.ownerUuid().orElse(player.getUUID());
+        String ownerName = updated.hasOwner() ? updated.ownerName() : player.getName().getString();
+
+        EconomyDatabaseManager.getInstance().upsertBankAccount(updated.pdaId(), ownerUuid, ownerName, newBalance);
         EconomyDatabaseManager.getInstance().logTransaction(
                 "ATM_WITHDRAW", player.getUUID(), player.getName().getString(),
-                null, "Shield Bank", centsToWithdraw, newBalance,
-                "Withdrew " + itemsToGive.size() + " cash stacks from PDA virtual account"
+                ownerUuid, "Shield Bank (#" + updated.pdaId().toString().substring(0, 8) + ")",
+                centsToWithdraw, newBalance,
+                "ATM Saque (" + itemsToGive.size() + " packs)"
         );
 
         player.playNotifySound(SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1.0f, 1.5f);

@@ -49,6 +49,14 @@ public class PdaItem extends Item {
             data = data.withOwner(player.getUUID(), player.getName().getString());
             stack.set(FwDataComponents.PDA_DATA.get(), data);
         }
+        if (player != null && !player.level().isClientSide) {
+            net.nextfur.fwc.economy.db.EconomyDatabaseManager.getInstance().upsertBankAccount(
+                    data.pdaId(),
+                    data.ownerUuid().orElse(player.getUUID()),
+                    data.hasOwner() ? data.ownerName() : player.getName().getString(),
+                    data.bankBalanceCents()
+            );
+        }
         return data;
     }
 

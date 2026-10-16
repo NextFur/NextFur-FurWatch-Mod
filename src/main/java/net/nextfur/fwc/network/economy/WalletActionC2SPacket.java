@@ -171,36 +171,36 @@ public record WalletActionC2SPacket(int actionType, long amountCents, String pay
                 return;
             }
 
-            EconomyDatabaseManager.getInstance().depositCheck(checkData.checkId(), player.getUUID(), player.getName().getString())
-                    .thenAccept(result -> {
+            EconomyDatabaseManager.getInstance()
+                    .registerCheck(checkData.checkId(), checkData.issuerUuid(), checkData.issuerName(), checkData.payee(), checkData.amountCents())
+                    .thenCompose(v -> EconomyDatabaseManager.getInstance().depositCheck(checkData.checkId(), player.getUUID(), player.getName().getString()))
+                    .thenAccept(result -> player.server.execute(() -> {
                         if (result == DepositResult.SUCCESS) {
-                            player.server.execute(() -> {
-                                long newBalance = data.balanceCents() + checkData.amountCents();
-                                WalletData updated = data.withBalance(newBalance);
-                                wallet.set(FwDataComponents.WALLET_DATA.get(), updated);
-                                menu.setWalletStack(wallet);
-                                depositSlot.set(ItemStack.EMPTY);
-                                menu.broadcastChanges();
+                            long newBalance = data.balanceCents() + checkData.amountCents();
+                            WalletData updated = data.withBalance(newBalance);
+                            wallet.set(FwDataComponents.WALLET_DATA.get(), updated);
+                            menu.setWalletStack(wallet);
+                            depositSlot.set(ItemStack.EMPTY);
+                            menu.broadcastChanges();
 
-                                EconomyDatabaseManager.getInstance().logTransaction(
-                                        "CHECK_DEPOSITED", player.getUUID(), player.getName().getString(),
-                                        checkData.issuerUuid(), checkData.issuerName(),
-                                        checkData.amountCents(), newBalance,
-                                        "Check #" + checkData.checkId().toString().substring(0, 8) + " cashed"
-                                );
-                                EconomyDatabaseManager.getInstance().updateWalletSnapshot(
-                                        player.getUUID(), player.getName().getString(), updated.walletId(), newBalance
-                                );
+                            EconomyDatabaseManager.getInstance().logTransaction(
+                                    "CHECK_DEPOSITED", player.getUUID(), player.getName().getString(),
+                                    checkData.issuerUuid(), checkData.issuerName(),
+                                    checkData.amountCents(), newBalance,
+                                    "Check #" + checkData.checkId().toString().substring(0, 8) + " cashed"
+                            );
+                            EconomyDatabaseManager.getInstance().updateWalletSnapshot(
+                                    player.getUUID(), player.getName().getString(), updated.walletId(), newBalance
+                            );
 
-                                PacketDistributor.sendToPlayer(player, new WalletSyncS2CPacket(updated));
-                                player.sendSystemMessage(Component.literal("§aCheque de §f" + EconomyFormatHelper.formatFull(checkData.amountCents()) + "§a compensado com sucesso!"));
-                            });
+                            PacketDistributor.sendToPlayer(player, new WalletSyncS2CPacket(updated));
+                            player.sendSystemMessage(Component.literal("§aCheque de §f" + EconomyFormatHelper.formatFull(checkData.amountCents()) + "§a compensado com sucesso!"));
                         } else if (result == DepositResult.ALREADY_DEPOSITED) {
                             player.sendSystemMessage(Component.literal("§cEste cheque já foi depositado!"));
                         } else {
                             player.sendSystemMessage(Component.literal("§cErro ao processar cheque: registro não encontrado ou cancelado."));
                         }
-                    });
+                    }));
         }
     }
 

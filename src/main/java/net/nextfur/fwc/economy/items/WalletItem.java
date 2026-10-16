@@ -27,6 +27,14 @@ public class WalletItem extends Item {
             data = WalletData.createNew(player.getUUID(), player.getName().getString());
             stack.set(FwDataComponents.WALLET_DATA.get(), data);
         }
+        if (player != null && !player.level().isClientSide) {
+            net.nextfur.fwc.economy.db.EconomyDatabaseManager.getInstance().upsertWallet(
+                    data.walletId(),
+                    data.ownerUuid() != null ? data.ownerUuid() : player.getUUID(),
+                    data.ownerName() != null && !data.ownerName().isBlank() ? data.ownerName() : player.getName().getString(),
+                    data.balanceCents()
+            );
+        }
         return data;
     }
 

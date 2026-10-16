@@ -25,13 +25,24 @@ public class EconomyDatabaseManager {
     private static EconomyDatabaseManager instance;
 
     private Connection connection;
-    private final ExecutorService dbExecutor = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r, "FurWatch-Economy-DB");
-        thread.setDaemon(true);
-        return thread;
-    });
+    private ExecutorService dbExecutor = createExecutor();
 
     private EconomyDatabaseManager() {}
+
+    private static ExecutorService createExecutor() {
+        return Executors.newSingleThreadExecutor(r -> {
+            Thread thread = new Thread(r, "FurWatch-Economy-DB");
+            thread.setDaemon(true);
+            return thread;
+        });
+    }
+
+    private synchronized ExecutorService getExecutor() {
+        if (dbExecutor == null || dbExecutor.isShutdown() || dbExecutor.isTerminated()) {
+            dbExecutor = createExecutor();
+        }
+        return dbExecutor;
+    }
 
     public static synchronized EconomyDatabaseManager getInstance() {
         if (instance == null) {
@@ -40,13 +51,30 @@ public class EconomyDatabaseManager {
         return instance;
     }
 
+    private Connection connectSqlite(String dbUrl) throws Exception {
+        try {
+            Class<?> clazz = Class.forName("org.sqlite.JDBC");
+            Driver driver = (Driver) clazz.getDeclaredConstructor().newInstance();
+            return driver.connect(dbUrl, new java.util.Properties());
+        } catch (ClassNotFoundException e) {
+            Class<?> clazz = Class.forName("org.sqlite.JDBC", true, ClassLoader.getSystemClassLoader());
+            Driver driver = (Driver) clazz.getDeclaredConstructor().newInstance();
+            return driver.connect(dbUrl, new java.util.Properties());
+        }
+    }
+
     public synchronized void initialize(MinecraftServer server) {
         try {
+            getExecutor();
+            if (this.connection != null && !this.connection.isClosed()) {
+                this.connection.close();
+            }
+
             Path dbDirectory;
             try {
-                dbDirectory = server.getWorldPath(LevelResource.ROOT).resolve("furwatch");
+                dbDirectory = server.getWorldPath(LevelResource.ROOT).resolve("furwatch").normalize();
             } catch (Exception e) {
-                dbDirectory = server.getServerDirectory().resolve("furwatch");
+                dbDirectory = server.getServerDirectory().resolve("furwatch").normalize();
             }
 
             File dirFile = dbDirectory.toFile();
@@ -58,8 +86,7 @@ public class EconomyDatabaseManager {
             String dbUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
 
             LOGGER.info("[FurWatch Economy] Connecting to SQLite database at: {}", dbFile.getAbsolutePath());
-            Class.forName("org.sqlite.JDBC");
-            this.connection = DriverManager.getConnection(dbUrl);
+            this.connection = connectSqlite(dbUrl);
 
             try (Statement st = connection.createStatement()) {
                 st.execute("PRAGMA journal_mode = WAL;");
@@ -126,11 +153,23 @@ public class EconomyDatabaseManager {
                 );
             """);
 
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS economy_bank_accounts (
+                    pda_uuid TEXT PRIMARY KEY,
+                    owner_uuid TEXT NOT NULL,
+                    owner_name TEXT NOT NULL,
+                    balance_cents INTEGER NOT NULL DEFAULT 0,
+                    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+                );
+            """);
+
             st.execute("CREATE INDEX IF NOT EXISTS idx_tx_player ON economy_transactions(player_uuid);");
+            st.execute("CREATE INDEX IF NOT EXISTS idx_tx_target ON economy_transactions(target_uuid);");
             st.execute("CREATE INDEX IF NOT EXISTS idx_checks_issuer ON economy_checks(issuer_uuid, status);");
             st.execute("CREATE INDEX IF NOT EXISTS idx_checks_status ON economy_checks(status);");
             st.execute("CREATE INDEX IF NOT EXISTS idx_snapshots_name ON economy_wallet_snapshots(player_name COLLATE NOCASE);");
             st.execute("CREATE INDEX IF NOT EXISTS idx_wallets_owner ON economy_wallets(owner_uuid);");
+            st.execute("CREATE INDEX IF NOT EXISTS idx_bank_owner ON economy_bank_accounts(owner_uuid);");
         }
     }
 
@@ -166,7 +205,7 @@ public class EconomyDatabaseManager {
             } catch (SQLException e) {
                 LOGGER.error("[FurWatch Economy] Failed to log transaction", e);
             }
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<Boolean> registerCheck(
@@ -179,7 +218,7 @@ public class EconomyDatabaseManager {
         return CompletableFuture.supplyAsync(() -> {
             if (connection == null) return false;
             String sql = """
-                INSERT INTO economy_checks (
+                INSERT OR IGNORE INTO economy_checks (
                     check_uuid, issuer_uuid, issuer_name, payee_name, amount_cents, status
                 ) VALUES (?, ?, ?, ?, ?, 'ACTIVE');
             """;
@@ -195,7 +234,7 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Failed to register check: " + checkId, e);
                 return false;
             }
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<DepositResult> depositCheck(UUID checkId, UUID depositorUuid, String depositorName) {
@@ -236,7 +275,7 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Error updating check status for deposit: " + checkId, e);
                 return DepositResult.ERROR;
             }
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<List<CheckRecord>> getActiveChecksByIssuer(UUID issuerUuid) {
@@ -255,7 +294,7 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Error fetching active checks for: " + issuerUuid, e);
             }
             return list;
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<Long> getTotalActiveChecksAmount(UUID issuerUuid) {
@@ -273,17 +312,18 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Error calculating active checks total for: " + issuerUuid, e);
             }
             return 0L;
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<List<TransactionRecord>> getRecentTransactions(UUID playerUuid, int limit) {
         return CompletableFuture.supplyAsync(() -> {
             List<TransactionRecord> list = new ArrayList<>();
             if (connection == null) return list;
-            String sql = "SELECT * FROM economy_transactions WHERE player_uuid = ? ORDER BY id DESC LIMIT ?;";
+            String sql = "SELECT * FROM economy_transactions WHERE player_uuid = ? OR target_uuid = ? ORDER BY id DESC LIMIT ?;";
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
                 ps.setString(1, playerUuid.toString());
-                ps.setInt(2, limit);
+                ps.setString(2, playerUuid.toString());
+                ps.setInt(3, limit);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         list.add(mapTransactionRecord(rs));
@@ -293,7 +333,7 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Error fetching transactions for: " + playerUuid, e);
             }
             return list;
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<Void> updateWalletSnapshot(UUID playerUuid, String playerName, UUID walletId, long balanceCents) {
@@ -316,12 +356,12 @@ public class EconomyDatabaseManager {
                 ps.executeUpdate();
 
                 if (walletId != null) {
-                    upsertWallet(walletId, playerUuid, playerName, balanceCents);
+                    upsertWalletSync(walletId, playerUuid, playerName, balanceCents);
                 }
             } catch (SQLException e) {
                 LOGGER.error("[FurWatch Economy] Error updating wallet snapshot for: " + playerUuid, e);
             }
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<WalletSnapshotRecord> getWalletSnapshot(UUID playerUuid) {
@@ -339,7 +379,7 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Error fetching wallet snapshot for: " + playerUuid, e);
             }
             return null;
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<WalletSnapshotRecord> getWalletSnapshotByName(String playerName) {
@@ -356,38 +396,100 @@ public class EconomyDatabaseManager {
             } catch (SQLException e) {
                 LOGGER.error("[FurWatch Economy] Error fetching wallet snapshot by name: " + playerName, e);
             }
+
+            // Fallback: check economy_wallets, economy_bank_accounts, or economy_transactions
+            String fallbackSql = """
+                SELECT owner_uuid AS p_uuid, owner_name AS p_name, last_updated FROM economy_wallets WHERE owner_name = ? COLLATE NOCASE
+                UNION ALL
+                SELECT owner_uuid AS p_uuid, owner_name AS p_name, last_updated FROM economy_bank_accounts WHERE owner_name = ? COLLATE NOCASE
+                UNION ALL
+                SELECT player_uuid AS p_uuid, player_name AS p_name, timestamp AS last_updated FROM economy_transactions WHERE player_name = ? COLLATE NOCASE
+                LIMIT 1;
+            """;
+            try (PreparedStatement ps = connection.prepareStatement(fallbackSql)) {
+                ps.setString(1, playerName);
+                ps.setString(2, playerName);
+                ps.setString(3, playerName);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new WalletSnapshotRecord(
+                                UUID.fromString(rs.getString("p_uuid")),
+                                rs.getString("p_name"),
+                                null,
+                                0L,
+                                rs.getString("last_updated")
+                        );
+                    }
+                }
+            } catch (SQLException e) {
+                LOGGER.error("[FurWatch Economy] Error in fallback player lookup by name: " + playerName, e);
+            }
             return null;
-        }, dbExecutor);
+        }, getExecutor());
+    }
+
+    private void upsertWalletSync(UUID walletId, UUID ownerUuid, String ownerName, long balanceCents) throws SQLException {
+        if (connection == null || walletId == null) return;
+        String sql = """
+            INSERT INTO economy_wallets (wallet_uuid, owner_uuid, owner_name, balance_cents, last_updated)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(wallet_uuid) DO UPDATE SET
+                owner_uuid = excluded.owner_uuid,
+                owner_name = excluded.owner_name,
+                balance_cents = excluded.balance_cents,
+                last_updated = CURRENT_TIMESTAMP;
+        """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, walletId.toString());
+            ps.setString(2, ownerUuid != null ? ownerUuid.toString() : "");
+            ps.setString(3, ownerName != null ? ownerName : "Desconhecido");
+            ps.setLong(4, balanceCents);
+            ps.executeUpdate();
+        }
     }
 
     public CompletableFuture<Void> upsertWallet(UUID walletId, UUID ownerUuid, String ownerName, long balanceCents) {
         return CompletableFuture.runAsync(() -> {
-            if (connection == null || walletId == null) return;
+            try {
+                upsertWalletSync(walletId, ownerUuid, ownerName, balanceCents);
+            } catch (SQLException e) {
+                LOGGER.error("[FurWatch Economy] Error upserting wallet: " + walletId, e);
+            }
+        }, getExecutor());
+    }
+
+    public CompletableFuture<Void> upsertBankAccount(UUID pdaId, UUID ownerUuid, String ownerName, long balanceCents) {
+        return CompletableFuture.runAsync(() -> {
+            if (connection == null || pdaId == null) return;
             String sql = """
-                INSERT INTO economy_wallets (wallet_uuid, owner_uuid, owner_name, balance_cents, last_updated)
+                INSERT INTO economy_bank_accounts (pda_uuid, owner_uuid, owner_name, balance_cents, last_updated)
                 VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-                ON CONFLICT(wallet_uuid) DO UPDATE SET
+                ON CONFLICT(pda_uuid) DO UPDATE SET
                     owner_uuid = excluded.owner_uuid,
                     owner_name = excluded.owner_name,
                     balance_cents = excluded.balance_cents,
                     last_updated = CURRENT_TIMESTAMP;
             """;
             try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                ps.setString(1, walletId.toString());
+                ps.setString(1, pdaId.toString());
                 ps.setString(2, ownerUuid != null ? ownerUuid.toString() : "");
-                ps.setString(3, ownerName != null ? ownerName : "Desconhecido");
+                ps.setString(3, ownerName != null && !ownerName.isBlank() ? ownerName : "Desconhecido");
                 ps.setLong(4, balanceCents);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                LOGGER.error("[FurWatch Economy] Error upserting wallet: " + walletId, e);
+                LOGGER.error("[FurWatch Economy] Error upserting bank account: " + pdaId, e);
             }
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<GlobalEconomyStats> getGlobalEconomyStats() {
+        return getGlobalEconomyStats(0L);
+    }
+
+    public CompletableFuture<GlobalEconomyStats> getGlobalEconomyStats(long onlinePhysicalCashCents) {
         return CompletableFuture.supplyAsync(() -> {
             if (connection == null) {
-                return new GlobalEconomyStats(0, 0L, 0, 0L, 0L, 0L, "Nenhum", 0L);
+                return new GlobalEconomyStats(0, 0L, 0, 0L, onlinePhysicalCashCents, 0, 0L, onlinePhysicalCashCents, 0L, "Nenhum", 0L);
             }
 
             int totalWallets = 0;
@@ -408,15 +510,39 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Error querying global wallet stats", e);
             }
 
-            String topWalletSql = "SELECT owner_name, balance_cents FROM economy_wallets ORDER BY balance_cents DESC LIMIT 1;";
+            int totalBankAccounts = 0;
+            long totalBankCents = 0L;
+            String bankStatsSql = "SELECT COUNT(*) AS total, COALESCE(SUM(balance_cents), 0) AS sum_cents FROM economy_bank_accounts;";
             try (Statement st = connection.createStatement();
-                 ResultSet rs = st.executeQuery(topWalletSql)) {
+                 ResultSet rs = st.executeQuery(bankStatsSql)) {
                 if (rs.next()) {
-                    topOwner = rs.getString("owner_name");
-                    topBalance = rs.getLong("balance_cents");
+                    totalBankAccounts = rs.getInt("total");
+                    totalBankCents = rs.getLong("sum_cents");
                 }
             } catch (SQLException e) {
-                LOGGER.error("[FurWatch Economy] Error querying top wallet", e);
+                LOGGER.error("[FurWatch Economy] Error querying global bank stats", e);
+            }
+
+            String topHolderSql = """
+                SELECT owner_name, SUM(balance_cents) AS total_owner_cents
+                FROM (
+                    SELECT owner_uuid, owner_name, balance_cents FROM economy_wallets
+                    UNION ALL
+                    SELECT owner_uuid, owner_name, balance_cents FROM economy_bank_accounts
+                )
+                WHERE owner_uuid != ''
+                GROUP BY owner_uuid
+                ORDER BY total_owner_cents DESC
+                LIMIT 1;
+            """;
+            try (Statement st = connection.createStatement();
+                 ResultSet rs = st.executeQuery(topHolderSql)) {
+                if (rs.next()) {
+                    topOwner = rs.getString("owner_name");
+                    topBalance = rs.getLong("total_owner_cents");
+                }
+            } catch (SQLException e) {
+                LOGGER.error("[FurWatch Economy] Error querying top holder", e);
             }
 
             int activeChecks = 0;
@@ -432,19 +558,24 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Error querying active checks stats", e);
             }
 
-            long totalCirculating = totalWalletCents + totalChecksCents;
+            int totalAccounts = totalWallets + totalBankAccounts;
+            long avgAccountCents = totalAccounts > 0 ? (totalWalletCents + totalBankCents) / totalAccounts : avgWalletCents;
+            long totalCirculating = totalWalletCents + totalBankCents + onlinePhysicalCashCents + totalChecksCents;
 
             return new GlobalEconomyStats(
                     totalWallets,
                     totalWalletCents,
+                    totalBankAccounts,
+                    totalBankCents,
+                    onlinePhysicalCashCents,
                     activeChecks,
                     totalChecksCents,
                     totalCirculating,
-                    avgWalletCents,
+                    avgAccountCents,
                     topOwner,
                     topBalance
             );
-        }, dbExecutor);
+        }, getExecutor());
     }
 
     public CompletableFuture<Long> getTotalWalletsBalanceByOwner(UUID ownerUuid) {
@@ -462,19 +593,40 @@ public class EconomyDatabaseManager {
                 LOGGER.error("[FurWatch Economy] Error querying total wallets balance for owner: " + ownerUuid, e);
             }
             return 0L;
-        }, dbExecutor);
+        }, getExecutor());
+    }
+
+    public CompletableFuture<Long> getTotalBankBalanceByOwner(UUID ownerUuid) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (connection == null || ownerUuid == null) return 0L;
+            String sql = "SELECT COALESCE(SUM(balance_cents), 0) AS total FROM economy_bank_accounts WHERE owner_uuid = ?;";
+            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                ps.setString(1, ownerUuid.toString());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getLong("total");
+                    }
+                }
+            } catch (SQLException e) {
+                LOGGER.error("[FurWatch Economy] Error querying total bank balance for owner: " + ownerUuid, e);
+            }
+            return 0L;
+        }, getExecutor());
     }
 
     public synchronized void close() {
         if (connection != null) {
             try {
                 connection.close();
+                connection = null;
                 LOGGER.info("[FurWatch Economy] SQLite connection closed.");
             } catch (SQLException e) {
                 LOGGER.error("[FurWatch Economy] Error closing database connection", e);
             }
         }
-        dbExecutor.shutdown();
+        if (dbExecutor != null) {
+            dbExecutor.shutdown();
+        }
     }
 
     private static CheckRecord mapCheckRecord(ResultSet rs) throws SQLException {
