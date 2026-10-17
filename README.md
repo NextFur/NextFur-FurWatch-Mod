@@ -19,6 +19,7 @@
   * /economy - Comandos administrativos do controle de economia ✅
   * /tell - Comando de mensagem atrelado ao PDA ✅
   * /pickpocket (/pickpoket) - Comando para tentar a sorte em roubar a carteira de algum jogador que esteja proximo ✅
+  * /fwadmin - Comando para abrir menu de administrador - controle de itens banidos e ações rapidas; ⭕
 * Efeitos customizados: 
   * MoonGravity ✅
   * PowerDown ✅
