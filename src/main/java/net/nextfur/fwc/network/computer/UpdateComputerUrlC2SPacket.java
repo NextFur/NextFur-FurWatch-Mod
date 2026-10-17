@@ -29,8 +29,8 @@ public record UpdateComputerUrlC2SPacket(BlockPos pos, String url) implements Cu
     public static void handle(UpdateComputerUrlC2SPacket packet, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             if (ctx.player() instanceof ServerPlayer player) {
-                // Creative or Admin permission check
-                if (!player.isCreative() && !player.hasPermissions(2)) {
+                // Creative mode check
+                if (!player.isCreative()) {
                     return;
                 }
                 // Distance check

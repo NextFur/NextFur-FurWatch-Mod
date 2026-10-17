@@ -49,46 +49,46 @@ public class ComputerScreen extends Screen {
         this.openTimestamp = System.currentTimeMillis();
 
         viewportX = 8;
-        viewportY = 32;
+        viewportY = isCreative ? 32 : 8;
         viewportWidth = Math.max(width - 16, 50);
-        viewportHeight = Math.max(height - 48, 50);
+        viewportHeight = Math.max(height - (isCreative ? 48 : 24), 50);
 
-        int currentBtnX = 8;
-        int topBarY = 5;
-
-        // Navigation Buttons
-        // Back
-        addRenderableWidget(Button.builder(Component.literal("◀"), btn -> {
-            if (browser != null) browser.goBack();
-        }).bounds(currentBtnX, topBarY, 20, 20).build());
-        currentBtnX += 24;
-
-        // Forward
-        addRenderableWidget(Button.builder(Component.literal("▶"), btn -> {
-            if (browser != null) browser.goForward();
-        }).bounds(currentBtnX, topBarY, 20, 20).build());
-        currentBtnX += 24;
-
-        // Reload
-        addRenderableWidget(Button.builder(Component.literal("⟳"), btn -> {
-            if (browser != null) browser.reload();
-        }).bounds(currentBtnX, topBarY, 20, 20).build());
-        currentBtnX += 24;
-
-        // Home
-        addRenderableWidget(Button.builder(Component.literal("⌂"), btn -> {
-            if (browser != null) browser.loadURL(currentUrl);
-            if (urlEditBox != null) urlEditBox.setValue(currentUrl);
-        }).bounds(currentBtnX, topBarY, 20, 20).build());
-        currentBtnX += 28;
-
-        // Close button at top right
-        int closeBtnX = width - 26;
-        addRenderableWidget(Button.builder(Component.literal("✕"), btn -> onClose())
-                .bounds(closeBtnX, topBarY, 20, 20).build());
-
-        // URL Input and Save button (ONLY VISIBLE AND CREATED IF IN CREATIVE MODE)
         if (isCreative) {
+            int currentBtnX = 8;
+            int topBarY = 5;
+
+            // Navigation Buttons
+            // Back
+            addRenderableWidget(Button.builder(Component.literal("◀"), btn -> {
+                if (browser != null) browser.goBack();
+            }).bounds(currentBtnX, topBarY, 20, 20).build());
+            currentBtnX += 24;
+
+            // Forward
+            addRenderableWidget(Button.builder(Component.literal("▶"), btn -> {
+                if (browser != null) browser.goForward();
+            }).bounds(currentBtnX, topBarY, 20, 20).build());
+            currentBtnX += 24;
+
+            // Reload
+            addRenderableWidget(Button.builder(Component.literal("⟳"), btn -> {
+                if (browser != null) browser.reload();
+            }).bounds(currentBtnX, topBarY, 20, 20).build());
+            currentBtnX += 24;
+
+            // Home
+            addRenderableWidget(Button.builder(Component.literal("⌂"), btn -> {
+                if (browser != null) browser.loadURL(currentUrl);
+                if (urlEditBox != null) urlEditBox.setValue(currentUrl);
+            }).bounds(currentBtnX, topBarY, 20, 20).build());
+            currentBtnX += 28;
+
+            // Close button at top right
+            int closeBtnX = width - 26;
+            addRenderableWidget(Button.builder(Component.literal("✕"), btn -> onClose())
+                    .bounds(closeBtnX, topBarY, 20, 20).build());
+
+            // URL Input and Save button
             int saveBtnWidth = 54;
             int saveBtnX = closeBtnX - saveBtnWidth - 4;
             int labelWidth = 60;
@@ -185,8 +185,10 @@ public class ComputerScreen extends Screen {
         gui.fill(viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, 0xFF000000);
 
         // 4. Top Toolbar background & header
-        gui.fill(0, 0, width, 30, 0xFF1C2024);
-        gui.fill(0, 29, width, 30, 0xFF363B40);
+        if (isCreative) {
+            gui.fill(0, 0, width, 30, 0xFF1C2024);
+            gui.fill(0, 29, width, 30, 0xFF363B40);
+        }
 
         // 5. Bottom Status Bar
         gui.fill(0, height - 16, width, height, 0xFF121417);
