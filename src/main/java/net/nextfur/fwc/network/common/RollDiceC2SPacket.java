@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.nextfur.fwc.FwMain;
+import net.nextfur.fwc.persona.PersonaData;
+import net.nextfur.fwc.persona.PersonaService;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +41,9 @@ public class RollDiceC2SPacket implements CustomPacketPayload {
     }
 
     public static void handle(RollDiceC2SPacket packet, ServerPlayer sender) {
-        int result = calculateResult(packet.formula);
+        PersonaData persona = PersonaService.getPersonaData(sender);
+        float badOdds = persona.getCharismaRollBadOdds();
+        int result = calculateResult(packet.formula, badOdds);
 
         RollDiceS2CPacket responsePacket = new RollDiceS2CPacket(packet.formula, result, sender.getId());
 
@@ -74,8 +78,7 @@ public class RollDiceC2SPacket implements CustomPacketPayload {
         }
     }
 
-
-    private static int calculateResult(String formula) {
+    private static int calculateResult(String formula, float badOdds) {
         try {
             Pattern pattern = Pattern.compile("(\\d+)d(\\d+)?");
             Matcher matcher = pattern.matcher(formula.trim());
@@ -89,7 +92,13 @@ public class RollDiceC2SPacket implements CustomPacketPayload {
 
                 int total = 0;
                 for (int i = 0; i < count; i++) {
-                    total += (int) (Math.random() * faces) + 1;
+                    int roll = (int) (Math.random() * faces) + 1;
+                    if (badOdds > 0.0f && faces > 1 && Math.random() < badOdds) {
+                        int badCap = Math.max(1, faces / 2);
+                        int badRoll = (int) (Math.random() * badCap) + 1;
+                        roll = Math.min(roll, badRoll);
+                    }
+                    total += roll;
                 }
                 return total;
             }

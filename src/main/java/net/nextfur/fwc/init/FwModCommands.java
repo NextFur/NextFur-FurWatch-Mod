@@ -24,5 +24,6 @@ public class FwModCommands {
         DiceRollMenuCommand.register(dispatcher);   // roll
         EconomyCommand.register(dispatcher);        // economy, fweco, carteira
         PickpocketCommand.register(dispatcher);     // pickpocket, pickpoket, batercarteira
+        SheetCommand.register(dispatcher);          // sheet
     }
 }

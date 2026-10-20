@@ -3,6 +3,11 @@
   "minVersion": "0.8",
   "package": "net.nextfur.fwc.mixin",
   "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "EnchantmentMenuMixin",
+    "MobEffectInstanceAccessor",
+    "VillagerMixin"
+  ],
   "client": [
     "client.LevelRendererMixin",
     "client.VideoSettingsScreenMixin"

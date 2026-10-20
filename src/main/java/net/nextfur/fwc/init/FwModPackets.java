@@ -247,5 +247,18 @@ public class FwModPackets {
                 net.nextfur.fwc.network.signalblocker.UpdateSignalBlockerC2SPacket.STREAM_CODEC,
                 net.nextfur.fwc.network.signalblocker.UpdateSignalBlockerC2SPacket::handle
         );
+
+        // Persona Sheet Packets
+        registrar.playToClient(
+                net.nextfur.fwc.network.persona.OpenPersonaSheetS2CPacket.TYPE,
+                net.nextfur.fwc.network.persona.OpenPersonaSheetS2CPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.persona.OpenPersonaSheetS2CPacket::handle
+        );
+
+        registrar.playToServer(
+                net.nextfur.fwc.network.persona.SavePersonaSheetC2SPacket.TYPE,
+                net.nextfur.fwc.network.persona.SavePersonaSheetC2SPacket.STREAM_CODEC,
+                net.nextfur.fwc.network.persona.SavePersonaSheetC2SPacket::handle
+        );
     }
 }
