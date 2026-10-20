@@ -141,7 +141,7 @@ public class SanityCommand {
 
         source.sendSuccess(() -> Component.literal("§8====== §6§lFurWatch Sanidade: §e" + target.getName().getString() + " §8======"), false);
         source.sendSuccess(() -> Component.literal("§7Nível de Sanidade: " + sanityStr + " §8(" + stateLabel + "§8)"), false);
-        source.sendSuccess(() -> Component.literal("§7Atividade de Insanidade (35-10%): §d" + activityStr), false);
+        source.sendSuccess(() -> Component.literal("§7Atividade de Insanidade (50-1%): §d" + activityStr), false);
         source.sendSuccess(() -> Component.literal("§7Abates de Jogadores (10m/30m/1h): §f"
                 + pKills10m + " §8/ §f" + pKills30m + " §8/ §f" + pKills60m
                 + " §8(Próx. penalidade: §c-" + String.format(Locale.ROOT, "%.2f%%", nextPlayerPenalty) + "§8)"), false);
@@ -153,18 +153,18 @@ public class SanityCommand {
     }
 
     private static String formatSanityColor(float sanity) {
-        if (sanity > 65.0f) return "§a";
-        if (sanity > 35.0f) return "§e";
-        if (sanity > 20.0f) return "§6";
-        if (sanity > 10.0f) return "§c";
+        if (sanity >= 50.0f) return "§a";
+        if (sanity > 30.0f) return "§e";
+        if (sanity > 15.0f) return "§6";
+        if (sanity > 1.0f) return "§c";
         return "§4§l";
     }
 
     private static String getPsychologicalStateLabel(float sanity) {
-        if (sanity > 65.0f) return "§aEstável";
-        if (sanity > 35.0f) return "§eInquieto";
-        if (sanity > 20.0f) return "§6Perturbado";
-        if (sanity > 10.0f) return "§cInsano";
+        if (sanity >= 50.0f) return "§aEstável";
+        if (sanity > 30.0f) return "§eInquieto";
+        if (sanity > 15.0f) return "§6Perturbado";
+        if (sanity > 1.0f) return "§cInsano";
         return "§4§lColapso Mental";
     }
 }

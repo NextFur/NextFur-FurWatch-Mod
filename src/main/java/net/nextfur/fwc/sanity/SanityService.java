@@ -19,6 +19,9 @@ import net.nextfur.fwc.network.sanity.SanitySyncS2CPacket;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class SanityService {
     public static final float MAX_SANITY = SanityData.MAX_SANITY;
@@ -46,11 +49,17 @@ public final class SanityService {
     public static final float PLAYER_HIT_BASE_PENALTY = 1.0f;
     public static final long PLAYER_HIT_COOLDOWN_MS = 3_000L;
 
-    // Low sanity effect thresholds (35% down to 10%, increasing exponentially)
-    public static final float LOW_SANITY_START = 35.0f;
-    public static final float LOW_SANITY_CRITICAL = 10.0f;
+    // Low sanity effect thresholds (50% down to 1%, increasing exponentially)
+    public static final float LOW_SANITY_START = 50.0f;
+    public static final float LOW_SANITY_CRITICAL = 1.0f;
     private static final double EXP_STEEPNESS = 3.0D;
     private static final double EXP_DENOMINATOR = Math.exp(EXP_STEEPNESS) - 1.0D;
+
+    // Long minimum interval between server-side low-sanity weakening activities per player
+    // (6 minutes near 50% sanity down to 2 minutes minimum at <=1% sanity)
+    public static final long MIN_ACTIVITY_INTERVAL_MAX_MS = 360_000L;
+    public static final long MIN_ACTIVITY_INTERVAL_MIN_MS = 120_000L;
+    private static final Map<UUID, Long> LAST_WEAKENING_ACTIVITY_MS = new ConcurrentHashMap<>();
 
     private SanityService() {
     }
@@ -75,9 +84,9 @@ public final class SanityService {
 
     /**
      * Exponential low-sanity activity factor in [0.0, 1.0].
-     * Above 35% sanity -> 0.0.
-     * Between 35% and 10% -> increases exponentially from 0.0 to 1.0.
-     * At or below 10% -> 1.0 (maximum activity).
+     * Above 50% sanity -> 0.0.
+     * Between 50% and 1% -> increases exponentially from 0.0 to 1.0.
+     * At or below 1% -> 1.0 (maximum activity).
      */
     public static float getInsanityIntensity(float sanity) {
         if (sanity >= LOW_SANITY_START) {
@@ -229,7 +238,7 @@ public final class SanityService {
         SanityData current = getSanityData(player);
         float sanity = current.sanity();
 
-        // 1. Passive recovery: 0% -> 100% over 6 hours when not killing/hitting anything
+        // 1. Passive recovery: 0% -> 100% over 18 hours when not killing/hitting anything
         if (sanity < MAX_SANITY && (now - current.lastViolentActionTimestamp() >= RECOVERY_IDLE_DELAY_MS)) {
             float recovered = Math.min(MAX_SANITY, sanity + RECOVERY_PER_SECOND);
             boolean crossedThreshold = sanity < LOW_SANITY_START && recovered >= LOW_SANITY_START;
@@ -247,77 +256,84 @@ public final class SanityService {
             }
         }
 
-        // 2. Low-sanity random weakening effects (35% down to 10%, increasing exponentially)
+        // 2. Low-sanity random weakening effects (50% down to 1%, spaced out with long intervals)
         if (sanity < LOW_SANITY_START && !player.isCreative() && !player.isSpectator()) {
-            tickLowSanityWeakeningEffects(player, sanity);
+            tickLowSanityWeakeningEffects(player, sanity, now);
         }
     }
 
-    private static void tickLowSanityWeakeningEffects(ServerPlayer player, float sanity) {
+    private static void tickLowSanityWeakeningEffects(ServerPlayer player, float sanity, long now) {
         float intensity = getInsanityIntensity(sanity);
         if (intensity <= 0.0f) {
             return;
         }
 
+        // Enforce a long minimum interval (6 min down to 2 min) so debuffs are precautionary, not annoying
+        long minIntervalMs = Mth.lerpInt(
+                intensity,
+                (int) MIN_ACTIVITY_INTERVAL_MAX_MS,
+                (int) MIN_ACTIVITY_INTERVAL_MIN_MS
+        );
+        long lastActivity = LAST_WEAKENING_ACTIVITY_MS.getOrDefault(player.getUUID(), 0L);
+        if (locationOrTimeNotReady(now, lastActivity, minIntervalMs)) {
+            return;
+        }
+
         RandomSource random = player.getRandom();
-        // Exponentially increasing chance per second:
-        // ~0.8%/sec near 34%, ~2.5%/sec at 20%, ~8.3%/sec at <=10%
-        float triggerChance = 0.008f + (0.075f * intensity);
+        float triggerChance = 0.0005f + (0.0035f * intensity);
         if (random.nextFloat() >= triggerChance) {
             return;
         }
 
-        // Select a weakening effect weighted by current insanity intensity
+        LAST_WEAKENING_ACTIVITY_MS.put(player.getUUID(), now);
+
+        // Select a brief weakening effect weighted by current insanity intensity
         int roll = random.nextInt(100);
         Holder<MobEffect> chosenEffect;
         int durationTicks;
         int amplifier = 0;
 
-        if (roll < 30) {
+        if (roll < 35) {
             // Weakness
             chosenEffect = MobEffects.WEAKNESS;
-            durationTicks = Mth.lerpInt(intensity, 120, 320); // 6s - 16s
-            if (intensity > 0.75f && random.nextFloat() < 0.45f) {
+            durationTicks = Mth.lerpInt(intensity, 80, 160); // 4s - 8s
+            if (intensity > 0.75f && random.nextFloat() < 0.09f) {
                 amplifier = 1;
             }
-        } else if (roll < 55) {
+        } else if (roll < 62) {
             // Slowness
             chosenEffect = MobEffects.MOVEMENT_SLOWDOWN;
-            durationTicks = Mth.lerpInt(intensity, 80, 220); // 4s - 11s
-            if (intensity > 0.85f && random.nextFloat() < 0.35f) {
+            durationTicks = Mth.lerpInt(intensity, 60, 140); // 3s - 7s
+            if (intensity > 0.85f && random.nextFloat() < 0.07f) {
                 amplifier = 1;
             }
-        } else if (roll < 75) {
+        } else if (roll < 82) {
             // Mining Fatigue
             chosenEffect = MobEffects.DIG_SLOWDOWN;
-            durationTicks = Mth.lerpInt(intensity, 120, 280); // 6s - 14s
-        } else if (roll < 88) {
+            durationTicks = Mth.lerpInt(intensity, 80, 160); // 4s - 8s
+        } else if (roll < 95 || sanity > 12.0f) {
             // Hunger
             chosenEffect = MobEffects.HUNGER;
-            durationTicks = Mth.lerpInt(intensity, 140, 300); // 7s - 15s
-        } else if (sanity <= 28.0f && roll < 95) {
-            // Darkness pulse
-            chosenEffect = MobEffects.DARKNESS;
-            durationTicks = Mth.lerpInt(intensity, 80, 180); // 4s - 9s
-        } else if (sanity <= 18.0f) {
-            // Brief Blindness or Nausea at critical sanity
-            if (random.nextBoolean()) {
-                chosenEffect = MobEffects.BLINDNESS;
-                durationTicks = Mth.lerpInt(intensity, 45, 90); // 2.2s - 4.5s
-            } else {
-                chosenEffect = MobEffects.CONFUSION;
-                durationTicks = Mth.lerpInt(intensity, 100, 160); // 5s - 8s
-            }
+            durationTicks = Mth.lerpInt(intensity, 100, 180); // 5s - 9s
         } else {
-            chosenEffect = MobEffects.WEAKNESS;
-            durationTicks = 140;
+            // Brief Nausea at critical sanity
+            chosenEffect = MobEffects.CONFUSION;
+            durationTicks = Mth.lerpInt(intensity, 60, 110); // 3s - 5.5s
         }
 
         // Apply with visible=false and showIcon=false so it infringes naturally without HUD clutter
         player.addEffect(new MobEffectInstance(chosenEffect, durationTicks, amplifier, false, false, false));
     }
 
+    private static boolean locationOrTimeNotReady(long now, long lastActivity, long minIntervalMs) {
+        if (lastActivity == 0L) {
+            return false;
+        }
+        return (now - lastActivity) < minIntervalMs;
+    }
+
     public static void clearSanityDebuffs(ServerPlayer player) {
+        LAST_WEAKENING_ACTIVITY_MS.remove(player.getUUID());
         removeHiddenEffectIfPresent(player, MobEffects.WEAKNESS);
         removeHiddenEffectIfPresent(player, MobEffects.MOVEMENT_SLOWDOWN);
         removeHiddenEffectIfPresent(player, MobEffects.DIG_SLOWDOWN);

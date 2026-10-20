@@ -33,8 +33,6 @@ public class FwModEvents {
             eventBus.addListener(SanityClientHandler::onClientTick);
             eventBus.addListener(SanityClientHandler::onClientLogout);
             eventBus.addListener(SanityClientHandler::onRenderGui);
-            eventBus.addListener(SanityClientHandler::onFogColor);
-            eventBus.addListener(SanityClientHandler::onRenderFog);
             eventBus.addListener(SanityClientHandler::onCameraAngles);
             eventBus.addListener(SanityClientHandler::onComputeFov);
         }
