@@ -23,5 +23,45 @@
         "sounds": [
             "fursmp:lights_out"
         ]
+    },
+    "heartbeat": {
+        "subtitle": "subtitle.fursmp.heartbeat",
+        "sounds": [
+            "fursmp:heartbeat"
+        ]
+    },
+    "insanity": {
+        "subtitle": "subtitle.fursmp.insanity",
+        "sounds": [
+            "fursmp:insanity"
+        ]
+    },
+    "insanity1": {
+        "subtitle": "subtitle.fursmp.insanity1",
+        "sounds": [
+            "fursmp:insanity1"
+        ]
+    },
+    "whoosh": {
+        "subtitle": "subtitle.fursmp.whoosh",
+        "sounds": [
+            "fursmp:whoosh"
+        ]
+    },
+    "leaves_rustle": {
+        "subtitle": "subtitle.fursmp.leaves_rustle",
+        "sounds": [
+            "fursmp:leaves_rustle"
+        ]
+    },
+    "swish": {
+        "subtitle": "subtitle.fursmp.swish",
+        "sounds": [
+            "fursmp:swish0",
+            "fursmp:swish1",
+            "fursmp:swish2",
+            "fursmp:swish3",
+            "fursmp:swish4"
+        ]
     }
 }

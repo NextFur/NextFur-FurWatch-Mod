@@ -5,6 +5,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.nextfur.fwc.client.gui.OffRpScreenRenderer;
+import net.nextfur.fwc.client.sanity.SanityClientHandler;
 import net.nextfur.fwc.client.world.CustomSkyRenderer;
 import net.nextfur.fwc.client.world.OffRpRenderer;
 import net.nextfur.fwc.util.client.PlayerComponent;
@@ -29,6 +30,13 @@ public class FwModEvents {
             eventBus.addListener(OffRpScreenRenderer::onRenderOverlay);
             eventBus.addListener(PlayerComponent::onClientTick);
             eventBus.addListener(PlayerComponent::onClientLogout);
+            eventBus.addListener(SanityClientHandler::onClientTick);
+            eventBus.addListener(SanityClientHandler::onClientLogout);
+            eventBus.addListener(SanityClientHandler::onRenderGui);
+            eventBus.addListener(SanityClientHandler::onFogColor);
+            eventBus.addListener(SanityClientHandler::onRenderFog);
+            eventBus.addListener(SanityClientHandler::onCameraAngles);
+            eventBus.addListener(SanityClientHandler::onComputeFov);
         }
     }
 

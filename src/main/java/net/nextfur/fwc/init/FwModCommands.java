@@ -25,5 +25,6 @@ public class FwModCommands {
         EconomyCommand.register(dispatcher);        // economy, fweco, carteira
         PickpocketCommand.register(dispatcher);     // pickpocket, pickpoket, batercarteira
         SheetCommand.register(dispatcher);          // sheet
+        SanityCommand.register(dispatcher);         // sanity, sanidade
     }
 }

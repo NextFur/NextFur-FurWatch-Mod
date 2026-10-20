@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.nextfur.fwc.FwMain;
 import net.nextfur.fwc.persona.PersonaData;
+import net.nextfur.fwc.sanity.SanityData;
 
 import java.util.function.Supplier;
 
@@ -23,5 +24,10 @@ public class FwAttachments {
             ATTACHMENT_TYPES.register("persona_data", () -> AttachmentType.builder(() -> PersonaData.DEFAULT)
                     .serialize(PersonaData.CODEC)
                     .copyOnDeath()
+                    .build());
+
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<SanityData>> SANITY_DATA =
+            ATTACHMENT_TYPES.register("sanity_data", () -> AttachmentType.builder(() -> SanityData.DEFAULT)
+                    .serialize(SanityData.CODEC)
                     .build());
 }
