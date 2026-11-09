@@ -1,3 +1,5 @@
+![FurWatch](.github/assets/6.png)
+
 <div align="center">
   <h1>👁️ NextFUR FurWatch ✨</h1>
 </div>
