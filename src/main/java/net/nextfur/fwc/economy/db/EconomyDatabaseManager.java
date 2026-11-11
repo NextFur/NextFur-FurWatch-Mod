@@ -11,10 +11,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -22,12 +32,88 @@ import java.util.concurrent.Executors;
 
 public class EconomyDatabaseManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(EconomyDatabaseManager.class);
+    private static final String EMBEDDED_SQLITE_RESOURCE = "META-INF/libraries/sqlite-jdbc.jar";
+    private static final String EMBEDDED_SQLITE_JAR_NAME = "sqlite-jdbc-3.46.1.0.jar";
+    private static final String[] DRIVER_CLASS_CANDIDATES = {
+            "org.sqlite.JDBC",
+            "com.fursmp.shadow.sqlite.JDBC"
+    };
+
     private static EconomyDatabaseManager instance;
+    private static volatile Driver cachedSqliteDriver;
+    private static volatile IsolatedSqliteClassLoader isolatedClassLoader;
 
     private Connection connection;
     private ExecutorService dbExecutor = createExecutor();
 
     private EconomyDatabaseManager() {}
+
+    /**
+     * Child-first URLClassLoader that isolates {@code org.sqlite.*} classes and native library
+     * resources from Youer/Paper and other mods while delegating JDK ({@code java.sql.*}) and
+     * logging ({@code org.slf4j.*}) classes to the parent classloader.
+     */
+    private static final class IsolatedSqliteClassLoader extends URLClassLoader {
+        static {
+            ClassLoader.registerAsParallelCapable();
+        }
+
+        IsolatedSqliteClassLoader(URL[] urls, ClassLoader parent) {
+            super(urls, parent);
+        }
+
+        private static boolean isIsolatedSqliteEntry(String name) {
+            return name.startsWith("org.sqlite.")
+                    || name.startsWith("org/sqlite/")
+                    || name.startsWith("META-INF/maven/org.xerial/")
+                    || name.startsWith("META-INF/native-image/org.xerial/")
+                    || name.equals("sqlite-jdbc.properties");
+        }
+
+        @Override
+        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            synchronized (getClassLoadingLock(name)) {
+                Class<?> c = findLoadedClass(name);
+                if (c == null) {
+                    if (isIsolatedSqliteEntry(name)) {
+                        try {
+                            c = findClass(name);
+                        } catch (ClassNotFoundException ignored) {
+                        }
+                    }
+                    if (c == null) {
+                        c = super.loadClass(name, false);
+                    }
+                }
+                if (resolve) {
+                    resolveClass(c);
+                }
+                return c;
+            }
+        }
+
+        @Override
+        public URL getResource(String name) {
+            if (isIsolatedSqliteEntry(name)) {
+                URL url = findResource(name);
+                if (url != null) {
+                    return url;
+                }
+            }
+            return super.getResource(name);
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            if (isIsolatedSqliteEntry(name)) {
+                List<URL> urls = Collections.list(findResources(name));
+                if (!urls.isEmpty()) {
+                    return Collections.enumeration(urls);
+                }
+            }
+            return super.getResources(name);
+        }
+    }
 
     private static ExecutorService createExecutor() {
         return Executors.newSingleThreadExecutor(r -> {
@@ -51,15 +137,180 @@ public class EconomyDatabaseManager {
         return instance;
     }
 
-    private Connection connectSqlite(String dbUrl) throws Exception {
+    private Connection connectSqlite(String dbUrl, Path dbDirectory) throws Exception {
+        Driver existingDriver = cachedSqliteDriver;
+        if (existingDriver != null) {
+            Connection conn = existingDriver.connect(dbUrl, new Properties());
+            if (conn != null) {
+                return conn;
+            }
+        }
+
+        synchronized (EconomyDatabaseManager.class) {
+            if (cachedSqliteDriver != null) {
+                Connection conn = cachedSqliteDriver.connect(dbUrl, new Properties());
+                if (conn != null) {
+                    return conn;
+                }
+            }
+
+            Exception lastError = null;
+
+            // 1. Primary strategy: Load embedded META-INF/libraries/sqlite-jdbc.jar in an isolated
+            // child-first URLClassLoader so JPMS/FML never sees duplicate modules or split packages,
+            // while JNI native bindings (Java_org_sqlite_core_NativeDB_*) remain intact.
+            try {
+                Connection conn = connectViaIsolatedEmbeddedJar(dbUrl, dbDirectory);
+                if (conn != null) {
+                    return conn;
+                }
+            } catch (Exception e) {
+                lastError = e;
+                LOGGER.debug("[FurWatch Economy] Isolated embedded SQLite loader fallback triggered: {}", e.getMessage());
+            }
+
+            // 2. Fallback strategy: Try already-loaded SQLite drivers across accessible classloaders
+            // (e.g., Youer/Paper server classpath, dev environment, or relocated driver).
+            ClassLoader[] loaders = new ClassLoader[]{
+                    EconomyDatabaseManager.class.getClassLoader(),
+                    Thread.currentThread().getContextClassLoader(),
+                    ClassLoader.getSystemClassLoader()
+            };
+
+            for (String driverClassName : DRIVER_CLASS_CANDIDATES) {
+                for (ClassLoader loader : loaders) {
+                    if (loader == null) continue;
+                    try {
+                        Class<?> clazz = Class.forName(driverClassName, true, loader);
+                        Driver driver = (Driver) clazz.getDeclaredConstructor().newInstance();
+                        Connection conn = connectWithNativeIsolation(driver, dbUrl, dbDirectory);
+                        if (conn != null) {
+                            cachedSqliteDriver = driver;
+                            return conn;
+                        }
+                    } catch (Throwable t) {
+                        if (t instanceof Exception ex) {
+                            lastError = ex;
+                        } else {
+                            lastError = new SQLException("Failed to load SQLite driver " + driverClassName, t);
+                        }
+                    }
+                }
+            }
+
+            // 3. Final fallback: DriverManager
+            try {
+                Connection conn = DriverManager.getConnection(dbUrl);
+                if (conn != null) {
+                    return conn;
+                }
+            } catch (Exception e) {
+                if (lastError == null) {
+                    lastError = e;
+                }
+            }
+
+            if (lastError != null) {
+                throw lastError;
+            }
+            throw new SQLException("No suitable SQLite JDBC driver found for " + dbUrl);
+        }
+    }
+
+    private static Connection connectViaIsolatedEmbeddedJar(String dbUrl, Path dbDirectory) throws Exception {
+        if (isolatedClassLoader == null) {
+            Path extractedJar = extractEmbeddedSqliteJar(dbDirectory);
+            if (extractedJar == null) {
+                return null;
+            }
+            isolatedClassLoader = new IsolatedSqliteClassLoader(
+                    new URL[]{extractedJar.toUri().toURL()},
+                    EconomyDatabaseManager.class.getClassLoader()
+            );
+        }
+
+        Class<?> clazz = Class.forName("org.sqlite.JDBC", true, isolatedClassLoader);
+        Driver driver = (Driver) clazz.getDeclaredConstructor().newInstance();
+        Connection conn = connectWithNativeIsolation(driver, dbUrl, dbDirectory);
+        if (conn != null) {
+            cachedSqliteDriver = driver;
+        }
+        return conn;
+    }
+
+    private static Connection connectWithNativeIsolation(Driver driver, String dbUrl, Path dbDirectory) throws Exception {
+        // Temporarily clear org.sqlite.lib.path if set by another mod/Youer so SQLiteJDBCLoader
+        // extracts a unique UUID-named native library for our ClassLoader instead of colliding
+        // with a native binary path already bound to another ClassLoader.
+        String prevLibPath = System.getProperty("org.sqlite.lib.path");
+        if (prevLibPath != null) {
+            System.clearProperty("org.sqlite.lib.path");
+        }
         try {
-            Class<?> clazz = Class.forName("org.sqlite.JDBC");
-            Driver driver = (Driver) clazz.getDeclaredConstructor().newInstance();
-            return driver.connect(dbUrl, new java.util.Properties());
-        } catch (ClassNotFoundException e) {
-            Class<?> clazz = Class.forName("org.sqlite.JDBC", true, ClassLoader.getSystemClassLoader());
-            Driver driver = (Driver) clazz.getDeclaredConstructor().newInstance();
-            return driver.connect(dbUrl, new java.util.Properties());
+            return driver.connect(dbUrl, new Properties());
+        } catch (Throwable firstError) {
+            // Retry with a dedicated native temp directory inside furwatch/libs/native in case
+            // the host OS mounts /tmp (java.io.tmpdir) with noexec.
+            if (dbDirectory != null) {
+                Path nativeTmpDir = dbDirectory.resolve("libs").resolve("native");
+                Files.createDirectories(nativeTmpDir);
+                String prevTmpDir = System.getProperty("org.sqlite.tmpdir");
+                System.setProperty("org.sqlite.tmpdir", nativeTmpDir.toAbsolutePath().toString());
+                try {
+                    return driver.connect(dbUrl, new Properties());
+                } finally {
+                    if (prevTmpDir != null) {
+                        System.setProperty("org.sqlite.tmpdir", prevTmpDir);
+                    } else {
+                        System.clearProperty("org.sqlite.tmpdir");
+                    }
+                }
+            }
+            if (firstError instanceof Exception ex) {
+                throw ex;
+            }
+            throw new SQLException("SQLite native initialization failed", firstError);
+        } finally {
+            if (prevLibPath != null) {
+                System.setProperty("org.sqlite.lib.path", prevLibPath);
+            }
+        }
+    }
+
+    private static Path extractEmbeddedSqliteJar(Path dbDirectory) throws IOException {
+        InputStream in = EconomyDatabaseManager.class.getClassLoader().getResourceAsStream(EMBEDDED_SQLITE_RESOURCE);
+        if (in == null) {
+            in = EconomyDatabaseManager.class.getResourceAsStream("/" + EMBEDDED_SQLITE_RESOURCE);
+        }
+        if (in == null) {
+            return null;
+        }
+
+        try (InputStream stream = in) {
+            Path targetDir;
+            if (dbDirectory != null) {
+                targetDir = dbDirectory.resolve("libs");
+            } else {
+                targetDir = Paths.get(System.getProperty("java.io.tmpdir"), "furwatch-sqlite");
+            }
+            Files.createDirectories(targetDir);
+            Path targetJar = targetDir.resolve(EMBEDDED_SQLITE_JAR_NAME);
+
+            Path tempJar = targetDir.resolve(EMBEDDED_SQLITE_JAR_NAME + ".tmp");
+            Files.copy(stream, tempJar, StandardCopyOption.REPLACE_EXISTING);
+            long newSize = Files.size(tempJar);
+
+            if (!Files.exists(targetJar) || Files.size(targetJar) != newSize) {
+                try {
+                    Files.move(tempJar, targetJar, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException moveEx) {
+                    // On Windows, if targetJar is already open in a previous ClassLoader, keep using targetJar
+                    Files.deleteIfExists(tempJar);
+                }
+            } else {
+                Files.deleteIfExists(tempJar);
+            }
+            return targetJar;
         }
     }
 
@@ -86,7 +337,7 @@ public class EconomyDatabaseManager {
             String dbUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
 
             LOGGER.info("[FurWatch Economy] Connecting to SQLite database at: {}", dbFile.getAbsolutePath());
-            this.connection = connectSqlite(dbUrl);
+            this.connection = connectSqlite(dbUrl, dbDirectory);
 
             try (Statement st = connection.createStatement()) {
                 st.execute("PRAGMA journal_mode = WAL;");

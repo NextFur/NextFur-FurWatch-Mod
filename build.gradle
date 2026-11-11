@@ -65,13 +65,26 @@ neoForge {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+configurations {
+    sqliteLibrary {
+        canBeConsumed = false
+        canBeResolved = true
+        transitive = false
+    }
+}
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'org.xerial:sqlite-jdbc:3.46.1.0'
-    additionalRuntimeClasspath 'org.xerial:sqlite-jdbc:3.46.1.0'
-    jarJar(implementation('org.xerial:sqlite-jdbc:3.46.1.0'))
+    compileOnly 'org.xerial:sqlite-jdbc:3.46.1.0'
+    sqliteLibrary 'org.xerial:sqlite-jdbc:3.46.1.0'
     runtimeOnly 'com.cinemamod:mcef-neoforge:2.1.6-1.21.1'
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    from(configurations.named('sqliteLibrary')) {
+        into 'META-INF/libraries'
+        rename { 'sqlite-jdbc.jar' }
+    }
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
